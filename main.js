@@ -12,6 +12,7 @@ const paramValue = searchParams.get(paramName);
 const mData = getData(paramValue);
 
 function createTableHeaderLinks() {
+  // TODO: make sure circular references are not created 
   const tableHeader = document.getElementById("tHeader");
   const navMenu = document.createElement("div");
   tableHeader.appendChild(navMenu);
@@ -58,7 +59,7 @@ function initializePage() {
 function updateQueryHeading() {
   const querySpan = document.getElementById("query");
   let key = searchParams.get("period");
-  // TODO: consolidate this logic with the getData function
+  // TODO: consolidate this logic with the getData function; 
   key = key || "2024";
   querySpan.textContent = dataSets.find(dataSet => dataSet.Period === key).Name;
 }
