@@ -1,21 +1,22 @@
-function getPageData(pageName) {
-  // pageName is the key that maps to the data set, so filenames have to match these keys
-  const pageDataSets = {
-    index: mData2024,
-    all_time: mDataAllTime,
+function getData(dataKey) {
+  dataKey = dataKey ||"2024" 
+  // dataKey is the key that maps to the data set, so filenames have to match these keys
+  const dataSets = {
+    "2024":     mData2024,
+    "all_time": mDataAllTime
   };
  
-  if (pageDataSets[pageName]) {
-    return pageDataSets[pageName];
+  if (dataSets[dataKey]) {
+    return dataSets[dataKey];
   } else {
-    console.log("getPageData: no data for page " + pageName);
+    console.log("getData: no data for page " + dataKey);
     return [];
   }
 }
 
-const pages = [
-  { Key: "index", Name: "2024" },
-  { Key: "all_time", Name: "All Time" },
+const dataSets = [
+  { Period: "2024", Name: "2024" },
+  { Period: "all_time", Name: "All Time" },
 ]
 
 const mColumns = [

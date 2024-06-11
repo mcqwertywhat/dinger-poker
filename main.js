@@ -1,7 +1,15 @@
-// get the data that corresponds to this page
-const pathArray = window.location.pathname.split("/");
-const currentPageName = pathArray.pop().split(".")[0];
-const mData = getPageData(currentPageName);
+// Get the query string from the URL
+const queryString = window.location.search;
+
+// Create a URLSearchParams object from the query string
+const searchParams = new URLSearchParams(queryString);
+
+// Get a specific parameter value by its name
+const paramName = 'period';
+const paramValue = searchParams.get(paramName);
+
+// set the data that corresponds to this query
+const mData = getData(paramValue);
 
 function createTableHeaderLinks() {
   const tableHeader = document.getElementById("tHeader");
@@ -9,12 +17,12 @@ function createTableHeaderLinks() {
   tableHeader.appendChild(navMenu);
   navMenu.className = "description";
 
-  for (const page of pages) {
+  for (const dataSet of dataSets) {
     const link = document.createElement("a");
-    link.href = `${page.Key}.html`;
-    link.textContent = `${page.Name}`
+    link.href = `index.html?period=${dataSet.Period}`;
+    link.textContent = `${dataSet.Name}`
     navMenu.appendChild(link);
-    if (page != pages[pages.length - 1]) { 
+    if (dataSet != dataSets[dataSets.length - 1]) { 
       navMenu.appendChild(document.createTextNode(" | "));
     }    
   }
@@ -39,11 +47,20 @@ function createTableRows() {
 }
 
 function initializePage() {
+  updateQueryHeading();
   createTableHeaderLinks()
   createTableRows();
   if (TDSort) {
     TDSort.init('pTable', 'pColumns');
   }
+}
+
+function updateQueryHeading() {
+  const querySpan = document.getElementById("query");
+  let key = searchParams.get("period");
+  // TODO: consolidate this logic with the getData function
+  key = key || "2024";
+  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === key).Name;
 }
 
 var TDSort = (function () {
