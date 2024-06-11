@@ -13,6 +13,11 @@ function getPageData(pageName) {
   }
 }
 
+const pages = [
+  { Key: "index", Name: "2024" },
+  { Key: "all_time", Name: "All Time" },
+]
+
 const mColumns = [
   { Key: "_Index", Name: "#" },
   { Key: "Name", Name: "Name" },

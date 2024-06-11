@@ -8,6 +8,18 @@ a {
   text-decoration: none;
 }
 
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}
+
 a:hover {
   text-decoration: underline;
 }
@@ -47,6 +59,7 @@ body {
   background-color: #fff;
   color: #000;
   border-radius: 6px;
+  border: 0px;
 }
 
 .statsColumnHeader {

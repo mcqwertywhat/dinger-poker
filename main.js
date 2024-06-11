@@ -1,3 +1,51 @@
+// get the data that corresponds to this page
+const pathArray = window.location.pathname.split("/");
+const currentPageName = pathArray.pop().split(".")[0];
+const mData = getPageData(currentPageName);
+
+function createTableHeaderLinks() {
+  const tableHeader = document.getElementById("tHeader");
+  const navMenu = document.createElement("div");
+  tableHeader.appendChild(navMenu);
+  navMenu.className = "description";
+
+  for (const page of pages) {
+    const link = document.createElement("a");
+    link.href = `${page.Key}.html`;
+    link.textContent = `${page.Name}`
+    navMenu.appendChild(link);
+    if (page != pages[pages.length - 1]) { 
+      navMenu.appendChild(document.createTextNode(" | "));
+    }    
+  }
+}
+
+function createTableRows() {
+  tableBody = document.getElementById("pBody");
+
+  for (let i = 0; i < mData.length; i++) {
+    const tr = document.createElement("tr");
+    tr.className = i % 2 === 0 ? "even" : "odd";
+    
+    mData[i].Columns.forEach((column) => {
+      const td = document.createElement("td");
+      td.textContent = column.Text;
+      td.className = `statsColumn align-${column.Align}`;
+      tr.appendChild(td);
+    });
+
+    tableBody.appendChild(tr);
+  }
+}
+
+function initializePage() {
+  createTableHeaderLinks()
+  createTableRows();
+  if (TDSort) {
+    TDSort.init('pTable', 'pColumns');
+  }
+}
+
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
@@ -8,16 +56,11 @@ var TDSort = (function () {
   var mTableID = "";
   var mHeaderRowID = "";
   var mIndexCol = 0;
-  // get the data that corresponds to this page
-  const pathArray = window.location.pathname.split("/");
-  const pageName = pathArray.pop().split(".")[0];
-  const mData = getPageData(pageName);
 
   // initialize the page
   function init(inTableID, inHeaderRowID) {
     mTableID = inTableID;
     mHeaderRowID = inHeaderRowID;
-
     // install an onClick handler for each column header
     var theRow = document.getElementById(mHeaderRowID);
     var getSortFn = function (inIndex) {
@@ -42,8 +85,9 @@ var TDSort = (function () {
     // put a reference to each row in the data, if we haven't already
     var theRows = document.getElementById(mTableID).rows;
 
-    for (var i = 0, iLen = mData.length; i < iLen; i++)
+    for (var i = 0, iLen = mData.length; i < iLen; i++) {
       mData[i].Row = theRows[i + 1];
+    }
   }
 
   // sort fn
@@ -79,9 +123,9 @@ var TDSort = (function () {
     var theParent = theTable.rows[0].parentNode;
 
     // remove all rows, in current sort order (appears to be the fastest way)
-    for (var i = 0, iLen = mData.length; i < iLen; i++)
+    for (var i = 0, iLen = mData.length; i < iLen; i++) {
       theParent.removeChild(mData[i].Row);
-
+    }
     // sort the rows
     mData.sort(sortRow);
 
@@ -111,4 +155,7 @@ var TDSort = (function () {
   return {
     init: init,
   };
+
 })();
+
+window.onload = initializePage;
