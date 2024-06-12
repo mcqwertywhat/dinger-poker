@@ -1,12 +1,10 @@
-const queryString = window.location.search;
-const searchParams = new URLSearchParams(queryString);
-// only allowed param is time 'period'; if this changes, update this code
-const period = searchParams.get('period') || '2024';
-
-const dataSets = [
-  { Period: "2024", Name: "2024" },
-  { Period: "all_time", Name: "All Time" },
-]
+const DB = {
+  // at the moment, we expect the query param to be the key of the object
+  // think of this DB as a list of reports
+  // if we want to add more CSV files, we just add a new key-value pair to this object
+  "2024":     { title: "2024", filename: "2024.csv", data: [] },
+  "all_time": { title: "All Time", filename: "all_time.csv", data: [] }
+}
 
 const mColumns = [
   { Key: "_Index", Name: "#" },
@@ -26,8 +24,17 @@ const mColumns = [
   { Key: "AverageHits", Name: "Average Hits" },
 ];
 
+const queryString = window.location.search;
+const searchParams = new URLSearchParams(queryString);
+// only allowed param is 'q' and we expect that it matches a DB key
+const query = searchParams.get('q');
+const validQueryParams = Object.keys(DB);
+if (!query || !validQueryParams.includes(query)) {
+  // default to 2024 if no query param is provided
+  window.location.href = 'index.html?q=2024';
+}
+
 async function initializePage() {
-  console.log('initializing page')
   await setData();
   updateQueryHeading();
   createTableHeaderLinks()
@@ -37,13 +44,13 @@ async function initializePage() {
 
 async function setData() {
   // grab data for each csv file
-  let mData2024 = await fetchCSV('data/2024.csv');
-  mData2024 = parseCSV(mData2024);
+  for (let report of Object.values(DB)) {
+    let data = await fetchCSV(`data/${report.filename}`);
+    data = parseCSV(data);
+    report.data = data
+  }
 
-  let mDataAllTime = await fetchCSV('data/all_time.csv');
-  mDataAllTime = parseCSV(mDataAllTime);
-
-  mData = period === '2024' ? mData2024 : mDataAllTime;
+  mData = DB[query].data;
 }
 
 function parseCSV(csvText) {
@@ -90,21 +97,26 @@ async function fetchCSV(url) {
 }
 
 function createTableHeaderLinks() {
-  // TODO: make sure circular references are not created 
   const tableHeader = document.getElementById("tHeader");
   const navMenu = document.createElement("div");
   tableHeader.appendChild(navMenu);
   navMenu.className = "description";
 
-  for (const dataSet of dataSets) {
+  const keys = Object.keys(DB);
+  const lastKey = keys[keys.length - 1];
+
+  keys.forEach((key) => {
+    const report = DB[key];
     const link = document.createElement("a");
-    link.href = `index.html?period=${dataSet.Period}`;
-    link.textContent = `${dataSet.Name}`
+    link.href = `index.html?q=${key}`;
+    link.textContent = report.title;
     navMenu.appendChild(link);
-    if (dataSet != dataSets[dataSets.length - 1]) { 
+
+    // no pipe after last link
+    if (key !== lastKey) {
       navMenu.appendChild(document.createTextNode(" | "));
-    }    
-  }
+    }
+  });
 }
 
 function createTableRows() {
@@ -126,9 +138,9 @@ function createTableRows() {
 }
 
 function updateQueryHeading() {
-  const querySpan = document.getElementById("query");
+  const reportTitle = document.getElementById("report-title");
   // TODO: consolidate this logic with the getData function; 
-  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === period).Name;
+  reportTitle.textContent = DB[query].title;
 }
 
 var TDSort = (function () {
