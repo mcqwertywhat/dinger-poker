@@ -44,9 +44,13 @@ async function initializePage() {
 
 async function setData() {
   // grab data for each csv file
-  for (let report of Object.values(DB)) {
+  // TODO: we should use Promise.all to fetch all the data at once
+  for (let key in DB) {
+    let report = DB[key];
     let data = await fetchCSV(`data/${report.filename}`);
     data = parseCSV(data);
+    localStorage.setItem(`${key}`, JSON.stringify(data)); // Store data as JSON string
+    console.log(`${key} Data cached in localStorage.`);
     report.data = data
   }
 
