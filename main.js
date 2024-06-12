@@ -1,31 +1,68 @@
-
-// TODO: the querystring and 
-// Get the query string from the URL
 const queryString = window.location.search;
-
-// Create a URLSearchParams object from the query string
 const searchParams = new URLSearchParams(queryString);
-
-// Get a specific parameter value by its name
-const paramName = 'period';
-const paramValue = searchParams.get(paramName);
-
-// set the data that corresponds to this query
-// TODO: getData should be removed/refactored if CSV files are used.
-const mData = getData(paramValue);
+// only allowed param is time 'period'; if this changes, update this code
+const period = searchParams.get('period') || '2024';
 
 async function initializePage() {
-  // grab data for each csv file
   console.log('initializing page')
-  let data2024CSV = await fetchCSV('data/2024.csv');
-  data2024CSV = parseCSV(data2024CSV);
-  // TODO: get rid of this line, it's just a test to see if we can actually read CSV files within the repo.
-  console.log(data2024CSV)
+  await setData();
   updateQueryHeading();
   createTableHeaderLinks()
   createTableRows();
-  if (TDSort) {
-    TDSort.init('pTable', 'pColumns');
+  TDSort?.init('pTable', 'pColumns');
+}
+
+async function setData() {
+  // grab data for each csv file
+  let mData2024 = await fetchCSV('data/2024.csv');
+  mData2024 = parseCSV(mData2024);
+
+  let mDataAllTime = await fetchCSV('data/all_time.csv');
+  mDataAllTime = parseCSV(mDataAllTime);
+
+  mData = period === '2024' ? mData2024 : mDataAllTime;
+}
+
+function parseCSV(csvText) {
+  // Transform CSV data into a data structure that is expected based on exising JS Code
+  // TODO: See if we really need Papa.parse. Might be overkill and would rather keep as lightweight as possible.
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',');
+
+  const processedData = lines.slice(1).map((line, index) => {
+    const values = line.split(',');
+    const row = headers.reduce((obj, header, i) => {
+      obj[header.trim()] = values[i] ? values[i].trim() : '';
+      return obj;
+    }, {});
+
+    const columns = Object.entries(row).map(([key, value]) => {
+      // Convert numbers to actual numbers and format accordingly
+      const numericValue = parseFloat(value.replace(/[,$]/g, ''));
+      return {
+        Text: value,
+        HTML: value,
+        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
+        Align: !isNaN(numericValue) ? "right" : "left"
+      };
+    });
+
+    return {
+      Index: index,
+      Columns: columns
+    };
+  });
+
+  return processedData;
+}
+
+async function fetchCSV(url) {
+  try {
+    const response = await fetch(url);
+    const csvText = await response.text();
+    return csvText;
+  } catch (error) {
+    console.error('Error fetching CSV file:', error);
   }
 }
 
@@ -67,10 +104,8 @@ function createTableRows() {
 
 function updateQueryHeading() {
   const querySpan = document.getElementById("query");
-  let key = searchParams.get("period");
   // TODO: consolidate this logic with the getData function; 
-  key = key || "2024";
-  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === key).Name;
+  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === period).Name;
 }
 
 var TDSort = (function () {
