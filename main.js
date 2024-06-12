@@ -1,7 +1,9 @@
 const DB = {
   // at the moment, we expect the query param to be the key of the object
-  "2024":     { Name: "2024", filename: "2024.csv", dataSet: [] },
-  "all_time": { Name: "All Time", filename: "all_time.csv", dataSet: [] }
+  // think of this DB as a list of reports
+  // if we want to add more CSV files, we just add a new key-value pair to this object
+  "2024":     { title: "2024", filename: "2024.csv", data: [] },
+  "all_time": { title: "All Time", filename: "all_time.csv", data: [] }
 }
 
 const mColumns = [
@@ -42,13 +44,13 @@ async function initializePage() {
 
 async function setData() {
   // grab data for each csv file
-  for (let dSet of Object.values(DB)) {
-    let data = await fetchCSV(`data/${dSet.filename}`);
+  for (let report of Object.values(DB)) {
+    let data = await fetchCSV(`data/${report.filename}`);
     data = parseCSV(data);
-    dSet.dataSet = data
+    report.data = data
   }
 
-  mData = DB[query].dataSet;
+  mData = DB[query].data;
 }
 
 function parseCSV(csvText) {
@@ -104,10 +106,10 @@ function createTableHeaderLinks() {
   const lastKey = keys[keys.length - 1];
 
   keys.forEach((key) => {
-    const dataSet = DB[key];
+    const report = DB[key];
     const link = document.createElement("a");
     link.href = `index.html?q=${key}`;
-    link.textContent = dataSet.Name;
+    link.textContent = report.title;
     navMenu.appendChild(link);
 
     // no pipe after last link
@@ -136,9 +138,9 @@ function createTableRows() {
 }
 
 function updateQueryHeading() {
-  const querySpan = document.getElementById("query");
+  const reportTitle = document.getElementById("report-title");
   // TODO: consolidate this logic with the getData function; 
-  querySpan.textContent = DB[query].Name;
+  reportTitle.textContent = DB[query].title;
 }
 
 var TDSort = (function () {
