@@ -40,10 +40,16 @@ const mColumns = [
 function parseCSV(csvText) {
   // Transform CSV data into a data structure that is expected based on exising JS Code
   // TODO: See if we really need Papa.parse. Might be overkill and would rather keep as lightweight as possible.
-  const parsedData = Papa.parse(csvText, { header: true }).data;
-  const processedData = [];
-  
-  parsedData.forEach((row, index) => {
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',');
+
+  const processedData = lines.slice(1).map((line, index) => {
+    const values = line.split(',');
+    const row = headers.reduce((obj, header, i) => {
+      obj[header.trim()] = values[i] ? values[i].trim() : '';
+      return obj;
+    }, {});
+
     const columns = Object.entries(row).map(([key, value]) => {
       // Convert numbers to actual numbers and format accordingly
       const numericValue = parseFloat(value.replace(/[,$]/g, ''));
@@ -54,14 +60,13 @@ function parseCSV(csvText) {
         Align: !isNaN(numericValue) ? "right" : "left"
       };
     });
-    
-    // Add the processed row to the array
-    processedData.push({
+
+    return {
       Index: index,
       Columns: columns
-    });
+    };
   });
-  
+
   return processedData;
 }
 
