@@ -1,15 +1,93 @@
-// Get the query string from the URL
 const queryString = window.location.search;
-
-// Create a URLSearchParams object from the query string
 const searchParams = new URLSearchParams(queryString);
+// only allowed param is time 'period'; if this changes, update this code
+const period = searchParams.get('period') || '2024';
 
-// Get a specific parameter value by its name
-const paramName = 'period';
-const paramValue = searchParams.get(paramName);
+const dataSets = [
+  { Period: "2024", Name: "2024" },
+  { Period: "all_time", Name: "All Time" },
+]
 
-// set the data that corresponds to this query
-const mData = getData(paramValue);
+const mColumns = [
+  { Key: "_Index", Name: "#" },
+  { Key: "Name", Name: "Name" },
+  { Key: "Buyins", Name: "Buy-ins" },
+  { Key: "RebuysCount", Name: "Rebuys" },
+  { Key: "Hits", Name: "Hits" },
+  { Key: "TotalWinnings", Name: "Total Winnings" },
+  { Key: "TotalCost", Name: "Total Cost" },
+  { Key: "TotalTake", Name: "Total Take" },
+  { Key: "TimesPlaced", Name: "Times Placed" },
+  { Key: "First", Name: "1st" },
+  { Key: "Second", Name: "2nd" },
+  { Key: "Third", Name: "3rd" },
+  { Key: "AveragePlaced", Name: "Average Placed" },
+  { Key: "OnTheBubble", Name: "Bubble" },
+  { Key: "AverageHits", Name: "Average Hits" },
+];
+
+async function initializePage() {
+  console.log('initializing page')
+  await setData();
+  updateQueryHeading();
+  createTableHeaderLinks()
+  createTableRows();
+  TDSort?.init('pTable', 'pColumns');
+}
+
+async function setData() {
+  // grab data for each csv file
+  let mData2024 = await fetchCSV('data/2024.csv');
+  mData2024 = parseCSV(mData2024);
+
+  let mDataAllTime = await fetchCSV('data/all_time.csv');
+  mDataAllTime = parseCSV(mDataAllTime);
+
+  mData = period === '2024' ? mData2024 : mDataAllTime;
+}
+
+function parseCSV(csvText) {
+  // Transform CSV data into a data structure that is expected based on exising JS Code
+  // TODO: See if we really need Papa.parse. Might be overkill and would rather keep as lightweight as possible.
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',');
+
+  const processedData = lines.slice(1).map((line, index) => {
+    const values = line.split(',');
+    const row = headers.reduce((obj, header, i) => {
+      obj[header.trim()] = values[i] ? values[i].trim() : '';
+      return obj;
+    }, {});
+
+    const columns = Object.entries(row).map(([key, value]) => {
+      // Convert numbers to actual numbers and format accordingly
+      const numericValue = parseFloat(value.replace(/[,$]/g, ''));
+      return {
+        Text: value,
+        HTML: value,
+        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
+        Align: !isNaN(numericValue) ? "right" : "left"
+      };
+    });
+
+    return {
+      Index: index,
+      Columns: columns
+    };
+  });
+
+  return processedData;
+}
+
+async function fetchCSV(url) {
+  try {
+    const response = await fetch(url);
+    const csvText = await response.text();
+    return csvText;
+  } catch (error) {
+    console.error('Error fetching CSV file:', error);
+  }
+}
 
 function createTableHeaderLinks() {
   // TODO: make sure circular references are not created 
@@ -47,21 +125,10 @@ function createTableRows() {
   }
 }
 
-function initializePage() {
-  updateQueryHeading();
-  createTableHeaderLinks()
-  createTableRows();
-  if (TDSort) {
-    TDSort.init('pTable', 'pColumns');
-  }
-}
-
 function updateQueryHeading() {
   const querySpan = document.getElementById("query");
-  let key = searchParams.get("period");
   // TODO: consolidate this logic with the getData function; 
-  key = key || "2024";
-  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === key).Name;
+  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === period).Name;
 }
 
 var TDSort = (function () {
