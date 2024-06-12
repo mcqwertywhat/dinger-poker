@@ -37,6 +37,45 @@ const mColumns = [
   { Key: "AverageHits", Name: "Average Hits" },
 ];
 
+function parseCSV(csvText) {
+  // Transform CSV data into a data structure that is expected based on exising JS Code
+  // TODO: See if we really need Papa.parse. Might be overkill and would rather keep as lightweight as possible.
+  const parsedData = Papa.parse(csvText, { header: true }).data;
+  const processedData = [];
+  
+  parsedData.forEach((row, index) => {
+    const columns = Object.entries(row).map(([key, value]) => {
+      // Convert numbers to actual numbers and format accordingly
+      const numericValue = parseFloat(value.replace(/[,$]/g, ''));
+      return {
+        Text: value,
+        HTML: value,
+        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
+        Align: !isNaN(numericValue) ? "right" : "left"
+      };
+    });
+    
+    // Add the processed row to the array
+    processedData.push({
+      Index: index,
+      Columns: columns
+    });
+  });
+  
+  return processedData;
+}
+
+async function fetchCSV(url) {
+  try {
+    const response = await fetch(url);
+    const csvText = await response.text();
+    return csvText;
+  } catch (error) {
+    console.error('Error fetching CSV file:', error);
+  }
+}
+
+
 const mData2024 = [
   {
     Index: 0,

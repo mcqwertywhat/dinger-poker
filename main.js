@@ -1,3 +1,5 @@
+
+// TODO: the querystring and 
 // Get the query string from the URL
 const queryString = window.location.search;
 
@@ -9,7 +11,22 @@ const paramName = 'period';
 const paramValue = searchParams.get(paramName);
 
 // set the data that corresponds to this query
+// TODO: getData should be removed/refactored if CSV files are used.
 const mData = getData(paramValue);
+
+async function initializePage() {
+  // grab data for each csv file
+  let data2024CSV = await fetchCSV('data/2024.csv');
+  data2024CSV = parseCSV(data2024CSV);
+  // TODO: get rid of this line, it's just a test to see if we can actually read CSV files within the repo.
+  console.log(data2024CSV)
+  updateQueryHeading();
+  createTableHeaderLinks()
+  createTableRows();
+  if (TDSort) {
+    TDSort.init('pTable', 'pColumns');
+  }
+}
 
 function createTableHeaderLinks() {
   // TODO: make sure circular references are not created 
@@ -44,15 +61,6 @@ function createTableRows() {
     });
 
     tableBody.appendChild(tr);
-  }
-}
-
-function initializePage() {
-  updateQueryHeading();
-  createTableHeaderLinks()
-  createTableRows();
-  if (TDSort) {
-    TDSort.init('pTable', 'pColumns');
   }
 }
 
