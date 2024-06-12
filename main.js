@@ -16,6 +16,7 @@ const mData = getData(paramValue);
 
 async function initializePage() {
   // grab data for each csv file
+  console.log('initializing page')
   let data2024CSV = await fetchCSV('data/2024.csv');
   data2024CSV = parseCSV(data2024CSV);
   // TODO: get rid of this line, it's just a test to see if we can actually read CSV files within the repo.
