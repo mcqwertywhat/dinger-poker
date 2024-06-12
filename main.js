@@ -3,6 +3,11 @@ const DB = {
   // think of this DB as a list of reports
   // if we want to add more CSV files, we just add a new key-value pair to this object
   "2024":     { title: "2024", filename: "2024.csv", data: [] },
+  "2023":     { title: "2023", filename: "2023.csv", data: [] },
+  "2022":     { title: "2022", filename: "2022.csv", data: [] },
+  "2021":     { title: "2021", filename: "2021.csv", data: [] },
+  "2020":     { title: "2020", filename: "2020.csv", data: [] },
+  "2019":     { title: "2019", filename: "2019.csv", data: [] },
   "all_time": { title: "All Time", filename: "all_time.csv", data: [] }
 }
 
