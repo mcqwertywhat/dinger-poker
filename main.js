@@ -3,10 +3,10 @@ const searchParams = new URLSearchParams(queryString);
 // only allowed param is time 'period'; if this changes, update this code
 const period = searchParams.get('period') || '2024';
 
-const dataSets = [
-  { Period: "2024", Name: "2024" },
-  { Period: "all_time", Name: "All Time" },
-]
+const dataSetsV2 = {
+  "2024":     { Period: "2024", Name: "2024", filename: "2024.csv", dataSet: [] },
+  "all_time": { Period: "all_time", Name: "All Time", filename: "all_time.csv", dataSet: [] }
+}
 
 const mColumns = [
   { Key: "_Index", Name: "#" },
@@ -37,13 +37,13 @@ async function initializePage() {
 
 async function setData() {
   // grab data for each csv file
-  let mData2024 = await fetchCSV('data/2024.csv');
-  mData2024 = parseCSV(mData2024);
+  for (let dSet of Object.values(dataSetsV2)) {
+    let data = await fetchCSV(`data/${dSet.filename}`);
+    data = parseCSV(data);
+    dSet.dataSet = data
+  }
 
-  let mDataAllTime = await fetchCSV('data/all_time.csv');
-  mDataAllTime = parseCSV(mDataAllTime);
-
-  mData = period === '2024' ? mData2024 : mDataAllTime;
+  mData = dataSetsV2[period].dataSet;
 }
 
 function parseCSV(csvText) {
@@ -96,12 +96,15 @@ function createTableHeaderLinks() {
   tableHeader.appendChild(navMenu);
   navMenu.className = "description";
 
-  for (const dataSet of dataSets) {
+  const values = Object.values(dataSetsV2);
+  const lastElement = values[values.length - 1];
+
+  for (let dataSet of values) {
     const link = document.createElement("a");
     link.href = `index.html?period=${dataSet.Period}`;
     link.textContent = `${dataSet.Name}`
     navMenu.appendChild(link);
-    if (dataSet != dataSets[dataSets.length - 1]) { 
+    if (dataSet != lastElement) { 
       navMenu.appendChild(document.createTextNode(" | "));
     }    
   }
@@ -128,7 +131,7 @@ function createTableRows() {
 function updateQueryHeading() {
   const querySpan = document.getElementById("query");
   // TODO: consolidate this logic with the getData function; 
-  querySpan.textContent = dataSets.find(dataSet => dataSet.Period === period).Name;
+  querySpan.textContent = dataSetsV2[period].Name;
 }
 
 var TDSort = (function () {
