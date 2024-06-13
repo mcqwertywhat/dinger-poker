@@ -78,7 +78,6 @@ async function setData() {
 
 function parseCSV(csvText) {
   // Transform CSV data into a data structure that is expected based on exising JS Code
-  // TODO: See if we really need Papa.parse. Might be overkill and would rather keep as lightweight as possible.
   const lines = csvText.trim().split('\n');
   const headers = lines[0].split(',');
 
