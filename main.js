@@ -138,11 +138,12 @@ async function setData() {
   }
   // TODO: Why do these variables work without a let/const/var keyword? they're not declared anywhere
   mData = DB[query].data;
-  mColumns = validColumns.map((column) => {
+  const validHeaderNames = validColumns.map(column => column.Name);
+  mColumns = DB[query].headers.map(headerName => {
     // this is a bit of a hack, but we need to set the columns based on the data
     // we assume that if the column isn't in the report (csv file) its data is not either
-    if (DB[query].headers.includes(column.Name)) {
-      return column
+    if (validHeaderNames.includes(headerName)) {
+      return validColumns.find(column => column.Name === headerName);
     }
   }).filter((column) => column !== undefined);
 }
