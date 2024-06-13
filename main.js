@@ -1,5 +1,4 @@
 const reports = {
-  // expect the query param ('rID') to be the key of the report
   2024: {
     title: "2024",
     filename: "2024.csv",
@@ -10,67 +9,67 @@ const reports = {
     title: "2023",
     filename: "2023.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   2022: {
     title: "2022",
     filename: "2022.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   2021: {
     title: "2021",
     filename: "2021.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   2020: {
     title: "2020",
     filename: "2020.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   2019: {
     title: "2019",
     filename: "2019.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   christmas: {
     title: "Christmas Poker",
     filename: "christmas.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   dinger_days: {
     title: "Dinger Days",
     filename: "dinger_days.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   bounty: {
     title: "Bounty",
     filename: "bounty.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   hold_em_rebuy: {
     title: "Hold'em Rebuy",
     filename: "hold_em_rebuy.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   sundays: {
     title: "Sundays",
     filename: "sundays.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
   all_time: {
     title: "All Time",
     filename: "all_time.csv",
     headers: [],
-    data: [], 
+    data: [],
   },
 };
 
@@ -94,12 +93,12 @@ const validColumns = [
 
 const queryString = window.location.search;
 const searchParams = new URLSearchParams(queryString);
-// only allowed param is 'rID' and we expect that it matches a reports key
-const reportKey = searchParams.get("rID");
+// only allowed param is 'id'; expect it to match a reports key
+const requestedReportID = searchParams.get("id");
 const validQueryParams = Object.keys(reports);
-if (!reportKey || !validQueryParams.includes(reportKey)) {
-  // default to 2024 if no valid reportKey is provided
-  window.location.href = "index.html?rID=2024";
+if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
+  // default to 2024 if no valid report key is provided
+  window.location.href = "index.html?id=2024";
 }
 
 async function initializePage() {
@@ -126,7 +125,11 @@ async function setData() {
     } else {
       // Data is not available in localStorage, fetch it
       let data = await fetchCSV(`data/${report.filename}`);
-      headers = data.trim().split("\n")[0].split(",").map(header => header.trim());
+      headers = data
+        .trim()
+        .split("\n")[0]
+        .split(",")
+        .map((header) => header.trim());
       // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
       data = parseCSV(data);
       report.headers = headers;
@@ -135,15 +138,17 @@ async function setData() {
     }
   }
   // TODO: Why do these variables work without a let/const/var keyword? they're not declared anywhere
-  mData = reports[reportKey].data;
-  const validHeaderNames = validColumns.map(column => column.Name);
-  mColumns = reports[reportKey].headers.map(headerName => {
-    // this is a bit of a hack, but we need to set the columns based on the data
-    // we assume that if the column isn't in the report (csv file) its data is not either
-    if (validHeaderNames.includes(headerName)) {
-      return validColumns.find(column => column.Name === headerName);
-    }
-  }).filter((column) => column !== undefined);
+  mData = reports[requestedReportID].data;
+  const validHeaderNames = validColumns.map((column) => column.Name);
+  mColumns = reports[requestedReportID].headers
+    .map((headerName) => {
+      // this is a bit of a hack, but we need to set the columns based on the data
+      // we assume that if the column isn't in the report (csv file) its data is not either
+      if (validHeaderNames.includes(headerName)) {
+        return validColumns.find((column) => column.Name === headerName);
+      }
+    })
+    .filter((column) => column !== undefined);
 }
 
 function createHeaderRow() {
@@ -161,7 +166,7 @@ function createHeaderRow() {
 function updateReportTitle() {
   const reportTitle = document.getElementById("report-title");
   // TODO: consolidate this logic with the getData function;
-  reportTitle.textContent = reports[reportKey].title;
+  reportTitle.textContent = reports[requestedReportID].title;
 }
 
 function createTableHeaderLinks() {
@@ -176,7 +181,7 @@ function createTableHeaderLinks() {
   keys.forEach((key) => {
     const report = reports[key];
     const link = document.createElement("a");
-    link.href = `index.html?rID=${key}`;
+    link.href = `index.html?id=${key}`;
     link.textContent = report.title;
     navMenu.appendChild(link);
 
