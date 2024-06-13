@@ -33,6 +33,17 @@ const mColumns = [
   { Key: "OnTheBubble", Name: "Bubble" },
   { Key: "AverageHits", Name: "Average Hits" },
 ];
+function createHeaderRow() {
+  const headerRow = document.getElementById("pColumns");
+
+  mColumns.forEach((column) => {
+    // TODO: this is a th, but originally was a td... but should be th for semantic reasons yeah?
+    const th = document.createElement("th");
+    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.textContent = column.Name;
+    headerRow.appendChild(th);
+  });
+}
 
 const queryString = window.location.search;
 const searchParams = new URLSearchParams(queryString);
@@ -46,6 +57,7 @@ if (!query || !validQueryParams.includes(query)) {
 
 async function initializePage() {
   await setData();
+  createHeaderRow();
   updateQueryHeading();
   createTableHeaderLinks()
   createTableRows();
