@@ -1,7 +1,5 @@
-const DB = {
-  // at the moment, we expect the query param to be the key of the object
-  // think of this DB as a list of reports
-  // if we want to add more CSV files, we just add a new key-value pair to this object
+const reports = {
+  // expect the query param ('rID') to be the key of the report
   2024: {
     title: "2024",
     filename: "2024.csv",
@@ -96,12 +94,12 @@ const validColumns = [
 
 const queryString = window.location.search;
 const searchParams = new URLSearchParams(queryString);
-// only allowed param is 'q' and we expect that it matches a DB key
-const query = searchParams.get("q");
-const validQueryParams = Object.keys(DB);
-if (!query || !validQueryParams.includes(query)) {
-  // default to 2024 if no valid query param is provided
-  window.location.href = "index.html?q=2024";
+// only allowed param is 'rID' and we expect that it matches a reports key
+const reportKey = searchParams.get("rID");
+const validQueryParams = Object.keys(reports);
+if (!reportKey || !validQueryParams.includes(reportKey)) {
+  // default to 2024 if no valid reportKey is provided
+  window.location.href = "index.html?rID=2024";
 }
 
 async function initializePage() {
@@ -116,8 +114,8 @@ async function initializePage() {
 async function setData() {
   // grab data for each csv file
   // TODO: we should use Promise.all to fetch all the data at once
-  for (let key in DB) {
-    let report = DB[key];
+  for (let key in reports) {
+    let report = reports[key];
     let cachedData = localStorage.getItem(`${key}`);
 
     if (cachedData) {
@@ -137,9 +135,9 @@ async function setData() {
     }
   }
   // TODO: Why do these variables work without a let/const/var keyword? they're not declared anywhere
-  mData = DB[query].data;
+  mData = reports[reportKey].data;
   const validHeaderNames = validColumns.map(column => column.Name);
-  mColumns = DB[query].headers.map(headerName => {
+  mColumns = reports[reportKey].headers.map(headerName => {
     // this is a bit of a hack, but we need to set the columns based on the data
     // we assume that if the column isn't in the report (csv file) its data is not either
     if (validHeaderNames.includes(headerName)) {
@@ -163,7 +161,7 @@ function createHeaderRow() {
 function updateReportTitle() {
   const reportTitle = document.getElementById("report-title");
   // TODO: consolidate this logic with the getData function;
-  reportTitle.textContent = DB[query].title;
+  reportTitle.textContent = reports[reportKey].title;
 }
 
 function createTableHeaderLinks() {
@@ -172,13 +170,13 @@ function createTableHeaderLinks() {
   tableHeader.appendChild(navMenu);
   navMenu.className = "description";
 
-  const keys = Object.keys(DB);
+  const keys = Object.keys(reports);
   const lastKey = keys[keys.length - 1];
 
   keys.forEach((key) => {
-    const report = DB[key];
+    const report = reports[key];
     const link = document.createElement("a");
-    link.href = `index.html?q=${key}`;
+    link.href = `index.html?rID=${key}`;
     link.textContent = report.title;
     navMenu.appendChild(link);
 
