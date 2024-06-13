@@ -94,32 +94,20 @@ const validColumns = [
   { Key: "AverageHits", Name: "Average Hits" },
 ];
 
-function createHeaderRow() {
-  const headerRow = document.getElementById("pColumns");
-
-  mColumns.forEach((column) => {
-    // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
-    const th = document.createElement("th");
-    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
-    th.textContent = column.Name;
-    headerRow.appendChild(th);
-  });
-}
-
 const queryString = window.location.search;
 const searchParams = new URLSearchParams(queryString);
 // only allowed param is 'q' and we expect that it matches a DB key
 const query = searchParams.get("q");
 const validQueryParams = Object.keys(DB);
 if (!query || !validQueryParams.includes(query)) {
-  // default to 2024 if no query param is provided
+  // default to 2024 if no valid query param is provided
   window.location.href = "index.html?q=2024";
 }
 
 async function initializePage() {
   await setData();
   createHeaderRow();
-  updateQueryHeading();
+  updateReportTitle();
   createTableHeaderLinks();
   createTableRows();
   TDSort?.init("pTable", "pColumns");
@@ -157,6 +145,65 @@ async function setData() {
       return column
     }
   }).filter((column) => column !== undefined);
+}
+
+function createHeaderRow() {
+  const headerRow = document.getElementById("pColumns");
+
+  mColumns.forEach((column) => {
+    // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
+    const th = document.createElement("th");
+    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.textContent = column.Name;
+    headerRow.appendChild(th);
+  });
+}
+
+function updateReportTitle() {
+  const reportTitle = document.getElementById("report-title");
+  // TODO: consolidate this logic with the getData function;
+  reportTitle.textContent = DB[query].title;
+}
+
+function createTableHeaderLinks() {
+  const tableHeader = document.getElementById("tHeader");
+  const navMenu = document.createElement("div");
+  tableHeader.appendChild(navMenu);
+  navMenu.className = "description";
+
+  const keys = Object.keys(DB);
+  const lastKey = keys[keys.length - 1];
+
+  keys.forEach((key) => {
+    const report = DB[key];
+    const link = document.createElement("a");
+    link.href = `index.html?q=${key}`;
+    link.textContent = report.title;
+    navMenu.appendChild(link);
+
+    // no pipe after last link
+    if (key !== lastKey) {
+      navMenu.appendChild(document.createTextNode(" | "));
+    }
+  });
+}
+
+function createTableRows() {
+  tableBody = document.getElementById("pBody");
+
+  for (let i = 0; i < mData.length; i++) {
+    const tr = document.createElement("tr");
+    tr.className = i % 2 === 0 ? "even" : "odd";
+
+    mData[i].Columns.forEach((column) => {
+      const td = document.createElement("td");
+      td.textContent = column.Text;
+      td.className = `statsColumn align-${column.Align}`;
+      tr.appendChild(td);
+    });
+
+    tableBody.appendChild(tr);
+  }
 }
 
 function parseCSV(csvText) {
@@ -202,53 +249,7 @@ async function fetchCSV(url) {
   }
 }
 
-function createTableHeaderLinks() {
-  const tableHeader = document.getElementById("tHeader");
-  const navMenu = document.createElement("div");
-  tableHeader.appendChild(navMenu);
-  navMenu.className = "description";
-
-  const keys = Object.keys(DB);
-  const lastKey = keys[keys.length - 1];
-
-  keys.forEach((key) => {
-    const report = DB[key];
-    const link = document.createElement("a");
-    link.href = `index.html?q=${key}`;
-    link.textContent = report.title;
-    navMenu.appendChild(link);
-
-    // no pipe after last link
-    if (key !== lastKey) {
-      navMenu.appendChild(document.createTextNode(" | "));
-    }
-  });
-}
-
-function createTableRows() {
-  tableBody = document.getElementById("pBody");
-
-  for (let i = 0; i < mData.length; i++) {
-    const tr = document.createElement("tr");
-    tr.className = i % 2 === 0 ? "even" : "odd";
-
-    mData[i].Columns.forEach((column) => {
-      const td = document.createElement("td");
-      td.textContent = column.Text;
-      td.className = `statsColumn align-${column.Align}`;
-      tr.appendChild(td);
-    });
-
-    tableBody.appendChild(tr);
-  }
-}
-
-function updateQueryHeading() {
-  const reportTitle = document.getElementById("report-title");
-  // TODO: consolidate this logic with the getData function;
-  reportTitle.textContent = DB[query].title;
-}
-
+// everything in TDSort was from the original HTML export
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
