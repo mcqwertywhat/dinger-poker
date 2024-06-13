@@ -1,22 +1,79 @@
-const DB = {
-  // at the moment, we expect the query param to be the key of the object
-  // think of this DB as a list of reports
-  // if we want to add more CSV files, we just add a new key-value pair to this object
-  "2024":            { title: "2024", filename: "2024.csv", data: [] },
-  "2023":            { title: "2023", filename: "2023.csv", data: [] },
-  "2022":            { title: "2022", filename: "2022.csv", data: [] },
-  "2021":            { title: "2021", filename: "2021.csv", data: [] },
-  "2020":            { title: "2020", filename: "2020.csv", data: [] },
-  "2019":            { title: "2019", filename: "2019.csv", data: [] },
-  "christmas":       { title: "Christmas Poker", filename: "christmas.csv", data: [] },
-  "dinger_days":     { title: "Dinger Days", filename: "dinger_days.csv", data: [] },
-  "bounty":          { title: "Bounty", filename: "bounty.csv", data: [] },
-  "hold_em_rebuy":   { title: "Hold'em Rebuy", filename: "hold_em_rebuy.csv", data: [] },
-  "sundays":         { title: "Sundays", filename: "sundays.csv", data: [] },
-  "all_time":        { title: "All Time", filename: "all_time.csv", data: [] }
-}
+const reports = {
+  2024: {
+    title: "2024",
+    filename: "2024.csv",
+    headers: [],
+    data: [],
+  },
+  2023: {
+    title: "2023",
+    filename: "2023.csv",
+    headers: [],
+    data: [],
+  },
+  2022: {
+    title: "2022",
+    filename: "2022.csv",
+    headers: [],
+    data: [],
+  },
+  2021: {
+    title: "2021",
+    filename: "2021.csv",
+    headers: [],
+    data: [],
+  },
+  2020: {
+    title: "2020",
+    filename: "2020.csv",
+    headers: [],
+    data: [],
+  },
+  2019: {
+    title: "2019",
+    filename: "2019.csv",
+    headers: [],
+    data: [],
+  },
+  christmas: {
+    title: "Christmas Poker",
+    filename: "christmas.csv",
+    headers: [],
+    data: [],
+  },
+  dinger_days: {
+    title: "Dinger Days",
+    filename: "dinger_days.csv",
+    headers: [],
+    data: [],
+  },
+  bounty: {
+    title: "Bounty",
+    filename: "bounty.csv",
+    headers: [],
+    data: [],
+  },
+  hold_em_rebuy: {
+    title: "Hold'em Rebuy",
+    filename: "hold_em_rebuy.csv",
+    headers: [],
+    data: [],
+  },
+  sundays: {
+    title: "Sundays",
+    filename: "sundays.csv",
+    headers: [],
+    data: [],
+  },
+  all_time: {
+    title: "All Time",
+    filename: "all_time.csv",
+    headers: [],
+    data: [],
+  },
+};
 
-const mColumns = [
+const validColumns = [
   { Key: "_Index", Name: "#" },
   { Key: "Name", Name: "Name" },
   { Key: "Buyins", Name: "Buy-ins" },
@@ -36,86 +93,80 @@ const mColumns = [
 
 const queryString = window.location.search;
 const searchParams = new URLSearchParams(queryString);
-// only allowed param is 'q' and we expect that it matches a DB key
-const query = searchParams.get('q');
-const validQueryParams = Object.keys(DB);
-if (!query || !validQueryParams.includes(query)) {
-  // default to 2024 if no query param is provided
-  window.location.href = 'index.html?q=2024';
+// only allowed param is 'id'; expect it to match a reports key
+const requestedReportID = searchParams.get("id");
+const validQueryParams = Object.keys(reports);
+if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
+  // default to 2024 if no valid report key is provided
+  window.location.href = "index.html?id=2024";
 }
 
 async function initializePage() {
   await setData();
-  updateQueryHeading();
-  createTableHeaderLinks()
+  createHeaderRow();
+  updateReportTitle();
+  createTableHeaderLinks();
   createTableRows();
-  TDSort?.init('pTable', 'pColumns');
+  TDSort?.init("pTable", "pColumns");
 }
 
 async function setData() {
   // grab data for each csv file
   // TODO: we should use Promise.all to fetch all the data at once
-  for (let key in DB) {
-    let report = DB[key];
+  for (let key in reports) {
+    let report = reports[key];
     let cachedData = localStorage.getItem(`${key}`);
-    
+
     if (cachedData) {
       // Data is available in localStorage
-      report.data = JSON.parse(cachedData);
-      console.log(`${key} data loaded from localStorage.`);
+      let parsedData = JSON.parse(cachedData);
+      report.headers = parsedData.headers;
+      report.data = parsedData.data;
     } else {
       // Data is not available in localStorage, fetch it
       let data = await fetchCSV(`data/${report.filename}`);
+      headers = data
+        .trim()
+        .split("\n")[0]
+        .split(",")
+        .map((header) => header.trim());
+      // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
       data = parseCSV(data);
-      localStorage.setItem(`${key}`, JSON.stringify(data)); // Store data as JSON string
-      console.log(`${key} data cached in localStorage.`);
+      report.headers = headers;
       report.data = data;
+      localStorage.setItem(`${key}`, JSON.stringify(report)); // Store data as JSON string
     }
   }
-
-  mData = DB[query].data;
+  // TODO: Why do these variables work without a let/const/var keyword? they're not declared anywhere
+  mData = reports[requestedReportID].data;
+  const validHeaderNames = validColumns.map((column) => column.Name);
+  mColumns = reports[requestedReportID].headers
+    .map((headerName) => {
+      // this is a bit of a hack, but we need to set the columns based on the data
+      // we assume that if the column isn't in the report (csv file) its data is not either
+      if (validHeaderNames.includes(headerName)) {
+        return validColumns.find((column) => column.Name === headerName);
+      }
+    })
+    .filter((column) => column !== undefined);
 }
 
-function parseCSV(csvText) {
-  // Transform CSV data into a data structure that is expected based on exising JS Code
-  const lines = csvText.trim().split('\n');
-  const headers = lines[0].split(',');
+function createHeaderRow() {
+  const headerRow = document.getElementById("pColumns");
 
-  const processedData = lines.slice(1).map((line, index) => {
-    const values = line.split(',');
-    const row = headers.reduce((obj, header, i) => {
-      obj[header.trim()] = values[i] ? values[i].trim() : '';
-      return obj;
-    }, {});
-
-    const columns = Object.entries(row).map(([key, value]) => {
-      // Convert numbers to actual numbers and format accordingly
-      const numericValue = parseFloat(value.replace(/[,$]/g, ''));
-      return {
-        Text: value,
-        HTML: value,
-        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
-        Align: !isNaN(numericValue) ? "right" : "left"
-      };
-    });
-
-    return {
-      Index: index,
-      Columns: columns
-    };
+  mColumns.forEach((column) => {
+    // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
+    const th = document.createElement("th");
+    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.textContent = column.Name;
+    headerRow.appendChild(th);
   });
-
-  return processedData;
 }
 
-async function fetchCSV(url) {
-  try {
-    const response = await fetch(url);
-    const csvText = await response.text();
-    return csvText;
-  } catch (error) {
-    console.error('Error fetching CSV file:', error);
-  }
+function updateReportTitle() {
+  const reportTitle = document.getElementById("report-title");
+  // TODO: consolidate this logic with the getData function;
+  reportTitle.textContent = reports[requestedReportID].title;
 }
 
 function createTableHeaderLinks() {
@@ -124,13 +175,13 @@ function createTableHeaderLinks() {
   tableHeader.appendChild(navMenu);
   navMenu.className = "description";
 
-  const keys = Object.keys(DB);
+  const keys = Object.keys(reports);
   const lastKey = keys[keys.length - 1];
 
   keys.forEach((key) => {
-    const report = DB[key];
+    const report = reports[key];
     const link = document.createElement("a");
-    link.href = `index.html?q=${key}`;
+    link.href = `index.html?id=${key}`;
     link.textContent = report.title;
     navMenu.appendChild(link);
 
@@ -147,7 +198,7 @@ function createTableRows() {
   for (let i = 0; i < mData.length; i++) {
     const tr = document.createElement("tr");
     tr.className = i % 2 === 0 ? "even" : "odd";
-    
+
     mData[i].Columns.forEach((column) => {
       const td = document.createElement("td");
       td.textContent = column.Text;
@@ -159,12 +210,50 @@ function createTableRows() {
   }
 }
 
-function updateQueryHeading() {
-  const reportTitle = document.getElementById("report-title");
-  // TODO: consolidate this logic with the getData function; 
-  reportTitle.textContent = DB[query].title;
+function parseCSV(csvText) {
+  // TODO: look at how this works and see why it doesn't return the headers
+  // Transform CSV data into a data structure that is expected based on exising JS Code
+  const lines = csvText.trim().split("\n");
+  const headers = lines[0].split(",");
+
+  const processedData = lines.slice(1).map((line, index) => {
+    const values = line.split(",");
+    const row = headers.reduce((obj, header, i) => {
+      obj[header.trim()] = values[i] ? values[i].trim() : "";
+      return obj;
+    }, {});
+
+    const columns = Object.entries(row).map(([key, value]) => {
+      // Convert numbers to actual numbers and format accordingly
+      const numericValue = parseFloat(value.replace(/[,$]/g, ""));
+      return {
+        Text: value,
+        HTML: value,
+        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
+        Align: !isNaN(numericValue) ? "right" : "left",
+      };
+    });
+
+    return {
+      Index: index,
+      Columns: columns,
+    };
+  });
+
+  return processedData;
 }
 
+async function fetchCSV(url) {
+  try {
+    const response = await fetch(url);
+    const csvText = await response.text();
+    return csvText;
+  } catch (error) {
+    console.error("Error fetching CSV file:", error);
+  }
+}
+
+// everything in TDSort was from the original HTML export
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
@@ -231,9 +320,8 @@ var TDSort = (function () {
   function sortByColumn(inIndex) {
     if (mData.length == 0) return;
 
-    if (inIndex == sortIndex)
-      reverseSort =
-        !reverseSort; // sorting the same column, again, so reverse the current sort
+    if (inIndex == sortIndex) reverseSort = !reverseSort;
+    // sorting the same column, again, so reverse the current sort
     else reverseSort = false; // if sorting on a new column, always reset to forward sort
 
     sortIndex = inIndex;
@@ -274,7 +362,6 @@ var TDSort = (function () {
   return {
     init: init,
   };
-
 })();
 
 window.onload = initializePage;
