@@ -72,8 +72,9 @@ async function loadReports() {
 }
 
 async function setData() {
-  // grab data for each csv file
-  // TODO: we should use Promise.all to fetch all the data at once
+  const hardcodedVersion = 1; // Example: Hardcoded version number
+
+  // Loop through each report
   for (let key in reports) {
     let report = reports[key];
     let cachedData = localStorage.getItem(`${key}`);
@@ -81,8 +82,32 @@ async function setData() {
     if (cachedData) {
       // Data is available in localStorage
       let parsedData = JSON.parse(cachedData);
-      report.headers = parsedData.headers;
-      report.data = parsedData.data;
+
+      // Check if the cached version matches the hardcoded version
+      if (parsedData.version === hardcodedVersion) {
+        // Use cached data
+        report.headers = parsedData.headers;
+        report.data = parsedData.data;
+      } else {
+        // Cached version does not match, fetch new data
+        let data = await fetchCSV(`data/${report.filename}`);
+        headers = data
+          .trim()
+          .split("\n")[0]
+          .split(",")
+          .map((header) => header.trim());
+        // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
+        data = parseCSV(data);
+        report.headers = headers;
+        report.data = data;
+
+        // Update and store new data in localStorage with version number
+        localStorage.setItem(`${key}`, JSON.stringify({
+          version: hardcodedVersion,
+          headers: report.headers,
+          data: report.data
+        }));
+      }
     } else {
       // Data is not available in localStorage, fetch it
       let data = await fetchCSV(`data/${report.filename}`);
@@ -95,22 +120,28 @@ async function setData() {
       data = parseCSV(data);
       report.headers = headers;
       report.data = data;
-      localStorage.setItem(`${key}`, JSON.stringify(report)); // Store data as JSON string
+
+      // Store new data in localStorage with version number
+      localStorage.setItem(`${key}`, JSON.stringify({
+        version: hardcodedVersion,
+        headers: report.headers,
+        data: report.data
+      }));
     }
   }
-  // TODO: Why do these variables work without a let/const/var keyword? they're not declared anywhere
+
+  // Now continue with the rest of your logic
   mData = reports[requestedReportID].data;
   const validHeaderNames = validColumns.map((column) => column.Name);
   mColumns = reports[requestedReportID].headers
     .map((headerName) => {
-      // this is a bit of a hack, but we need to set the columns based on the data
-      // we assume that if the column isn't in the report (csv file) its data is not either
       if (validHeaderNames.includes(headerName)) {
         return validColumns.find((column) => column.Name === headerName);
       }
     })
     .filter((column) => column !== undefined);
 }
+
 
 function createHeaderRow() {
   const headerRow = document.getElementById("pColumns");
