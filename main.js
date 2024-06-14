@@ -78,8 +78,9 @@ async function getLatestCommitTimeStamp() {
     return new Date(latestCommitTimestamp);
   } else {
     try {
-      console.log('Fetching latest commit timestamp from GitHub...');
-      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main`);
+      console.log('Fetching timestamp for the latest commit to the `data` folder from GitHub...');
+      // fetch only the latest commit (it *should* be the latest, according to GPT) from the main branch, for the data folder, with a limit of 1
+      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main?path=data&per_page=1`);
       const data = await response.json();    
       latestCommitTimestamp = new Date(data.commit.committer.date);
       return latestCommitTimestamp;

@@ -1,17 +1,19 @@
 # Dinger Poker
 
-This site lists a number of stats pages (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
+This site lists stats pages (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
 
-## Quick Start
+New reports can be uploaded as CSV files directly in the GitHub repository (in the `data` folder).
 
-**Add a new report** to the site:
+## Add a new report: Quick Version
 
 1. Add a CSV file to the `data` folder.
-2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added. The reports will appear on the site the same order as the entries in the file.
+2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
 
-That's it! The new report should appear on the site.
+That's it! The new report should appear on the site. It will appear on the site the same order as the entries in the file.
 
-## Details on adding a new report 
+## Add a new report: Detailed Version
+
+1. Add a CSV file to the `data` folder.
 
 ### Adding the CSV file
 
@@ -32,6 +34,8 @@ We expect a CSV file that uses only the column names below. We can use some or a
 - `Total Cost`
 - `Total Take`
 - `Total Winnings`
+
+2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
 
 ### Adding an entry to `reports.json`
 
@@ -74,3 +78,7 @@ If you want to refresh the data from a report, just replace its CSV file in the 
 ### Delete a report
 
 Just remove its entry in `reports.json` and remove its CSV file.
+
+## Stale Data
+
+Let's say you just uploaded a new report. It's possible, if you have your browser open to the site while you upload the report, that you will not see the uploaded data. If this happens, just close the tab with the site and open a new one. 
