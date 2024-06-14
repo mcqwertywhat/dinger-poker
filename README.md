@@ -9,7 +9,7 @@ This site lists a number of stats pages (i.e. reports) from Dinger Poker games. 
 **Add a new report** to the site:
 
 1. Add a CSV file to the `data` folder.
-2. Add an entry in the `_reports.json` file with a filename that matches the CSV file you added.
+2. Add an entry in the `_reports.json` file with a filename that matches the CSV file you added. The reports will appear on the site the same order as the entries in the file.
 
 That's it! The new report should appear on the site.
 
