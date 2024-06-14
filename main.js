@@ -107,8 +107,9 @@ async function checkAndUpdateIfNecessary() {
   const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
   const lastVisitDate = lastVisitTimestamp ? new Date(lastVisitTimestamp) : null;
 
+  // TODO: Testing => I'm not absolutely sure this will allow the localStorage data to be refreshed if the commit to the repo happens on the same day. Need to try to make a commit to the data folder and see if I start a new session that  I'm in shows as fetching new data.
   if (!lastVisitDate || latestCommitTimestamp > lastVisitDate) {
-    console.log('Updating data by reading CSV files from GitHub...');
+    console.log('Updating data by reading CSV files from GitHub - either no lastVisitDate or the latestCommit is later than the lastVisitDate...');
     localStorage.clear();
     await loadReports();
     await setData();
