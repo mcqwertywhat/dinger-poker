@@ -1,3 +1,7 @@
+// only allowed param is 'id'; expect it to match a reports key
+const requestedReportID = new URLSearchParams(window.location.search).get("id");
+let reports;
+
 const validColumns = [
   { Key: "_Index", Name: "#" },
   { Key: "Name", Name: "Name" },
@@ -16,12 +20,24 @@ const validColumns = [
   { Key: "AverageHits", Name: "Average Hits" },
 ];
 
-const queryString = window.location.search;
-const searchParams = new URLSearchParams(queryString);
-// only allowed param is 'id'; expect it to match a reports key
-const requestedReportID = searchParams.get("id");
+async function initializePage() {
+  await loadReports();
+  processQueryparams();
+  await setData();
+  createHeaderRow();
+  updateReportTitle();
+  createTableHeaderLinks();
+  createTableRows();
+  TDSort?.init("pTable", "pColumns");
+}
 
-let reports;
+function processQueryparams() {
+  const validQueryParams = Object.keys(reports);
+  if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
+    // default to 2024 if no valid report key is provided
+    window.location.href = "index.html?id=2024";
+  }
+}
 
 async function loadReports() {
   try {
@@ -53,21 +69,6 @@ async function loadReports() {
   } catch (error) {
     console.error('Error loading reports:', error);
   }
-}
-
-async function initializePage() {
-  await loadReports();
-  const validQueryParams = Object.keys(reports);
-  if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
-    // default to 2024 if no valid report key is provided
-    window.location.href = "index.html?id=2024";
-  }
-  await setData();
-  createHeaderRow();
-  updateReportTitle();
-  createTableHeaderLinks();
-  createTableRows();
-  TDSort?.init("pTable", "pColumns");
 }
 
 async function setData() {
