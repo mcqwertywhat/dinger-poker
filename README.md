@@ -1,7 +1,5 @@
 # Dinger Poker
 
-_A place to post poker stats from Dinger Poker games._
-
 This site lists a number of stats pages (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
 
 ## Quick Start
