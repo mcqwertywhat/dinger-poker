@@ -9,7 +9,7 @@ This site lists a number of stats pages (i.e. reports) from Dinger Poker games. 
 **Add a new report** to the site:
 
 1. Add a CSV file to the `data` folder.
-2. Add an entry in the `_reports.json` file with a filename that matches the CSV file you added. The reports will appear on the site the same order as the entries in the file.
+2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added. The reports will appear on the site the same order as the entries in the file.
 
 That's it! The new report should appear on the site.
 
@@ -35,7 +35,7 @@ We expect a CSV file that uses only the column names below. We can use some or a
 - `Total Take`
 - `Total Winnings`
 
-### Adding an entry to `_reports.json`
+### Adding an entry to `reports.json`
 
 Here's an example of adding a report entry with the `id` `pineapples`:
 
@@ -67,7 +67,7 @@ A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+p
   - Wrap it in double quotes `"`
 - On the line after the `filename`, make sure there is a closing curly brace `}`
 
-**Do not** change the name of the `_reports.json` file or the name of the `data` folder
+**Do not** change the name of the `reports.json` file or the name of the `data` folder
 
 ### Replace an existing report
 
@@ -75,4 +75,4 @@ If you want to refresh the data from a report, just replace its CSV file in the 
 
 ### Delete a report
 
-Just remove its entry in `_reports.json` and remove its CSV file.
+Just remove its entry in `reports.json` and remove its CSV file.
