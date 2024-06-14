@@ -42,7 +42,7 @@ function processQueryparams() {
 async function loadReports() {
   try {
     // Fetch the JSON file
-    const response = await fetch('data/reports.json');
+    const response = await fetch('reports.json');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
