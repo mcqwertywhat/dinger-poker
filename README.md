@@ -2,11 +2,7 @@
 
 _A place to post poker stats from Dinger Poker games._
 
----
-
 This site lists a number of stats pages (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
-
----
 
 ## Quick Start
 
@@ -17,35 +13,19 @@ This site lists a number of stats pages (i.e. reports) from Dinger Poker games. 
 
 That's it! The new report should appear on the site.
 
----
-
 ## Details on adding a new report 
 
 ### Adding the CSV file
 
-The column names should be the first line of the CSV file, and we expect a file that only uses these column names. The names can be in any order.
+We expect a CSV file that uses only these column names. We can use some or all of the columns, and the columns can be in any order (just show here alphabetically)
 
-- `#`
-- `1st`
-- `2nd`
-- `3rd`
-- `Average Hits`
-- `Average Placed`
-- `Bubble`
-- `Buy-ins`
-- `Hits`
-- `Name`
-- `Rebuys`
-- `Times Placed`
-- `Total Cost`
-- `Total Take`
-- `Total Winnings`
+| `#` | `1st` | `2nd` | `3rd` | `Average Hits` | `Average Placed` | `Bubble` | `Buy-ins` | `Hits` | `Name` | `Rebuys` | `Times Placed` | `Total Cost` | `Total Take` | `Total Winnings` |
+|-----|-------|-------|-------|----------------|------------------|----------|-----------|--------|--------|----------|----------------|--------------|-------------|------------------|
+
 
 ### Adding an entry to `_reports.json`
 
-A report needs an ID, a `title` and a `filename`. It also has to be structured with `{ }` around the `title` and `filename`, and all the things you enter should have `"` around them. 
-
-Here's an example of adding a report entry with the id `pineapples`:
+Here's an example of adding a report entry with the `id` `pineapples`:
 
 ```json
 {
@@ -60,14 +40,25 @@ Here's an example of adding a report entry with the id `pineapples`:
 }
 ```
 
-The `"title"` is text that will appear on the site (displayed as the link to the report and as the heading for the report).
+A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+paste an existing entry and replace the text with what you need for the new report. That said, keep the following in mind:
 
-The **ID** for the report in the example above is `pineapples`. **It should be unique from all other IDs.** Use only letters, numbers, underscores, and dashes for the ID and also for the `filename`. (_Other characters might work....but sticking with these will definitely work._)
+- In the entry before your new one, put a comma `,` after the `}`
+- The `id` above is `pineapples`. It will appear in a url if you share a link to a specific report, like this: `https://mcqwertywhat.github.io/dinger-poker/index.html?id=pineapples`
+  - It should be unique 
+  - Wrap it in double quotes `"`
+  - It should use only letters, numbers, underscores, and dashes (no spaces or special characters)
+- The `title` is text that will appear on the site. It is displayed as the link to the report and as the heading for the report.
+  - Put a comma `,` at the end of its entry line
+  - Wrap it in double quotes `"`
+- The `filename` will not appear anywhere on the site
+  - Use only letters, numbers, underscores, and dashes. (_Other characters might work....but sticking with these will definitely work._)
+  - Wrap it in double quotes `"`
+- On the line after the `filename`, make sure there is a closing curly brace `}`
 
 **Do not** change the name of the `_reports.json` file or the name of the `data` folder
 
 ### Replace an existing report
 
-If you want to refresh the data from a report, you just need to replace its CSV file in the `data` folder. The filename should stay the same.
+If you want to refresh the data from a report, just replace its CSV file in the `data` folder with a file of the same name.
 
 
