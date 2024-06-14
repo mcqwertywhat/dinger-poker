@@ -1,6 +1,6 @@
-# Dinger Poker
+#  &#x1F0A1; Dinger Poker &#x1F0B1;
 
-This site lists stats pages (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
+This site lists stats (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
 
 New reports can be uploaded as CSV files directly in the GitHub repository (in the `data` folder).
 
