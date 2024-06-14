@@ -73,4 +73,6 @@ A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+p
 
 If you want to refresh the data from a report, just replace its CSV file in the `data` folder with a file of the same name.
 
+### Delete a report
 
+Just remove its entry in `_reports.json` and remove its CSV file.
