@@ -58,9 +58,6 @@ async function loadReports() {
       }
     }
 
-    // Use the data (assign it to a variable or process it as needed)
-    console.log('Reports:', reports);
-
     // Now you can work with the `reports` object as needed
     // TODO: really? assign as global variable like this?
     // For example, assign it to a global variable if necessary
