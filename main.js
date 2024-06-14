@@ -1,77 +1,6 @@
-const reports = {
-  2024: {
-    title: "2024",
-    filename: "2024.csv",
-    headers: [],
-    data: [],
-  },
-  2023: {
-    title: "2023",
-    filename: "2023.csv",
-    headers: [],
-    data: [],
-  },
-  2022: {
-    title: "2022",
-    filename: "2022.csv",
-    headers: [],
-    data: [],
-  },
-  2021: {
-    title: "2021",
-    filename: "2021.csv",
-    headers: [],
-    data: [],
-  },
-  2020: {
-    title: "2020",
-    filename: "2020.csv",
-    headers: [],
-    data: [],
-  },
-  2019: {
-    title: "2019",
-    filename: "2019.csv",
-    headers: [],
-    data: [],
-  },
-  christmas: {
-    title: "Christmas Poker",
-    filename: "christmas.csv",
-    headers: [],
-    data: [],
-  },
-  dinger_days: {
-    title: "Dinger Days",
-    filename: "dinger_days.csv",
-    headers: [],
-    data: [],
-  },
-  bounty: {
-    title: "Bounty",
-    filename: "bounty.csv",
-    headers: [],
-    data: [],
-  },
-  hold_em_rebuy: {
-    title: "Hold'em Rebuy",
-    filename: "hold_em_rebuy.csv",
-    headers: [],
-    data: [],
-  },
-  sundays: {
-    title: "Sundays",
-    filename: "sundays.csv",
-    headers: [],
-    data: [],
-  },
-  all_time: {
-    title: "All Time",
-    filename: "all_time.csv",
-    headers: [],
-    data: [],
-  },
-};
+// only allowed param is 'id'; expect it to match a reports key
+const requestedReportID = new URLSearchParams(window.location.search).get("id");
+let reports;
 
 const validColumns = [
   { Key: "_Index", Name: "#" },
@@ -91,23 +20,55 @@ const validColumns = [
   { Key: "AverageHits", Name: "Average Hits" },
 ];
 
-const queryString = window.location.search;
-const searchParams = new URLSearchParams(queryString);
-// only allowed param is 'id'; expect it to match a reports key
-const requestedReportID = searchParams.get("id");
-const validQueryParams = Object.keys(reports);
-if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
-  // default to 2024 if no valid report key is provided
-  window.location.href = "index.html?id=2024";
-}
-
 async function initializePage() {
+  await loadReports();
+  processQueryparams();
   await setData();
   createHeaderRow();
   updateReportTitle();
   createTableHeaderLinks();
   createTableRows();
   TDSort?.init("pTable", "pColumns");
+}
+
+function processQueryparams() {
+  const validQueryParams = Object.keys(reports);
+  if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
+    // default to 2024 if no valid report key is provided
+    window.location.href = "index.html?id=2024";
+  }
+}
+
+async function loadReports() {
+  try {
+    // Fetch the JSON file
+    const response = await fetch('_reports.json');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    // Parse the JSON data
+    reports = await response.json();
+
+    // Add `headers` and `data` attributes to each report
+    for (const key in reports) {
+      if (reports.hasOwnProperty(key)) {
+        reports[key].headers = [];
+        reports[key].data = [];
+      }
+    }
+
+    // Use the data (assign it to a variable or process it as needed)
+    console.log('Reports:', reports);
+
+    // Now you can work with the `reports` object as needed
+    // TODO: really? assign as global variable like this?
+    // For example, assign it to a global variable if necessary
+    window.reports = reports;
+
+  } catch (error) {
+    console.error('Error loading reports:', error);
+  }
 }
 
 async function setData() {
