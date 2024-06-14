@@ -17,11 +17,14 @@ That's it! The new report should appear on the site.
 
 ### Adding the CSV file
 
-We expect a CSV file that uses only these column names. We can use some or all of the columns, and the columns can be in any order (just show here alphabetically)
+We expect a CSV file that uses only these column names: 
 
-| `#` | `1st` | `2nd` | `3rd` | `Average Hits` | `Average Placed` | `Bubble` | `Buy-ins` | `Hits` | `Name` | `Rebuys` | `Times Placed` | `Total Cost` | `Total Take` | `Total Winnings` |
-|-----|-------|-------|-------|----------------|------------------|----------|-----------|--------|--------|----------|----------------|--------------|-------------|------------------|
+| `#` | `1st` | `2nd` | `3rd` | `Average Hits` | `Average Placed` | `Bubble` | `Buy-ins` |
+|-----|-------|-------|-------|----------------|------------------|----------|-----------|
+| `Hits` | `Name` | `Rebuys` | `Times Placed` | `Total Cost` | `Total Take` | `Total Winnings` |  |
 
+- We can use some or all of the columns.
+- The columns can be in any order.
 
 ### Adding an entry to `_reports.json`
 
