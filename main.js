@@ -21,6 +21,7 @@ const validColumns = [
 ];
 
 async function initializePage() {
+  await checkAndUpdateIfNecessary();
   await loadReports();
   processQueryparams();
   await setData();
@@ -65,6 +66,52 @@ async function loadReports() {
 
   } catch (error) {
     console.error('Error loading reports:', error);
+  }
+}
+
+async function getLatestCommitTimeStamp() {
+  // fetches the latest timestamp for the last GitHub commit from session storage if it exists, or from GitHub if it doesn't
+  // returns a Date object, or null if error
+  let latestCommitTimestamp = sessionStorage.getItem('latestCommitTimestamp');
+  
+  if (latestCommitTimestamp) {
+    return new Date(latestCommitTimestamp);
+  } else {
+    try {
+      console.log('Fetching latest commit timestamp from GitHub...');
+      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main`);
+      const data = await response.json();    
+      latestCommitTimestamp = new Date(data.commit.committer.date);
+      return latestCommitTimestamp;
+    } catch (error) {
+      console.error('Error fetching latest commit timestamp:', error);
+      return null;
+    }
+  }
+}
+
+async function checkAndUpdateIfNecessary() {
+  // latestCommitTimestamp should be a Date object
+  const latestCommitTimestamp = await getLatestCommitTimeStamp();
+  if (!latestCommitTimestamp) {
+    console.error('Could not get latest commit timestamp.');
+    return;
+  }
+  // we set the latest commit timestamp in session storage so we don't have to fetch it again this session
+  // but we do want to check for updates on each session; 
+  // this was decided as an alternative to having a button where the user refreshed their data manually
+  // now instead, the user should just close the tab and reopen to get the latest data
+  sessionStorage.setItem('latestCommitTimestamp', latestCommitTimestamp.toISOString());
+
+  const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
+  const lastVisitDate = lastVisitTimestamp ? new Date(lastVisitTimestamp) : null;
+
+  if (!lastVisitDate || latestCommitTimestamp > lastVisitDate) {
+    console.log('Updating data by reading CSV files from GitHub...');
+    localStorage.clear();
+    await loadReports();
+    await setData();
+    localStorage.setItem('lastVisitTimestamp', new Date().toISOString());
   }
 }
 
