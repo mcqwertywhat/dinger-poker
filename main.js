@@ -21,6 +21,7 @@ const validColumns = [
 ];
 
 async function initializePage() {
+  await checkAndUpdateIfNecessary();
   await loadReports();
   processQueryparams();
   await setData();
@@ -58,9 +59,6 @@ async function loadReports() {
       }
     }
 
-    // Use the data (assign it to a variable or process it as needed)
-    console.log('Reports:', reports);
-
     // Now you can work with the `reports` object as needed
     // TODO: really? assign as global variable like this?
     // For example, assign it to a global variable if necessary
@@ -71,9 +69,55 @@ async function loadReports() {
   }
 }
 
-async function setData() {
-  const hardcodedVersion = 1; // Example: Hardcoded version number
+async function getLatestCommitTimeStamp() {
+  // fetches the latest timestamp for the last GitHub commit from session storage if it exists, or from GitHub if it doesn't
+  // returns a Date object, or null if error
+  let latestCommitTimestamp = sessionStorage.getItem('latestCommitTimestamp');
+  
+  if (latestCommitTimestamp) {
+    return new Date(latestCommitTimestamp);
+  } else {
+    try {
+      console.log('Fetching timestamp for the latest commit to the `data` folder from GitHub...');
+      // fetch only the latest commit (it *should* be the latest, according to GPT) from the main branch, for the data folder, with a limit of 1
+      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main?path=data&per_page=1`);
+      const data = await response.json();    
+      latestCommitTimestamp = new Date(data.commit.committer.date);
+      return latestCommitTimestamp;
+    } catch (error) {
+      console.error('Error fetching latest commit timestamp:', error);
+      return null;
+    }
+  }
+}
 
+async function checkAndUpdateIfNecessary() {
+  // latestCommitTimestamp should be a Date object
+  const latestCommitTimestamp = await getLatestCommitTimeStamp();
+  if (!latestCommitTimestamp) {
+    console.error('Could not get latest commit timestamp.');
+    return;
+  }
+  // we set the latest commit timestamp in session storage so we don't have to fetch it again this session
+  // but we do want to check for updates on each session; 
+  // this was decided as an alternative to having a button where the user refreshed their data manually
+  // now instead, the user should just close the tab and reopen to get the latest data
+  sessionStorage.setItem('latestCommitTimestamp', latestCommitTimestamp.toISOString());
+
+  const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
+  const lastVisitDate = lastVisitTimestamp ? new Date(lastVisitTimestamp) : null;
+
+  // TODO: Testing => I'm not absolutely sure this will allow the localStorage data to be refreshed if the commit to the repo happens on the same day. Need to try to make a commit to the data folder and see if I start a new session that  I'm in shows as fetching new data.
+  if (!lastVisitDate || latestCommitTimestamp > lastVisitDate) {
+    console.log('Updating data by reading CSV files from GitHub - either no lastVisitDate or the latestCommit is later than the lastVisitDate...');
+    localStorage.clear();
+    await loadReports();
+    await setData();
+    localStorage.setItem('lastVisitTimestamp', new Date().toISOString());
+  }
+}
+
+async function setData() {
   // Loop through each report
   for (let key in reports) {
     let report = reports[key];
@@ -82,33 +126,10 @@ async function setData() {
     if (cachedData) {
       // Data is available in localStorage
       let parsedData = JSON.parse(cachedData);
-
-      // Check if the cached version matches the hardcoded version
-      if (parsedData.version === hardcodedVersion) {
-        // Use cached data
-        report.headers = parsedData.headers;
-        report.data = parsedData.data;
-      } else {
-        // Cached version does not match, fetch new data
-        let data = await fetchCSV(`data/${report.filename}`);
-        headers = data
-          .trim()
-          .split("\n")[0]
-          .split(",")
-          .map((header) => header.trim());
-        // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
-        data = parseCSV(data);
-        report.headers = headers;
-        report.data = data;
-
-        // Update and store new data in localStorage with version number
-        localStorage.setItem(`${key}`, JSON.stringify({
-          version: hardcodedVersion,
-          headers: report.headers,
-          data: report.data
-        }));
-      }
+      report.headers = parsedData.headers;
+      report.data = parsedData.data;
     } else {
+      console.log(`Fetching report ${key} data from CSV...`)
       // Data is not available in localStorage, fetch it
       let data = await fetchCSV(`data/${report.filename}`);
       headers = data
@@ -123,7 +144,6 @@ async function setData() {
 
       // Store new data in localStorage with version number
       localStorage.setItem(`${key}`, JSON.stringify({
-        version: hardcodedVersion,
         headers: report.headers,
         data: report.data
       }));
@@ -141,7 +161,6 @@ async function setData() {
     })
     .filter((column) => column !== undefined);
 }
-
 
 function createHeaderRow() {
   const headerRow = document.getElementById("pColumns");
