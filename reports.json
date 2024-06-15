@@ -46,10 +46,6 @@
   "all_time": {
     "title": "All Time",
     "filename": "all_time.csv"
-  },
-  "pineapples": {
-    "title": "When We Play For Pineapples",
-    "filename": "pineapple_poker.csv"
   }
 }
   
