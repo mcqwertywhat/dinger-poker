@@ -1,6 +1,6 @@
 # ♤♡ Dinger Poker ♢♧
 
-Live site: <a href="https://mcqwertywhat.github.io/dinger-poker" target="_blank">https://mcqwertywhat.github.io/dinger-poker</a>
+Live site: <a href="https://mcqwertywhat.github.io/dinger-poker" target="_blank" rel="noopener noreferrer">https://mcqwertywhat.github.io/dinger-poker</a>
 
 This site displays stats (i.e. reports) from Dinger Poker games. Each report's data is in a CSV file, and each one is a different query (a particular year, type of game, etc.)
 
