@@ -21,9 +21,9 @@ const validColumns = [
 ];
 
 async function initializePage() {
-  await checkAndUpdateIfNecessary();
   await loadReports();
   processQueryparams();
+  await checkAndUpdateIfNecessary();
   await setData();
   createHeaderRow();
   updateReportTitle();
@@ -43,6 +43,7 @@ function processQueryparams() {
 async function loadReports() {
   try {
     // Fetch the JSON file
+    console.log('Fetching reports.json...')
     const response = await fetch('reports.json');
     if (!response.ok) {
       throw new Error('Network response was not ok');
