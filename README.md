@@ -1,15 +1,13 @@
 # ♤♡ Dinger Poker ♢♧
 
-This site lists stats (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
-
-New reports can be uploaded as CSV files directly in the GitHub repository (in the `data` folder).
+This site displays stats (i.e. reports) from Dinger Poker games. Each report's data is in a CSV file, and each one is a different query (a particular year, type of game, etc.)
 
 ## Add a new report: Quick Version
 
 1. Add a CSV file to the `data` folder.
 2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
 
-That's it! The new report should appear on the site. **It will appear on the site the same order as the entries in the file**.
+That's it! The new report should appear on the site **appearing in the same order as is entered in the `reports.json` file**.
 
 ## How-to Video
 
