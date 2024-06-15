@@ -13,7 +13,7 @@ That's it! The new report should appear on the site. **It will appear on the sit
 
 ## How-to Video
 
-https://github.com/mcqwertywhat/dinger-poker/assets/172318399/4cd9707d-102c-4023-aae2-249ad9014390
+https://github.com/mcqwertywhat/dinger-poker/assets/172318399/951d7843-230b-4e62-be6c-7741cff16e15
 
 ## Add a new report: Detailed Version
 
