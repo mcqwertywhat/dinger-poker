@@ -9,7 +9,11 @@ New reports can be uploaded as CSV files directly in the GitHub repository (in t
 1. Add a CSV file to the `data` folder.
 2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
 
-That's it! The new report should appear on the site. It will appear on the site the same order as the entries in the file.
+That's it! The new report should appear on the site. **It will appear on the site the same order as the entries in the file**.
+
+## How-to Video
+
+https://github.com/mcqwertywhat/dinger-poker/assets/172318399/4cd9707d-102c-4023-aae2-249ad9014390
 
 ## Add a new report: Detailed Version
 
