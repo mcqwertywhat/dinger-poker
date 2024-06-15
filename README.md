@@ -1,4 +1,4 @@
-#  &#x1F0A1; Dinger Poker &#x1F0B1;
+# ♤♡ Dinger Poker ♢♧
 
 This site lists stats (i.e. reports) from Dinger Poker games. Each report is a different query (a particular year, all time, type of game, etc.)
 
