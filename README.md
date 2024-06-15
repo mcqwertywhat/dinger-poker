@@ -13,6 +13,11 @@ That's it! The new report should appear on the site **appearing in the same orde
 
 https://github.com/mcqwertywhat/dinger-poker/assets/65724195/a41ddf14-2fe6-46b1-96e2-e6f5d07e3958
 
+## how-to v2
+
+https://github.com/mcqwertywhat/dinger-poker/assets/65724195/aacdbc5a-1864-45ca-8161-6e44a92ecfaa
+
+
 ## Details on adding a new report
 
 ### Adding the CSV file
