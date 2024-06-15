@@ -2,7 +2,7 @@
 
 This site displays stats (i.e. reports) from Dinger Poker games. Each report's data is in a CSV file, and each one is a different query (a particular year, type of game, etc.)
 
-## Add a new report: Quick Version
+## Add a new report
 
 1. Add a CSV file to the `data` folder.
 2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
@@ -11,11 +11,9 @@ That's it! The new report should appear on the site **appearing in the same orde
 
 ## How-to Video
 
-https://github.com/mcqwertywhat/dinger-poker/assets/172318399/951d7843-230b-4e62-be6c-7741cff16e15
+https://github.com/mcqwertywhat/dinger-poker/assets/65724195/a41ddf14-2fe6-46b1-96e2-e6f5d07e3958
 
-## Add a new report: Detailed Version
-
-1. Add a CSV file to the `data` folder.
+## Details on adding a new report
 
 ### Adding the CSV file
 
@@ -36,8 +34,6 @@ We expect a CSV file that uses only the column names below. We can use some or a
 - `Total Cost`
 - `Total Take`
 - `Total Winnings`
-
-2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
 
 ### Adding an entry to `reports.json`
 
