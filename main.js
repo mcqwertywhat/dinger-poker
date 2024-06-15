@@ -42,27 +42,28 @@ function processQueryparams() {
 
 async function loadReports() {
   try {
-    // Fetch the JSON file
-    console.log('Fetching reports.json...')
-    const response = await fetch('reports.json');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    reports = localStorage.getItem('reports');
+    if (!reports) {
+      console.log('Fetching reports.json...');
+      const response = await fetch('reports.json');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      reports = await response.json();
+      localStorage.setItem('reports', JSON.stringify(reports));
+    } else {
+      reports = JSON.parse(reports);
     }
 
-    // Parse the JSON data
-    reports = await response.json();
-
-    // Add `headers` and `data` attributes to each report
+    // Add `headers` and `data` attributes to each report as we don't put them in JSON
     for (const key in reports) {
-      if (reports.hasOwnProperty(key)) {
-        reports[key].headers = [];
-        reports[key].data = [];
-      }
+      reports[key].headers = [];
+      reports[key].data = [];
     }
 
     // Now you can work with the `reports` object as needed
-    // TODO: really? assign as global variable like this?
     // For example, assign it to a global variable if necessary
+    // TODO: really? assign as global variable like this?
     window.reports = reports;
 
   } catch (error) {
