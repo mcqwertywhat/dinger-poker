@@ -81,7 +81,7 @@ async function getLatestCommitTimeStamp() {
   } else {
     try {
       console.log('Fetching timestamp for the latest commit to the `data` folder from GitHub...');
-      // fetch only the latest commit (it *should* be the latest, according to GPT) from the main branch, for the data folder, with a limit of 1
+      // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the data folder
       const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main?path=data&per_page=1`);
       const data = await response.json();    
       latestCommitTimestamp = new Date(data.commit.committer.date);
@@ -100,10 +100,8 @@ async function checkAndUpdateIfNecessary() {
     console.error('Could not get latest commit timestamp.');
     return;
   }
-  // we set the latest commit timestamp in session storage so we don't have to fetch it again this session
-  // but we do want to check for updates on each session; 
-  // this was decided as an alternative to having a button where the user refreshed their data manually
-  // now instead, the user should just close the tab and reopen to get the latest data
+  // we use session storage for this one value, but local storage for others because we want to check for updates on each session
+  // this also allows a user to just close the tab and reopen to get the latest data
   sessionStorage.setItem('latestCommitTimestamp', latestCommitTimestamp.toISOString());
 
   const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
