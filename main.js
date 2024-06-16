@@ -1,4 +1,5 @@
 // only allowed param is 'id'; expect it to match a reports key
+// TODO: should requestedReportID be set as global variable in some other way?
 const requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
 
@@ -24,7 +25,7 @@ async function initializePage() {
   await loadReports();
   processQueryparams();
   await checkAndUpdateIfNecessary();
-  await setData();
+  await setReportData(requestedReportID);
   createHeaderRow();
   updateReportTitle();
   createTableHeaderLinks();
@@ -113,7 +114,7 @@ async function checkAndUpdateIfNecessary() {
     localStorage.clear();
     await loadReports();
     console.log('About to get everything we need from the CSVs and JSON file...');
-    await setData();
+    await setReportData(requestedReportID);
     localStorage.setItem('lastVisitTimestamp', new Date().toISOString());
   }
 }
@@ -161,6 +162,46 @@ async function setData() {
       }
     })
     .filter((column) => column !== undefined);
+}
+
+async function setReportData(key) {
+  let report = reports[key];
+  let cachedReport = localStorage.getItem(`${key}`);
+
+  if (cachedReport) {
+    report = JSON.parse(cachedReport);
+  } else {
+    console.log(`Fetching report "${report.title}" data from CSV...`)
+    // Data is not available in localStorage, fetch it
+    let data = await fetchCSV(`data/${report.filename}`);
+    let headers = data
+      .trim()
+      .split("\n")[0]
+      .split(",")
+      .map((header) => header.trim());
+    // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
+    data = parseCSV(data);
+    // we need to set headers explicitly because they are not defined in the reports.json file
+    report.headers = headers;
+    report.data = data;
+
+    // Store new data in localStorage
+    localStorage.setItem(`${key}`, JSON.stringify({
+      headers: report.headers,
+      data: report.data
+    }));
+  }
+
+// TODO: this needs to be set elsewhere outside setReportData, maybe in a function called setCurrentReport
+mData = report.data;
+const validHeaderNames = validColumns.map((column) => column.Name);
+mColumns = report.headers
+  .map((headerName) => {
+    if (validHeaderNames.includes(headerName)) {
+      return validColumns.find((column) => column.Name === headerName);
+    }
+  })
+  .filter((column) => column !== undefined);
 }
 
 function createHeaderRow() {
