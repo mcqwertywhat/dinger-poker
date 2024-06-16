@@ -147,7 +147,7 @@ async function loadAndReturnReport(key) {
   if (cachedReport) {
     report = JSON.parse(cachedReport);
   } else {
-    console.log(`Fetching report "${report.title}" data from CSV...`)
+    console.log(`Fetching "${report.title}" report data from CSV...`)
     // Data is not available in localStorage, fetch it
     let data = await fetchCSV(`data/${report.filename}`);
     let headers = data
