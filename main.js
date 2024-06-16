@@ -1,6 +1,9 @@
 // only allowed param is 'id'; expect it to match a reports key
+// TODO: should requestedReportID be set as global variable in some other way?
 const requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
+let mData;
+let mColumns;
 
 const validColumns = [
   { Key: "_Index", Name: "#" },
@@ -24,12 +27,19 @@ async function initializePage() {
   await loadReports();
   processQueryparams();
   await checkAndUpdateIfNecessary();
-  await setData();
+  const requestedReport = await loadAndReturnReport(requestedReportID);
+  // awaiting setCurrentReport because mColumns has to be set before creating the header row
+  await setCurrentReport(requestedReport);
   createHeaderRow();
   updateReportTitle();
   createTableHeaderLinks();
   createTableRows();
   TDSort?.init("pTable", "pColumns");
+  if (sessionStorage.getItem("firstLoad") === null) {
+    // load other report data in background (notice we do not await this function)
+    cacheAllReportsData();
+    sessionStorage.setItem("firstLoad", "true");
+  }
 }
 
 function processQueryparams() {
@@ -81,7 +91,7 @@ async function getLatestCommitTimeStamp() {
   } else {
     try {
       console.log('Fetching timestamp for the latest commit to the `data` folder from GitHub...');
-      // fetch only the latest commit (it *should* be the latest, according to GPT) from the main branch, for the data folder, with a limit of 1
+      // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the data folder
       const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main?path=data&per_page=1`);
       const data = await response.json();    
       latestCommitTimestamp = new Date(data.commit.committer.date);
@@ -100,10 +110,8 @@ async function checkAndUpdateIfNecessary() {
     console.error('Could not get latest commit timestamp.');
     return;
   }
-  // we set the latest commit timestamp in session storage so we don't have to fetch it again this session
-  // but we do want to check for updates on each session; 
-  // this was decided as an alternative to having a button where the user refreshed their data manually
-  // now instead, the user should just close the tab and reopen to get the latest data
+  // we use session storage for this one value, but local storage for others because we want to check for updates on each session
+  // this also allows a user to just close the tab and reopen to get the latest data
   sessionStorage.setItem('latestCommitTimestamp', latestCommitTimestamp.toISOString());
 
   const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
@@ -114,49 +122,60 @@ async function checkAndUpdateIfNecessary() {
     console.log('Clearing local storage...either no lastVisitDate or the latestCommit is later than the lastVisitDate');
     localStorage.clear();
     await loadReports();
-    console.log('About to get everything we need from the CSVs and JSON file...');
-    await setData();
+    await loadAndReturnReport(requestedReportID);
     localStorage.setItem('lastVisitTimestamp', new Date().toISOString());
   }
 }
 
-async function setData() {
-  // Loop through each report
+async function cacheAllReportsData() {
+  // this should run in the background and fetch all the data from the CSVs and store it in localStorage
+  // it should only run if the data is not already in localStorage on the initial load of the page, and store an firstLoad session value to prevent it from running again
+  // we know this isn't being called unnecessarily because we checked it with a setTimeout of 10 seconds in testing; we could see that reports were not loaded ahead of time
   for (let key in reports) {
-    let report = reports[key];
-    let cachedData = localStorage.getItem(`${key}`);
-
-    if (cachedData) {
-      // Data is available in localStorage
-      let parsedData = JSON.parse(cachedData);
-      report.headers = parsedData.headers;
-      report.data = parsedData.data;
-    } else {
-      console.log(`Fetching report ${key} data from CSV...`)
-      // Data is not available in localStorage, fetch it
-      let data = await fetchCSV(`data/${report.filename}`);
-      headers = data
-        .trim()
-        .split("\n")[0]
-        .split(",")
-        .map((header) => header.trim());
-      // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
-      data = parseCSV(data);
-      report.headers = headers;
-      report.data = data;
-
-      // Store new data in localStorage with version number
-      localStorage.setItem(`${key}`, JSON.stringify({
-        headers: report.headers,
-        data: report.data
-      }));
+    if (reports[key].headers.length > 0 && reports[key].data.length > 0) {
+      console.log(`${reports[key].title} is already loaded in memory!`)
+      continue;
     }
+    loadAndReturnReport(key);
+  }
+}
+
+async function loadAndReturnReport(key) {
+  let report = reports[key];
+  let cachedReport = localStorage.getItem(`${key}`);
+
+  if (cachedReport) {
+    report = JSON.parse(cachedReport);
+  } else {
+    console.log(`Fetching "${report.title}" report data from CSV...`)
+    // Data is not available in localStorage, fetch it
+    let data = await fetchCSV(`data/${report.filename}`);
+    let headers = data
+      .trim()
+      .split("\n")[0]
+      .split(",")
+      .map((header) => header.trim());
+    // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
+    data = parseCSV(data);
+    // we need to set headers explicitly because they are not defined in the reports.json file
+    report.headers = headers;
+    report.data = data;
+
+    // Store new data in localStorage
+    localStorage.setItem(`${key}`, JSON.stringify({
+      headers: report.headers,
+      data: report.data
+    }));
   }
 
-  // Now continue with the rest of your logic
-  mData = reports[requestedReportID].data;
+  return report;
+}
+
+async function setCurrentReport(report) {
+  // async because mData and mColumns need to be set before other things happen
+  mData = report.data;
   const validHeaderNames = validColumns.map((column) => column.Name);
-  mColumns = reports[requestedReportID].headers
+  mColumns = report.headers
     .map((headerName) => {
       if (validHeaderNames.includes(headerName)) {
         return validColumns.find((column) => column.Name === headerName);
