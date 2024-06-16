@@ -134,32 +134,7 @@ async function cacheAllReportsData() {
       console.log(`${reports[key].title} is already loaded in memory!`)
       continue;
     }
-    let report = reports[key];
-    let cachedData = localStorage.getItem(`${key}`);
-
-    if (cachedData) {
-      // Data is available in localStorage
-      report = JSON.parse(cachedData);
-    } else {
-      console.log(`Fetching report "${report.title}" data from CSV...`)
-      // Data is not available in localStorage, fetch it
-      let data = await fetchCSV(`data/${report.filename}`);
-      headers = data
-        .trim()
-        .split("\n")[0]
-        .split(",")
-        .map((header) => header.trim());
-      // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
-      data = parseCSV(data);
-      report.headers = headers;
-      report.data = data;
-
-      // Store new data in localStorage
-      localStorage.setItem(`${key}`, JSON.stringify({
-        headers: report.headers,
-        data: report.data
-      }));
-    }
+    loadReportData(key);
   }
 }
 
