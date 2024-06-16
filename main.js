@@ -28,7 +28,8 @@ async function initializePage() {
   processQueryparams();
   await checkAndUpdateIfNecessary();
   const requestedReport = await loadReportData(requestedReportID);
-  setCurrentReport(requestedReport);
+  // awaiting setCurrentReport because mColumns has to be set before creating the header row
+  await setCurrentReport(requestedReport);
   createHeaderRow();
   updateReportTitle();
   createTableHeaderLinks();
@@ -169,7 +170,8 @@ async function loadReportData(key) {
   return report;
 }
 
-function setCurrentReport(report) {
+async function setCurrentReport(report) {
+  // async because mData and mColumns need to be set before other things happen
   mData = report.data;
   const validHeaderNames = validColumns.map((column) => column.Name);
   mColumns = report.headers
