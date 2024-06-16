@@ -27,7 +27,7 @@ async function initializePage() {
   await loadReports();
   processQueryparams();
   await checkAndUpdateIfNecessary();
-  const requestedReport = await loadReportData(requestedReportID);
+  const requestedReport = await loadAndReturnReport(requestedReportID);
   // awaiting setCurrentReport because mColumns has to be set before creating the header row
   await setCurrentReport(requestedReport);
   createHeaderRow();
@@ -122,7 +122,7 @@ async function checkAndUpdateIfNecessary() {
     console.log('Clearing local storage...either no lastVisitDate or the latestCommit is later than the lastVisitDate');
     localStorage.clear();
     await loadReports();
-    await loadReportData(requestedReportID);
+    await loadAndReturnReport(requestedReportID);
     localStorage.setItem('lastVisitTimestamp', new Date().toISOString());
   }
 }
@@ -136,11 +136,11 @@ async function cacheAllReportsData() {
       console.log(`${reports[key].title} is already loaded in memory!`)
       continue;
     }
-    loadReportData(key);
+    loadAndReturnReport(key);
   }
 }
 
-async function loadReportData(key) {
+async function loadAndReturnReport(key) {
   let report = reports[key];
   let cachedReport = localStorage.getItem(`${key}`);
 
