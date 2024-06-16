@@ -1,7 +1,8 @@
 {
   "2024": {
     "title": "2024",
-    "filename": "2024.csv"
+    "filename": "2024.csv",
+    "default": true
   },
   "2023": {
     "title": "2023",

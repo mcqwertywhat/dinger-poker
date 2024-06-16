@@ -1,6 +1,6 @@
 // only allowed param is 'id'; expect it to match a reports key
 // TODO: should requestedReportID be set as global variable in some other way?
-const requestedReportID = new URLSearchParams(window.location.search).get("id");
+let requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
 let mData;
 let mColumns;
@@ -45,10 +45,20 @@ async function initializePage() {
 function processQueryparams() {
   const validQueryParams = Object.keys(reports);
   if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
-    // default to 2024 if no valid report key is provided
-    window.location.href = "index.html?id=2024";
+    requestedReportID = getDefaultReportID();
+    window.location.href = `index.html?id=${requestedReportID}`;
   }
 }
+
+function getDefaultReportID() {  
+  for (const key in reports) {
+    if (reports[key].default) {
+      return key;
+    }
+  }  
+  // if no report is set to default, use the first report in the list
+  return Object.keys(reports)[0];
+} 
 
 async function loadReports() {
   try {
