@@ -9,9 +9,9 @@ Dinger Poker displays stats (i.e. reports) from poker games. Each report's data 
 1. Add a CSV file to the `data` folder.
 2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
 
-That's it! The new report should appear on the site **appearing in the same order as is entered in the `reports.json` file**.
-
 ## How-to Video
+
+> ⚠️ Video shows links in site menu, but that has since been replaced by a dropdown selector. 
 
 https://github.com/mcqwertywhat/dinger-poker/assets/65724195/a41ddf14-2fe6-46b1-96e2-e6f5d07e3958
 
