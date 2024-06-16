@@ -130,6 +130,7 @@ async function checkAndUpdateIfNecessary() {
 async function cacheAllReportsData() {
   // this should run in the background and fetch all the data from the CSVs and store it in localStorage
   // it should only run if the data is not already in localStorage on the initial load of the page, and store an firstLoad session value to prevent it from running again
+  // we know this isn't being called unnecessarily because we checked it with a setTimeout of 10 seconds in testing; we could see that reports were not loaded ahead of time
   for (let key in reports) {
     if (reports[key].headers.length > 0 && reports[key].data.length > 0) {
       console.log(`${reports[key].title} is already loaded in memory!`)
