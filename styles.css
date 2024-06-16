@@ -43,6 +43,8 @@ body {
   background-color: #000;
   color: #fff;
   text-align: center;
+  position: sticky;
+  top: 0;
 }
 
 .eventname {
@@ -64,6 +66,9 @@ body {
 
 .statsColumnHeader {
   font-weight: bold;
+  position: sticky;
+  top: 64px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
+  background-color: #fff;
 }
 
 .statsColumn {
