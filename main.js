@@ -31,8 +31,8 @@ async function initializePage() {
   // awaiting setCurrentReport because mColumns has to be set before creating the header row
   await setCurrentReport(requestedReport);
   createHeaderRow();
-  updateReportTitle();
-  createTableHeaderLinks();
+  populateDropdown()
+  addEventListenerForReportSelect()
   createTableRows();
   TDSort?.init("pTable", "pColumns");
   if (sessionStorage.getItem("firstLoad") === null) {
@@ -40,6 +40,13 @@ async function initializePage() {
     cacheAllReportsData();
     sessionStorage.setItem("firstLoad", "true");
   }
+}
+
+function addEventListenerForReportSelect() {
+  document.getElementById("report-select").addEventListener("change", () => {
+    requestedReportID = document.getElementById("report-select").value;
+    window.location.href = `index.html?id=${requestedReportID}`;
+  });
 }
 
 function processQueryparams() {
@@ -206,33 +213,16 @@ function createHeaderRow() {
   });
 }
 
-function updateReportTitle() {
-  const reportTitle = document.getElementById("report-title");
-  // TODO: consolidate this logic with the getData function;
-  reportTitle.textContent = reports[requestedReportID].title;
-}
+function populateDropdown() {
+  const reportSelect = document.getElementById("report-select");
+  for (const key in reports) {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = reports[key].title;
+    reportSelect.appendChild(option);
+  }
 
-function createTableHeaderLinks() {
-  const tableHeader = document.getElementById("tHeader");
-  const navMenu = document.createElement("div");
-  tableHeader.appendChild(navMenu);
-  navMenu.className = "description";
-
-  const keys = Object.keys(reports);
-  const lastKey = keys[keys.length - 1];
-
-  keys.forEach((key) => {
-    const report = reports[key];
-    const link = document.createElement("a");
-    link.href = `index.html?id=${key}`;
-    link.textContent = report.title;
-    navMenu.appendChild(link);
-
-    // no pipe after last link
-    if (key !== lastKey) {
-      navMenu.appendChild(document.createTextNode(" | "));
-    }
-  });
+  reportSelect.value = requestedReportID;
 }
 
 function createTableRows() {

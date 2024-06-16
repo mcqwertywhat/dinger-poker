@@ -77,3 +77,12 @@ body {
 .even {
   background-color: #eee;
 }
+
+#report-select {
+  display: inline-block;
+  margin: 10px;
+  background-color: #292c2a;
+  color:rgb(22, 225, 113);
+  padding-right: 10px;
+  padding-left: 5px;
+}
