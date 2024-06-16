@@ -25,12 +25,17 @@ async function initializePage() {
   await loadReports();
   processQueryparams();
   await checkAndUpdateIfNecessary();
-  await setReportData(requestedReportID);
+  await loadReportData(requestedReportID);
   createHeaderRow();
   updateReportTitle();
   createTableHeaderLinks();
   createTableRows();
   TDSort?.init("pTable", "pColumns");
+  if (sessionStorage.getItem("firstLoad") === null) {
+    // load other report data in background (notice we do not await this function)
+    cacheAllReportsData();
+    sessionStorage.setItem("firstLoad", "true");
+  }
 }
 
 function processQueryparams() {
@@ -113,25 +118,27 @@ async function checkAndUpdateIfNecessary() {
     console.log('Clearing local storage...either no lastVisitDate or the latestCommit is later than the lastVisitDate');
     localStorage.clear();
     await loadReports();
-    console.log('About to get everything we need from the CSVs and JSON file...');
-    await setReportData(requestedReportID);
+    await loadReportData(requestedReportID);
     localStorage.setItem('lastVisitTimestamp', new Date().toISOString());
   }
 }
 
-async function setData() {
-  // Loop through each report
+async function cacheAllReportsData() {
+  // this should run in the background and fetch all the data from the CSVs and store it in localStorage
+  // it should only run if the data is not already in localStorage on the initial load of the page, and store an firstLoad session value to prevent it from running again
   for (let key in reports) {
+    if (reports[key].headers.length > 0 && reports[key].data.length > 0) {
+      console.log(`${reports[key].title} is already loaded in memory!`)
+      continue;
+    }
     let report = reports[key];
     let cachedData = localStorage.getItem(`${key}`);
 
     if (cachedData) {
       // Data is available in localStorage
-      let parsedData = JSON.parse(cachedData);
-      report.headers = parsedData.headers;
-      report.data = parsedData.data;
+      report = JSON.parse(cachedData);
     } else {
-      console.log(`Fetching report ${key} data from CSV...`)
+      console.log(`Fetching report "${report.title}" data from CSV...`)
       // Data is not available in localStorage, fetch it
       let data = await fetchCSV(`data/${report.filename}`);
       headers = data
@@ -144,27 +151,16 @@ async function setData() {
       report.headers = headers;
       report.data = data;
 
-      // Store new data in localStorage with version number
+      // Store new data in localStorage
       localStorage.setItem(`${key}`, JSON.stringify({
         headers: report.headers,
         data: report.data
       }));
     }
   }
-
-  // Now continue with the rest of your logic
-  mData = reports[requestedReportID].data;
-  const validHeaderNames = validColumns.map((column) => column.Name);
-  mColumns = reports[requestedReportID].headers
-    .map((headerName) => {
-      if (validHeaderNames.includes(headerName)) {
-        return validColumns.find((column) => column.Name === headerName);
-      }
-    })
-    .filter((column) => column !== undefined);
 }
 
-async function setReportData(key) {
+async function loadReportData(key) {
   let report = reports[key];
   let cachedReport = localStorage.getItem(`${key}`);
 
