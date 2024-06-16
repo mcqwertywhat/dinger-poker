@@ -2,6 +2,8 @@
 // TODO: should requestedReportID be set as global variable in some other way?
 const requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
+let mData;
+let mColumns;
 
 const validColumns = [
   { Key: "_Index", Name: "#" },
@@ -25,7 +27,8 @@ async function initializePage() {
   await loadReports();
   processQueryparams();
   await checkAndUpdateIfNecessary();
-  await loadReportData(requestedReportID);
+  const requestedReport = await loadReportData(requestedReportID);
+  setCurrentReport(requestedReport);
   createHeaderRow();
   updateReportTitle();
   createTableHeaderLinks();
@@ -188,16 +191,19 @@ async function loadReportData(key) {
     }));
   }
 
-// TODO: this needs to be set elsewhere outside setReportData, maybe in a function called setCurrentReport
-mData = report.data;
-const validHeaderNames = validColumns.map((column) => column.Name);
-mColumns = report.headers
-  .map((headerName) => {
-    if (validHeaderNames.includes(headerName)) {
-      return validColumns.find((column) => column.Name === headerName);
-    }
-  })
-  .filter((column) => column !== undefined);
+  return report;
+}
+
+function setCurrentReport(report) {
+  mData = report.data;
+  const validHeaderNames = validColumns.map((column) => column.Name);
+  mColumns = report.headers
+    .map((headerName) => {
+      if (validHeaderNames.includes(headerName)) {
+        return validColumns.find((column) => column.Name === headerName);
+      }
+    })
+    .filter((column) => column !== undefined);
 }
 
 function createHeaderRow() {
