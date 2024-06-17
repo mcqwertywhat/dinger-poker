@@ -42,11 +42,11 @@
   },
   "sundays": {
     "title": "Sundays",
-    "filename": "sundays.csv"
+    "filename": "Sundays.csv"
   },
   "all_time": {
     "title": "All Time",
-    "filename": "all_time.csv"
+    "filename": "All Time.csv"
   }
 }
   
