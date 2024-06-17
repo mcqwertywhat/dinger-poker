@@ -170,18 +170,13 @@ async function loadAndReturnReport(key) {
       .map((header) => header.trim());
     // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
     data = parseCSV(data);
-    const lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);
     // we need to set headers explicitly because they are not defined in the reports.json file
     report.headers = headers;
     report.data = data;
-    report.lastUpdatedAt = lastUpdatedAt;
+    report.lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);;
 
     // Store new data in localStorage
-    localStorage.setItem(`${key}`, JSON.stringify({
-      headers: report.headers,
-      data: report.data,
-      lastUpdatedAt: report.lastUpdatedAt
-    }));
+    localStorage.setItem(`${key}`, JSON.stringify(report));
   }
 
   return report;
