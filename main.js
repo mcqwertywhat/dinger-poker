@@ -31,9 +31,10 @@ async function initializePage() {
   // awaiting setCurrentReport because mColumns has to be set before creating the header row
   await setCurrentReport(requestedReport);
   createHeaderRow();
-  populateDropdown()
-  populateLastUpdated(requestedReport);
-  addEventListenerForReportSelect()
+  populateDropdown();
+  populateInfoIcon(requestedReport);
+  addEventListenerForReportSelect();
+  addEventListenerForInfoIcon();
   createTableRows();
   TDSort?.init("pTable", "pColumns");
   if (sessionStorage.getItem("firstLoad") === null) {
@@ -43,7 +44,7 @@ async function initializePage() {
   }
 }
 
-function populateLastUpdated(report) {
+function populateInfoIcon(report) {
   const isoString = report.lastUpdatedAt
   const date = new Date(isoString);
 
@@ -56,8 +57,19 @@ function populateLastUpdated(report) {
     minute: '2-digit',
   };
   const localDateString = date.toLocaleString(undefined, options);
-  document.getElementById("last-updated-report-title").textContent = `"${report.title}" `;
-  document.getElementById("last-updated-time").textContent = localDateString;
+  document.getElementById("info-text").textContent = `"${report.title}" was last updated on ${localDateString}`;
+}
+
+function addEventListenerForInfoIcon() {  
+  document.getElementById("info-icon").addEventListener("click", () => {
+    const infoText = document.getElementById("info-text");
+    if (infoText.style.display === "inline-block") {
+      infoText.style.display = "none";
+      return;
+    } else {
+      infoText.style.display = "inline-block";
+    }
+  });
 }
 
 function addEventListenerForReportSelect() {

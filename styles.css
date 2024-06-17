@@ -67,7 +67,7 @@ body {
 .statsColumnHeader {
   font-weight: bold;
   position: sticky;
-  top: 79.5px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
+  top: 64px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
   background-color: #fff;
 }
 
@@ -83,10 +83,25 @@ body {
   background-color: #eee;
 }
 
-.last-updated {
+#info-icon {
   display: inline-block;
   color:rgb(221, 221, 221);
-  font-size: 9pt;
+  font-size: .75em;
+  cursor: pointer;
+}
+
+#info-text {
+  display: none;
+  position: absolute;
+  background-color: #d3d3d3;
+  margin-left: 3px;
+  margin-top: 2px;
+  color: #000;
+  border-radius: 3px;
+  padding: 5px;
+  font-size: .6em;
+  font-weight: lighter;
+  z-index: 1;
 }
 
 #report-select {
