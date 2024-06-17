@@ -26,13 +26,15 @@ const validColumns = [
 async function initializePage() {
   await loadReports();
   processQueryparams();
-  await checkAndUpdateIfNecessary();
+  await updateLocalStorageIfNecessary();
   const requestedReport = await loadAndReturnReport(requestedReportID);
   // awaiting setCurrentReport because mColumns has to be set before creating the header row
   await setCurrentReport(requestedReport);
   createHeaderRow();
-  populateDropdown()
-  addEventListenerForReportSelect()
+  populateDropdown();
+  populateInfoIcon(requestedReport);
+  addEventListenerForReportSelect();
+  addEventListenerForInfoIcon();
   createTableRows();
   TDSort?.init("pTable", "pColumns");
   if (sessionStorage.getItem("firstLoad") === null) {
@@ -40,6 +42,34 @@ async function initializePage() {
     cacheAllReportsData();
     sessionStorage.setItem("firstLoad", "true");
   }
+}
+
+function populateInfoIcon(report) {
+  const isoString = report.lastUpdatedAt
+  const date = new Date(isoString);
+
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    weekday: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  };
+  const localDateString = date.toLocaleString(undefined, options);
+  document.getElementById("info-text").textContent = `"${report.title}" was last updated on ${localDateString}`;
+}
+
+function addEventListenerForInfoIcon() {  
+  document.getElementById("info-icon").addEventListener("click", () => {
+    const infoText = document.getElementById("info-text");
+    if (infoText.style.display === "inline-block") {
+      infoText.style.display = "none";
+      return;
+    } else {
+      infoText.style.display = "inline-block";
+    }
+  });
 }
 
 function addEventListenerForReportSelect() {
@@ -82,10 +112,11 @@ async function loadReports() {
       reports = JSON.parse(reports);
     }
 
-    // Add `headers` and `data` attributes to each report as we don't put them in JSON
+    // Add `headers`, `data`, and `lastUpdatedAt` attributes to each report as we don't put them in JSON
     for (const key in reports) {
       reports[key].headers = [];
       reports[key].data = [];
+      reports[key].lastUpdatedAt = undefined;
     }
 
     // Now you can work with the `reports` object as needed
@@ -98,38 +129,33 @@ async function loadReports() {
   }
 }
 
-async function getLatestCommitTimeStamp() {
-  // fetches the latest timestamp for the last GitHub commit from session storage if it exists, or from GitHub if it doesn't
+async function getLatestCommitTimeStampFromGitHub(path) {
   // returns a Date object, or null if error
-  let latestCommitTimestamp = sessionStorage.getItem('latestCommitTimestamp');
-  
-  if (latestCommitTimestamp) {
-    return new Date(latestCommitTimestamp);
-  } else {
-    try {
-      console.log('Fetching timestamp for the latest commit to the `data` folder from GitHub...');
-      // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the data folder
-      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main?path=data&per_page=1`);
-      const data = await response.json();    
-      latestCommitTimestamp = new Date(data.commit.committer.date);
-      return latestCommitTimestamp;
-    } catch (error) {
-      console.error('Error fetching latest commit timestamp:', error);
-      return null;
-    }
+  try {
+    console.log(`Fetching timestamp for the latest commit for the path '${path}' from GitHub...`);
+    // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the specified folder/file
+    const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits?sha=main&per_page=1&path=${path}`);
+    const data = await response.json();  
+    latestCommitTimestamp = new Date(data[0].commit.committer.date);
+    return latestCommitTimestamp;
+  } catch (error) {
+    console.error('Error fetching latest commit timestamp:', error);
+    return null;
   }
 }
 
-async function checkAndUpdateIfNecessary() {
-  // latestCommitTimestamp should be a Date object
-  const latestCommitTimestamp = await getLatestCommitTimeStamp();
-  if (!latestCommitTimestamp) {
-    console.error('Could not get latest commit timestamp.');
-    return;
+async function updateLocalStorageIfNecessary() {
+  // see if data folder on github has been updated since last visit; if so, 
+  let latestCommitTimestamp = sessionStorage.getItem('latestCommitDataFolder');
+  if (latestCommitTimestamp) {
+    latestCommitTimestamp = new Date(latestCommitTimestamp);
+  } else {
+    latestCommitTimestamp = await getLatestCommitTimeStampFromGitHub('data');
   }
-  // we use session storage for this one value, but local storage for others because we want to check for updates on each session
+
+  // we use session storage for this one value
   // this also allows a user to just close the tab and reopen to get the latest data
-  sessionStorage.setItem('latestCommitTimestamp', latestCommitTimestamp.toISOString());
+  sessionStorage.setItem('latestCommitDataFolder', latestCommitTimestamp.toISOString());
 
   const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
   const lastVisitDate = lastVisitTimestamp ? new Date(lastVisitTimestamp) : null;
@@ -177,12 +203,10 @@ async function loadAndReturnReport(key) {
     // we need to set headers explicitly because they are not defined in the reports.json file
     report.headers = headers;
     report.data = data;
+    report.lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);;
 
     // Store new data in localStorage
-    localStorage.setItem(`${key}`, JSON.stringify({
-      headers: report.headers,
-      data: report.data
-    }));
+    localStorage.setItem(`${key}`, JSON.stringify(report));
   }
 
   return report;
