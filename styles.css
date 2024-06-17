@@ -67,7 +67,7 @@ body {
 .statsColumnHeader {
   font-weight: bold;
   position: sticky;
-  top: 64px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
+  top: 79.5px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
   background-color: #fff;
 }
 
@@ -81,6 +81,12 @@ body {
 
 .even {
   background-color: #eee;
+}
+
+.last-updated {
+  display: inline-block;
+  color:rgb(221, 221, 221);
+  font-size: 9pt;
 }
 
 #report-select {

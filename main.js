@@ -32,6 +32,7 @@ async function initializePage() {
   await setCurrentReport(requestedReport);
   createHeaderRow();
   populateDropdown()
+  populateLastUpdated(requestedReport);
   addEventListenerForReportSelect()
   createTableRows();
   TDSort?.init("pTable", "pColumns");
@@ -40,6 +41,23 @@ async function initializePage() {
     cacheAllReportsData();
     sessionStorage.setItem("firstLoad", "true");
   }
+}
+
+function populateLastUpdated(report) {
+  const isoString = report.lastUpdatedAt
+  const date = new Date(isoString);
+
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    weekday: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  };
+  const localDateString = date.toLocaleString(undefined, options);
+  document.getElementById("last-updated-report-title").textContent = `"${report.title}" `;
+  document.getElementById("last-updated-time").textContent = localDateString;
 }
 
 function addEventListenerForReportSelect() {
