@@ -26,7 +26,7 @@ const validColumns = [
 async function initializePage() {
   await loadReports();
   processQueryparams();
-  await checkAndUpdateIfNecessary();
+  await updateLocalStorageIfNecessary();
   const requestedReport = await loadAndReturnReport(requestedReportID);
   // awaiting setCurrentReport because mColumns has to be set before creating the header row
   await setCurrentReport(requestedReport);
@@ -82,10 +82,11 @@ async function loadReports() {
       reports = JSON.parse(reports);
     }
 
-    // Add `headers` and `data` attributes to each report as we don't put them in JSON
+    // Add `headers`, `data`, and `lastUpdatedAt` attributes to each report as we don't put them in JSON
     for (const key in reports) {
       reports[key].headers = [];
       reports[key].data = [];
+      reports[key].lastUpdatedAt = undefined;
     }
 
     // Now you can work with the `reports` object as needed
@@ -98,38 +99,33 @@ async function loadReports() {
   }
 }
 
-async function getLatestCommitTimeStamp(path) {
-  // fetches the latest timestamp for the last GitHub commit from session storage if it exists, or from GitHub if it doesn't
+async function getLatestCommitTimeStampFromGitHub(path) {
   // returns a Date object, or null if error
-  let latestCommitTimestamp = sessionStorage.getItem(latestCommitStorageKey(path));
-  
-  if (latestCommitTimestamp) {
-    return new Date(latestCommitTimestamp);
-  } else {
-    try {
-      console.log(`Fetching timestamp for the latest commit for the path '${path}' from GitHub...`);
-      // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the specified folder/file
-      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits?sha=main&per_page=1&path=${path}`);
-      const data = await response.json();  
-      latestCommitTimestamp = new Date(data[0].commit.committer.date);
-      return latestCommitTimestamp;
-    } catch (error) {
-      console.error('Error fetching latest commit timestamp:', error);
-      return null;
-    }
+  try {
+    console.log(`Fetching timestamp for the latest commit for the path '${path}' from GitHub...`);
+    // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the specified folder/file
+    const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits?sha=main&per_page=1&path=${path}`);
+    const data = await response.json();  
+    latestCommitTimestamp = new Date(data[0].commit.committer.date);
+    return latestCommitTimestamp;
+  } catch (error) {
+    console.error('Error fetching latest commit timestamp:', error);
+    return null;
   }
 }
 
-async function checkAndUpdateIfNecessary() {
-  // latestCommitTimestamp should be a Date object
-  const latestCommitTimestamp = await getLatestCommitTimeStamp('data');
-  if (!latestCommitTimestamp) {
-    console.error('Could not get latest commit timestamp.');
-    return;
+async function updateLocalStorageIfNecessary() {
+  // see if data folder on github has been updated since last visit; if so, 
+  let latestCommitTimestamp = sessionStorage.getItem('latestCommitDataFolder');
+  if (latestCommitTimestamp) {
+    latestCommitTimestamp = new Date(latestCommitTimestamp);
+  } else {
+    latestCommitTimestamp = await getLatestCommitTimeStampFromGitHub('data');
   }
-  // we use session storage for this one value, but local storage for others because we want to check for updates on each session
+
+  // we use session storage for this one value
   // this also allows a user to just close the tab and reopen to get the latest data
-  sessionStorage.setItem(latestCommitStorageKey('data'), latestCommitTimestamp.toISOString());
+  sessionStorage.setItem('latestCommitDataFolder', latestCommitTimestamp.toISOString());
 
   const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
   const lastVisitDate = lastVisitTimestamp ? new Date(lastVisitTimestamp) : null;
@@ -174,14 +170,17 @@ async function loadAndReturnReport(key) {
       .map((header) => header.trim());
     // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
     data = parseCSV(data);
+    const lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);
     // we need to set headers explicitly because they are not defined in the reports.json file
     report.headers = headers;
     report.data = data;
+    report.lastUpdatedAt = lastUpdatedAt;
 
     // Store new data in localStorage
     localStorage.setItem(`${key}`, JSON.stringify({
       headers: report.headers,
-      data: report.data
+      data: report.data,
+      lastUpdatedAt: report.lastUpdatedAt
     }));
   }
 
@@ -284,13 +283,6 @@ async function fetchCSV(url) {
   } catch (error) {
     console.error("Error fetching CSV file:", error);
   }
-}
-
-function latestCommitStorageKey(path) {
-  // use two underscores for periods and one underscore for slashes in the storage key
-  // in case we need to decode it, we know that two underscores are for periods
-  const parsedPath = path.replace(/\//g, '_').replace(/\./g, '__');
-  return `latestCommitTimestamp_${parsedPath}`;
 }
 
 // everything in TDSort was from the original HTML export
