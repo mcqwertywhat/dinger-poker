@@ -98,20 +98,20 @@ async function loadReports() {
   }
 }
 
-async function getLatestCommitTimeStamp() {
+async function getLatestCommitTimeStamp(path) {
   // fetches the latest timestamp for the last GitHub commit from session storage if it exists, or from GitHub if it doesn't
   // returns a Date object, or null if error
-  let latestCommitTimestamp = sessionStorage.getItem('latestCommitTimestamp');
+  let latestCommitTimestamp = sessionStorage.getItem(latestCommitStorageKey(path));
   
   if (latestCommitTimestamp) {
     return new Date(latestCommitTimestamp);
   } else {
     try {
-      console.log('Fetching timestamp for the latest commit to the `data` folder from GitHub...');
-      // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the data folder
-      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits/main?path=data&per_page=1`);
-      const data = await response.json();    
-      latestCommitTimestamp = new Date(data.commit.committer.date);
+      console.log(`Fetching timestamp for the latest commit for the path '${path}' from GitHub...`);
+      // fetch only the latest commit (`per_page=1` should be the latest, according to GPT) from the main branch, for the specified folder/file
+      const response = await fetch(`https://api.github.com/repos/mcqwertywhat/dinger-poker/commits?sha=main&per_page=1&path=${path}`);
+      const data = await response.json();  
+      latestCommitTimestamp = new Date(data[0].commit.committer.date);
       return latestCommitTimestamp;
     } catch (error) {
       console.error('Error fetching latest commit timestamp:', error);
@@ -122,14 +122,14 @@ async function getLatestCommitTimeStamp() {
 
 async function checkAndUpdateIfNecessary() {
   // latestCommitTimestamp should be a Date object
-  const latestCommitTimestamp = await getLatestCommitTimeStamp();
+  const latestCommitTimestamp = await getLatestCommitTimeStamp('data');
   if (!latestCommitTimestamp) {
     console.error('Could not get latest commit timestamp.');
     return;
   }
   // we use session storage for this one value, but local storage for others because we want to check for updates on each session
   // this also allows a user to just close the tab and reopen to get the latest data
-  sessionStorage.setItem('latestCommitTimestamp', latestCommitTimestamp.toISOString());
+  sessionStorage.setItem(latestCommitStorageKey('data'), latestCommitTimestamp.toISOString());
 
   const lastVisitTimestamp = localStorage.getItem('lastVisitTimestamp');
   const lastVisitDate = lastVisitTimestamp ? new Date(lastVisitTimestamp) : null;
@@ -284,6 +284,13 @@ async function fetchCSV(url) {
   } catch (error) {
     console.error("Error fetching CSV file:", error);
   }
+}
+
+function latestCommitStorageKey(path) {
+  // use two underscores for periods and one underscore for slashes in the storage key
+  // in case we need to decode it, we know that two underscores are for periods
+  const parsedPath = path.replace(/\//g, '_').replace(/\./g, '__');
+  return `latestCommitTimestamp_${parsedPath}`;
 }
 
 // everything in TDSort was from the original HTML export
