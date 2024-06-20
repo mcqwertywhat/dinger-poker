@@ -11,16 +11,16 @@ const validColumns = [
   { Key: "Buyins", Name: "Buy-ins" },
   { Key: "RebuysCount", Name: "Rebuys" },
   { Key: "Hits", Name: "Hits" },
-  { Key: "TotalWinnings", Name: "Total Winnings" },
-  { Key: "TotalCost", Name: "Total Cost" },
-  { Key: "TotalTake", Name: "Total Take" },
-  { Key: "TimesPlaced", Name: "Times Placed" },
+  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Winnings" },
+  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost" },
+  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take" },
+  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Podiums" },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Avg Placed" },
   { Key: "OnTheBubble", Name: "Bubble" },
-  { Key: "AverageHits", Name: "Average Hits" },
+  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits" },
 ];
 
 async function initializePage() {
@@ -232,7 +232,8 @@ function createHeaderRow() {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
     th.className = `statsColumn statsColumnHeader align-${column.Align}`;
-    th.textContent = column.Name;
+    const displayName = column.DisplayName ? column.DisplayName : column.Name;
+    th.textContent = displayName;
     headerRow.appendChild(th);
   });
 }
