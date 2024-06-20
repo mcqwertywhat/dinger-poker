@@ -57,7 +57,7 @@ body {
 }
 
 .statsTable {
-  padding: 8px;
+  padding: 0px; /* do not make padding more than 0 or sticky header names */
   background-color: #fff;
   color: #000;
   border-radius: 6px;
