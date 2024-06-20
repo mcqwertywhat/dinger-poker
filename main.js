@@ -18,7 +18,7 @@ const validColumns = [
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Wins Prize %" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Wins Prize Avg" },
   { Key: "OnTheBubble", Name: "Bubble" },
   { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits" },
 ];
