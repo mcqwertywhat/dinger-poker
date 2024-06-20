@@ -28,7 +28,11 @@ body {
   background-color: #5f7a96;
 }
 
-.infoTable {
+.outer-table-container {
+  text-align: center;
+}
+
+.table-container {
   border: 2px solid #000;
   border-radius: 6px;
   font-size: 1.0rem;
@@ -67,7 +71,7 @@ body {
 .statsColumnHeader {
   font-weight: bold;
   position: sticky;
-  top: 64px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
+  top: 54px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
   background-color: #fff;
 }
 
