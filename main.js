@@ -14,11 +14,11 @@ const validColumns = [
   { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Winnings" },
   { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost" },
   { Key: "TotalTake", Name: "Total Take", DisplayName: "Take" },
-  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Podiums" },
+  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Prizes Awarded" },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Avg Placed" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Wins Prize %" },
   { Key: "OnTheBubble", Name: "Bubble" },
   { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits" },
 ];
