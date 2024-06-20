@@ -1,6 +1,6 @@
 html {
   font-family: Arial;
-  font-size: 10pt;
+  font-size: 12pt;
 }
 
 a {
@@ -72,7 +72,7 @@ body {
 }
 
 .statsColumn {
-  padding: 5px 5px;
+  padding: 1rem;
   white-space: nowrap;
 }
 
