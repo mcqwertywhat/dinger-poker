@@ -6,19 +6,19 @@ let mData;
 let mColumns;
 
 const validColumns = [
-  { Key: "_Index", Name: "#" },
-  { Key: "Name", Name: "Name" },
-  { Key: "Buyins", Name: "Buy-ins" },
+  { Key: "_Index", Name: "#", DisplayName: "#"},
+  { Key: "Name", Name: "Name", DisplayName: "Name" },
+  { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games" },
   { Key: "RebuysCount", Name: "Rebuys" },
   { Key: "Hits", Name: "Hits" },
-  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Winnings" },
+  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won" },
   { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost" },
   { Key: "TotalTake", Name: "Total Take", DisplayName: "Take" },
-  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Prizes Awarded" },
+  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts" },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Wins Prize Avg" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %" },
   { Key: "OnTheBubble", Name: "Bubble" },
   { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits" },
 ];
