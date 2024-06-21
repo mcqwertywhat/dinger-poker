@@ -52,12 +52,12 @@ function populateInfoIcon(report) {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    weekday: 'short',
+    weekday: 'long',
     hour: 'numeric',
     minute: '2-digit',
   };
   const localDateString = date.toLocaleString(undefined, options);
-  document.getElementById("info-text").textContent = `"${report.title}" was last updated on ${localDateString}`;
+  document.getElementById("info-text").innerHTML = `<strong>${report.title}</strong> last updated on<br/> ${localDateString}`;
 }
 
 function addEventListenerForInfoIcon() {  
