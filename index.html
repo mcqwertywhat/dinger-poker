@@ -13,18 +13,21 @@
     
   <body>
 
-    <div class="outer-table-container">
-      <div class="table-container">
+    <div class="align-center">
+      <div class="infoTable">
+        <div id="tHeader" class="tableHeader">
+          <div class="eventname">Dinger Poker Stats
+            <span>
+              <select id="report-select" class="eventname">
+                <!-- Options will be populated dynamically -->
+              </select>
+            </span>
+            <span id="info-icon">&#9432;<span id="info-text"></span></span>
+          </div>
+          
+        </div>
+
         <table id="pTable" cellspacing="0" class="statsTable">
-          <thead id="tHeader" class="tableHeader">
-            <tr>
-              <th id="table-header-controls" class="eventname">
-                Dinger Poker Stats
-                <select id="report-select" class="eventname"></select>
-                <span id="info-icon">&#9432;<span id="info-text"></span></span>          
-              </th>
-            </tr>
-          </thead>
           <tbody id="pBody">
             <tr id="pColumns">
             </tr>
