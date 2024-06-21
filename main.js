@@ -227,8 +227,6 @@ async function setCurrentReport(report) {
 
 function createHeaderRow() {
   const headerRow = document.getElementById("pColumns");
-  // set the column span based on the number of columns
-  document.getElementById("table-header-controls").colSpan = mColumns.length;
 
   mColumns.forEach((column) => {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
