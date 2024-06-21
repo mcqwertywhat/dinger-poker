@@ -10,17 +10,17 @@ const validColumns = [
   { Key: "Name", Name: "Name", DisplayName: "Name" },
   { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games" },
   { Key: "RebuysCount", Name: "Rebuys" },
-  { Key: "Hits", Name: "Hits" },
-  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won" },
-  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost" },
-  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take" },
+  { Key: "Hits", Name: "Hits", Transform: transformHits },
+  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
+  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
+  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
   { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts" },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", Transform: transformAvgPlaced },
   { Key: "OnTheBubble", Name: "Bubble" },
-  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits" },
+  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", Transform: transformAvgHits  },
 ];
 
 async function initializePage() {
@@ -282,11 +282,17 @@ function parseCSV(csvText) {
     }, {});
 
     const columns = Object.entries(row).map(([key, value]) => {
-      // Convert numbers to actual numbers and format accordingly
+      // Convert numbers to actual numbers and format accordingly      
+      // it feels like data should be formatted on render (i.e. when the variable mData is set)
+      // but we aren't changing the original CSV file so who cares right?
+      // TODO: consider transforming on render; if we did do it where mData was set, then we'd be able to hide/show formatted/not formatted options instead of forcing them on the user 
       const numericValue = parseFloat(value.replace(/[,$]/g, ""));
+      const numericColumn = validColumns.find((column) => column.Name === key);
+      const formattedText = numericColumn.Transform ? numericColumn.Transform(numericValue) : value;
+      
       return {
-        Text: value,
-        HTML: value,
+        Text: formattedText,
+        HTML: formattedText,
         SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
         Align: !isNaN(numericValue) ? "right" : "left",
       };
@@ -299,6 +305,31 @@ function parseCSV(csvText) {
   });
 
   return processedData;
+}
+
+function transformMoney(numericValue) {
+  // do we need amount to be numeric value?
+  if (numericValue < 0) {
+    return `-$${Math.abs(numericValue).toFixed(0)}`;
+  } else {
+    return `$${numericValue.toFixed(0)}`;
+  }
+}
+
+function transformAvgPlaced(numericValue) {
+  return (numericValue * 100).toFixed(0) + "%";
+}
+
+function transformAvgHits(numericValue) {
+  numericValue = Math.round(numericValue * 10) / 10;
+  if (Number.isInteger(numericValue) && numericValue % 1 === 0) {
+    numericValue = numericValue.toFixed(1);
+  }
+  return numericValue;
+}
+
+function transformHits(numericValue) {
+  return Math.floor(numericValue);
 }
 
 async function fetchCSV(url) {
