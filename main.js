@@ -261,6 +261,9 @@ function createTableRows() {
       const td = document.createElement("td");
       td.textContent = column.Text;
       td.className = `statsColumn align-${column.Align}`;
+      if (column.FixedClasses) {
+        td.className += ` ${column.FixedClasses}`;
+      }
       tr.appendChild(td);
     });
 
@@ -290,11 +293,18 @@ function parseCSV(csvText) {
       const numericColumn = validColumns.find((column) => column.Name === key);
       const formattedText = numericColumn.Transform ? numericColumn.Transform(numericValue) : value;
       
+      let fixedClasses = null;
+      if (key === "#") {
+        fixedClasses = 'fixed-column fixed-column-0';
+      } else if (key === "Name") {
+        fixedClasses = 'fixed-column fixed-column-1';
+      }
       return {
         Text: formattedText,
         HTML: formattedText,
         SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
         Align: !isNaN(numericValue) ? "right" : "left",
+        FixedClasses: fixedClasses
       };
     });
 

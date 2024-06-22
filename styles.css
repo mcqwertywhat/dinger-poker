@@ -111,3 +111,90 @@ body {
   padding-right: 10px;
   padding-left: 5px;
 }
+
+@media screen and (max-width: 600px) {
+
+  /* TODO: no background (blue area) showing on any edge */
+  /* TODO: fix padding on table to make more compact on mobile */
+  
+  .infoTable {
+    max-width: 100%;
+    overflow-x: scroll;
+    font-size: .75rem;
+  }
+
+  .tableHeader {
+    left: 0;
+    min-height: 62px;
+  }
+
+  .eventname {
+    font-size: .9rem;
+  }
+
+  #info-icon {
+    font-size: 1rem;
+  }
+
+  #info-text {
+    right: 10px;
+    top: 44px;
+    margin-left: 3px;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: .6rem;
+    font-weight: lighter;
+    z-index: 1;
+  }
+
+  .fixed-column {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+  
+  .fixed-column-0 {
+    left: 0;
+  }
+  
+  .fixed-column-1 {
+    left: 36px; /* Adjust based on the width of your first column */
+  }
+  
+  #pColumns .fixed-column {
+    z-index: 2; /* Ensure headers are above the rest of the cells */
+  }
+
+  /* # (rank) cells note that "even" actually means "odd rank number" */
+  tr.even > :nth-child(1) {
+    background-color: #eee;
+  }
+  
+  tr.odd > :nth-child(1) {
+    background-color: #fff;
+  }
+  
+  /* player name cells note that "even" actually means "odd rank number" */
+  tr.even > :nth-child(2) {
+    background-color: #eee;
+    border-right: 1px solid #e3e3e3;
+  }
+  
+  tr.odd > :nth-child(2) {
+    background-color: #fff;
+    border-right: 1px solid #e3e3e3;
+  }
+
+  #pColumns > :nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+
+  #pColumns > :nth-child(2) {
+    position: sticky;
+    left: 36px;
+    z-index: 2;
+    border-right: 1px solid #e3e3e3;
+  }
+}
