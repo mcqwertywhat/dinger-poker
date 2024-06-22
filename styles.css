@@ -115,21 +115,33 @@ body {
 @media screen and (max-width: 600px) {
 
   /* TODO: no background (blue area) showing on any edge */
-  /* TODO: fix padding on table to make more compact on mobile */
+  /* TODO: keep columns names and event name stuck to top of browser on mobile */
+  /* TODO: move info icon somewhere else */
+  /* TODO: give columns a mobile display name */
+
+  body {
+    margin: 0;
+  }
   
+  /* controls all table text  */
   .infoTable {
     max-width: 100%;
     overflow-x: scroll;
     font-size: .75rem;
   }
 
-  .tableHeader {
-    left: 0;
-    min-height: 62px;
+  .statsColumn {
+    padding: .5rem;
   }
 
+  .tableHeader {
+    left: 0;
+    min-height: 61px;
+  }
+
+  /* controls size of page heading and select control; set to .9rem to deal with iPhone SE screen */
   .eventname {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 
   #info-icon {
@@ -144,7 +156,7 @@ body {
     padding: 5px 10px;
     font-size: .6rem;
     font-weight: lighter;
-    z-index: 1;
+    z-index: 2;
   }
 
   .fixed-column {
@@ -158,7 +170,7 @@ body {
   }
   
   .fixed-column-1 {
-    left: 36px; /* Adjust based on the width of your first column */
+    left: 26px; /* Adjust based on the width of your first column */
   }
   
   #pColumns .fixed-column {
@@ -193,7 +205,7 @@ body {
 
   #pColumns > :nth-child(2) {
     position: sticky;
-    left: 36px;
+    left: 26px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
