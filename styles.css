@@ -1,6 +1,6 @@
 html {
   font-family: Arial;
-  font-size: 10pt;
+  font-size: 12pt;
 }
 
 a {
@@ -57,7 +57,7 @@ body {
 }
 
 .statsTable {
-  padding: 8px;
+  padding: 0px; /* do not make padding more than 0 or sticky header names */
   background-color: #fff;
   color: #000;
   border-radius: 6px;
@@ -72,7 +72,7 @@ body {
 }
 
 .statsColumn {
-  padding: 5px 5px;
+  padding: 1rem;
   white-space: nowrap;
 }
 
@@ -86,7 +86,7 @@ body {
 #info-icon {
   display: inline-block;
   color:rgb(221, 221, 221);
-  font-size: .75em;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 
@@ -95,11 +95,10 @@ body {
   position: absolute;
   background-color: #d3d3d3;
   margin-left: 3px;
-  margin-top: 2px;
   color: #000;
   border-radius: 3px;
-  padding: 5px;
-  font-size: .6em;
+  padding: 5px 10px;
+  font-size: .9rem;
   font-weight: lighter;
   z-index: 1;
 }
@@ -111,4 +110,103 @@ body {
   color:rgb(22, 225, 113);
   padding-right: 10px;
   padding-left: 5px;
+}
+
+@media screen and (max-width: 600px) {
+
+  /* TODO: keep columns names and event name stuck to top of browser on mobile */
+  /* TODO: move info icon somewhere else */
+  /* TODO: give columns a mobile display name */
+  /* TODO: investigate align-undefined being set as a class */
+
+  body {
+    margin: 0;
+  }
+  
+  /* controls all table text  */
+  .infoTable {
+    max-width: 100%;
+    overflow-x: scroll;
+    font-size: .75rem;
+  }
+
+  .statsColumn {
+    padding: .5rem;
+  }
+
+  .tableHeader {
+    left: 0;
+    min-height: 61px;
+  }
+
+  /* controls size of page heading and select control; set to .9rem to deal with iPhone SE screen */
+  .eventname {
+    font-size: 0.9rem;
+  }
+
+  #info-icon {
+    font-size: 1rem;
+  }
+
+  #info-text {
+    right: 10px;
+    top: 44px;
+    margin-left: 3px;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: .6rem;
+    font-weight: lighter;
+    z-index: 2;
+  }
+
+  .fixed-column {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+  
+  .fixed-column-0 {
+    left: 0;
+  }
+  
+  .fixed-column-1 {
+    left: 26px; /* Adjust based on the width of your first column */
+  }
+  
+  #pColumns .fixed-column {
+    z-index: 2; /* Ensure headers are above the rest of the cells */
+  }
+
+  /* # (rank) cells note that "even" actually means "odd rank number" */
+  tr.even > :nth-child(1) {
+    background-color: #eee;
+  }
+  
+  tr.odd > :nth-child(1) {
+    background-color: #fff;
+  }
+  
+  /* player name cells note that "even" actually means "odd rank number" */
+  tr.even > :nth-child(2) {
+    background-color: #eee;
+    border-right: 1px solid #e3e3e3;
+  }
+  
+  tr.odd > :nth-child(2) {
+    background-color: #fff;
+    border-right: 1px solid #e3e3e3;
+  }
+
+  #pColumns > :nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+
+  #pColumns > :nth-child(2) {
+    position: sticky;
+    left: 26px;
+    z-index: 2;
+    border-right: 1px solid #e3e3e3;
+  }
 }

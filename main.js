@@ -6,21 +6,21 @@ let mData;
 let mColumns;
 
 const validColumns = [
-  { Key: "_Index", Name: "#" },
-  { Key: "Name", Name: "Name" },
-  { Key: "Buyins", Name: "Buy-ins" },
+  { Key: "_Index", Name: "#", DisplayName: "#"},
+  { Key: "Name", Name: "Name", DisplayName: "Name" },
+  { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games" },
   { Key: "RebuysCount", Name: "Rebuys" },
-  { Key: "Hits", Name: "Hits" },
-  { Key: "TotalWinnings", Name: "Total Winnings" },
-  { Key: "TotalCost", Name: "Total Cost" },
-  { Key: "TotalTake", Name: "Total Take" },
-  { Key: "TimesPlaced", Name: "Times Placed" },
+  { Key: "Hits", Name: "Hits", Transform: transformHits },
+  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
+  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
+  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
+  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts" },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", Transform: transformAvgPlaced },
   { Key: "OnTheBubble", Name: "Bubble" },
-  { Key: "AverageHits", Name: "Average Hits" },
+  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", Transform: transformAvgHits  },
 ];
 
 async function initializePage() {
@@ -52,12 +52,12 @@ function populateInfoIcon(report) {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    weekday: 'short',
+    weekday: 'long',
     hour: 'numeric',
     minute: '2-digit',
   };
   const localDateString = date.toLocaleString(undefined, options);
-  document.getElementById("info-text").textContent = `"${report.title}" was last updated on ${localDateString}`;
+  document.getElementById("info-text").innerHTML = `<strong>${report.title}</strong> last updated on<br/> ${localDateString}`;
 }
 
 function addEventListenerForInfoIcon() {  
@@ -232,7 +232,8 @@ function createHeaderRow() {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
     th.className = `statsColumn statsColumnHeader align-${column.Align}`;
-    th.textContent = column.Name;
+    const displayName = column.DisplayName ? column.DisplayName : column.Name;
+    th.textContent = displayName;
     headerRow.appendChild(th);
   });
 }
@@ -260,6 +261,9 @@ function createTableRows() {
       const td = document.createElement("td");
       td.textContent = column.Text;
       td.className = `statsColumn align-${column.Align}`;
+      if (column.FixedClasses) {
+        td.className += ` ${column.FixedClasses}`;
+      }
       tr.appendChild(td);
     });
 
@@ -281,13 +285,26 @@ function parseCSV(csvText) {
     }, {});
 
     const columns = Object.entries(row).map(([key, value]) => {
-      // Convert numbers to actual numbers and format accordingly
+      // Convert numbers to actual numbers and format accordingly      
+      // it feels like data should be formatted on render (i.e. when the variable mData is set)
+      // but we aren't changing the original CSV file so who cares right?
+      // TODO: consider transforming on render; if we did do it where mData was set, then we'd be able to hide/show formatted/not formatted options instead of forcing them on the user 
       const numericValue = parseFloat(value.replace(/[,$]/g, ""));
+      const numericColumn = validColumns.find((column) => column.Name === key);
+      const formattedText = numericColumn.Transform ? numericColumn.Transform(numericValue) : value;
+      
+      let fixedClasses = null;
+      if (key === "#") {
+        fixedClasses = 'fixed-column fixed-column-0';
+      } else if (key === "Name") {
+        fixedClasses = 'fixed-column fixed-column-1';
+      }
       return {
-        Text: value,
-        HTML: value,
+        Text: formattedText,
+        HTML: formattedText,
         SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
         Align: !isNaN(numericValue) ? "right" : "left",
+        FixedClasses: fixedClasses
       };
     });
 
@@ -298,6 +315,31 @@ function parseCSV(csvText) {
   });
 
   return processedData;
+}
+
+function transformMoney(numericValue) {
+  // do we need amount to be numeric value?
+  if (numericValue < 0) {
+    return `-$${Math.abs(numericValue).toFixed(0)}`;
+  } else {
+    return `$${numericValue.toFixed(0)}`;
+  }
+}
+
+function transformAvgPlaced(numericValue) {
+  return (numericValue * 100).toFixed(0) + "%";
+}
+
+function transformAvgHits(numericValue) {
+  numericValue = Math.round(numericValue * 10) / 10;
+  if (Number.isInteger(numericValue) && numericValue % 1 === 0) {
+    numericValue = numericValue.toFixed(1);
+  }
+  return numericValue;
+}
+
+function transformHits(numericValue) {
+  return Math.floor(numericValue);
 }
 
 async function fetchCSV(url) {
