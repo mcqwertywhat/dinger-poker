@@ -4,23 +4,25 @@ let requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
 let mData;
 let mColumns;
+const isOnSmallScreen = window.innerWidth <= 600;
+const useMobileColumns = false;
 
 const validColumns = [
   { Key: "_Index", Name: "#", DisplayName: "#"},
   { Key: "Name", Name: "Name", DisplayName: "Name" },
-  { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games" },
-  { Key: "RebuysCount", Name: "Rebuys" },
-  { Key: "Hits", Name: "Hits", Transform: transformHits },
+  { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games", MobileDisplayName: "GP" },
+  { Key: "RebuysCount", Name: "Rebuys", MobileDisplayName: "Rb" },
+  { Key: "Hits", Name: "Hits", MobileDisplayName: "H", Transform: transformHits },
   { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
   { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
   { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
-  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts" },
+  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts", MobileDisplayName: "P" },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", Transform: transformAvgPlaced },
-  { Key: "OnTheBubble", Name: "Bubble" },
-  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", Transform: transformAvgHits  },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", MobileDisplayName: "P%", Transform: transformAvgPlaced },
+  { Key: "OnTheBubble", Name: "Bubble", MobileDisplayName: "Bub" },
+  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", MobileDisplayName: "AH", Transform: transformAvgHits  },
 ];
 
 async function initializePage() {
@@ -232,7 +234,11 @@ function createHeaderRow() {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
     th.className = `statsColumn statsColumnHeader align-${column.Align}`;
-    const displayName = column.DisplayName ? column.DisplayName : column.Name;
+    let displayName = column.DisplayName ? column.DisplayName : column.Name;
+    if (useMobileColumns && isOnSmallScreen && column.MobileDisplayName) {
+      displayName = column.MobileDisplayName;
+    }
+
     th.textContent = displayName;
     headerRow.appendChild(th);
   });
