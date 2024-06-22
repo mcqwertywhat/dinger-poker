@@ -5,7 +5,8 @@ let reports;
 let mData;
 let mColumns;
 const isOnSmallScreen = window.innerWidth <= 600;
-const useMobileColumns = false;
+// TODO: this should be configurable with user selection? or force it on everyone but then each column will need an explanation
+const useMobileColumns = true;
 
 const validColumns = [
   { Key: "_Index", Name: "#", DisplayName: "#"},
