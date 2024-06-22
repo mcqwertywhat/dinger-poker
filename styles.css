@@ -170,8 +170,8 @@ body {
   }
   
   .fixed-column-1 {
-    /* 36px prevents the "Name" column from overlapping the "#" column and keeps it from shifting at all as the user scrolls right */
-    left: 36px;
+    /* prevents the "Name" column from overlapping the "#" column */
+    left: 28px;
   }
   
   #pColumns .fixed-column {
@@ -206,8 +206,8 @@ body {
 
   #pColumns > :nth-child(2) {
     position: sticky;
-    /* 36px prevents the "Name" column from overlapping the "#" column and keeps it from shifting at all as the user scrolls right */
-    left: 36px;
+    /* prevents the "Name" column from overlapping the "#" column */
+    left: 28px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
