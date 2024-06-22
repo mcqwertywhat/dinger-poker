@@ -114,10 +114,10 @@ body {
 
 @media screen and (max-width: 600px) {
 
-  /* TODO: no background (blue area) showing on any edge */
   /* TODO: keep columns names and event name stuck to top of browser on mobile */
   /* TODO: move info icon somewhere else */
   /* TODO: give columns a mobile display name */
+  /* TODO: investigate align-undefined being set as a class */
 
   body {
     margin: 0;
