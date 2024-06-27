@@ -67,7 +67,7 @@ body {
 .statsColumnHeader {
   font-weight: bold;
   position: sticky;
-  top: 64px; /* TODO: this value is adjusted to position it just under .tableHeader for desktop */
+  top: 64px; /* this value is adjusted to position it just under .tableHeader for desktop */
   background-color: #fff;
 }
 
@@ -114,7 +114,6 @@ body {
 
 @media screen and (max-width: 600px) {
 
-  /* TODO: keep columns names and event name stuck to top of browser on mobile */
   /* TODO: move info icon somewhere else */
   /* TODO: give columns a mobile display name */
   /* TODO: investigate align-undefined being set as a class */
@@ -128,15 +127,29 @@ body {
     max-width: 100%;
     overflow-x: scroll;
     font-size: .75rem;
+    position: fixed;
+    left: 0;
+    /* whatever offset we use for top, table needs to be 100% - that% for height */
+    top: 0;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
   }
 
   .statsColumn {
     padding: .5rem;
   }
 
+  .statsTable {
+    position: sticky;
+  }
+
   .tableHeader {
     left: 0;
     min-height: 61px;
+    position: sticky;
+    top: 0;
+    width: 100%;
   }
 
   /* controls size of page heading and select control; set to .9rem to deal with iPhone SE screen */
@@ -172,6 +185,10 @@ body {
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
     left: 28px;
+  }
+
+  .statsColumnHeader {
+    top: 0; /* this value is adjusted to position it just under .tableHeader for mobile */
   }
   
   #pColumns .fixed-column {
