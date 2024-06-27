@@ -130,8 +130,8 @@ body {
     position: fixed;
     left: 0;
     /* whatever offset we use for top, table needs to be 100% - that% for height */
-    top: 76px; 
-    height: 89%;
+    top: 0;
+    height: 100%;
     border: 0;
     border-radius: 0;
   }
@@ -140,10 +140,14 @@ body {
     padding: .5rem;
   }
 
+  .statsTable {
+    position: sticky;
+  }
+
   .tableHeader {
     left: 0;
     min-height: 61px;
-    position: fixed;
+    position: sticky;
     top: 0;
     width: 100%;
   }
