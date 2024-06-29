@@ -6,22 +6,24 @@ let mData;
 let mColumns;
 
 const validColumns = [
-  { Key: "_Index", Name: "#", DisplayName: "#"},
-  { Key: "Name", Name: "Name", DisplayName: "Name" },
-  { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games" },
-  { Key: "RebuysCount", Name: "Rebuys" },
-  { Key: "Hits", Name: "Hits", Transform: transformHits },
-  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
-  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
-  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
-  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts" },
-  { Key: "First", Name: "1st" },
-  { Key: "Second", Name: "2nd" },
-  { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", Transform: transformAvgPlaced },
-  { Key: "OnTheBubble", Name: "Bubble" },
-  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", Transform: transformAvgHits  },
-];
+  // the order of these columns is the order they will appear in the table
+  { key: "_Index", name: "#", displayName: "#"},
+  { key: "Name", name: "Name", displayName: "Name" },
+  { key: "Buyins", name: "Buy-ins", displayName: "Games" },
+  { key: "RebuysCount", name: "Rebuys" },
+  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts" },
+  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced },
+  { key: "First", name: "1st" },
+  { key: "Second", name: "2nd" },
+  { key: "Third", name: "3rd" },
+  { key: "OnTheBubble", name: "Bubble" },
+  { key: "Hits", name: "Hits", transform: transformHits },
+  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits  },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney },
+]
+.map((col, index) => ({ ...col, order: index }));
 
 async function initializePage() {
   await loadReports();
@@ -201,6 +203,7 @@ async function loadAndReturnReport(key) {
     // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
     data = parseCSV(data);
     // we need to set headers explicitly because they are not defined in the reports.json file
+    headers = orderHeaders(headers);
     report.headers = headers;
     report.data = data;
     report.lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);;
@@ -212,14 +215,25 @@ async function loadAndReturnReport(key) {
   return report;
 }
 
+function orderHeaders(headers) {
+  const orderedHeaders = [];
+  validColumns.sort((a, b) => a.order - b.order).forEach((column) => {
+    if (headers.includes(column.name)) {
+      orderedHeaders.push(column.name);
+    }
+  });
+
+  return orderedHeaders
+}
+
 async function setCurrentReport(report) {
   // async because mData and mColumns need to be set before other things happen
   mData = report.data;
-  const validHeaderNames = validColumns.map((column) => column.Name);
+  const validHeaderNames = validColumns.map((column) => column.name);
   mColumns = report.headers
     .map((headerName) => {
       if (validHeaderNames.includes(headerName)) {
-        return validColumns.find((column) => column.Name === headerName);
+        return validColumns.find((column) => column.name === headerName);
       }
     })
     .filter((column) => column !== undefined);
@@ -231,8 +245,8 @@ function createHeaderRow() {
   mColumns.forEach((column) => {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
-    th.className = `stats-col stats-col-header align-${column.Align}`;
-    const displayName = column.DisplayName ? column.DisplayName : column.Name;
+    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    const displayName = column.displayName ? column.displayName : column.name;
     th.textContent = displayName;
     headerRow.appendChild(th);
   });
@@ -284,14 +298,21 @@ function parseCSV(csvText) {
       return obj;
     }, {});
 
-    const columns = Object.entries(row).map(([key, value]) => {
+    // this is a bit hacky; we should really refactor this to have an overall better data structure that links headers to data; they are currently separate
+    let sortedColumns = Object.entries(row).sort((a, b) => {
+      a = validColumns.find((column) => column.name === a[0]);
+      b = validColumns.find((column) => column.name === b[0]);
+      return a.order - b.order;
+    });
+
+    const columns = sortedColumns.map(([key, value]) => {
       // Convert numbers to actual numbers and format accordingly      
       // it feels like data should be formatted on render (i.e. when the variable mData is set)
       // but we aren't changing the original CSV file so who cares right?
       // TODO: consider transforming on render; if we did do it where mData was set, then we'd be able to hide/show formatted/not formatted options instead of forcing them on the user 
       const numericValue = parseFloat(value.replace(/[,$]/g, ""));
-      const numericColumn = validColumns.find((column) => column.Name === key);
-      const formattedText = numericColumn.Transform ? numericColumn.Transform(numericValue) : value;
+      const numericColumn = validColumns.find((column) => column.name === key);
+      const formattedText = numericColumn.transform ? numericColumn.transform(numericValue) : value;
       
       let fixedClasses = null;
       if (key === "#") {
@@ -380,8 +401,8 @@ var TDSort = (function () {
       for (var i = 0, iLen = theRow.cells.length; i < iLen; i++) {
         if (
           i != mIndexCol &&
-          mColumns[i].Key != "_PlayerImage" &&
-          mColumns[i].Key != "_HitmanImage"
+          mColumns[i].key != "_PlayerImage" &&
+          mColumns[i].key != "_HitmanImage"
         ) {
           theRow.cells[i].onclick = getSortFn(i);
           theRow.cells[i].style.cursor = "pointer";
