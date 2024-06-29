@@ -1,5 +1,5 @@
 html {
-  font-family: Arial;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 12pt;
 }
 
@@ -105,9 +105,10 @@ body {
 
 #report-select {
   display: inline-block;
+  font-family: "Georgia", "Times New Roman", Times, serif;
   margin: 10px;
-  background-color: #292c2a;
-  color:rgb(22, 225, 113);
+  background-color: #2f2d32;
+  color:rgb(255, 255, 255);
   padding-right: 10px;
   padding-left: 5px;
 }
