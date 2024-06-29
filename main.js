@@ -245,7 +245,7 @@ function createHeaderRow() {
   mColumns.forEach((column) => {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
-    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.className = `stats-col stats-col-header align-${column.Align}`;
     const displayName = column.displayName ? column.displayName : column.name;
     th.textContent = displayName;
     headerRow.appendChild(th);
