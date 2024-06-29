@@ -6,22 +6,24 @@ let mData;
 let mColumns;
 
 const validColumns = [
+  // the order of these columns is the order they will appear in the table
   { Key: "_Index", Name: "#", DisplayName: "#"},
   { Key: "Name", Name: "Name", DisplayName: "Name" },
   { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games" },
   { Key: "RebuysCount", Name: "Rebuys" },
-  { Key: "Hits", Name: "Hits", Transform: transformHits },
-  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
-  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
-  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
   { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts" },
+  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", Transform: transformAvgPlaced },
   { Key: "First", Name: "1st" },
   { Key: "Second", Name: "2nd" },
   { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", Transform: transformAvgPlaced },
   { Key: "OnTheBubble", Name: "Bubble" },
+  { Key: "Hits", Name: "Hits", Transform: transformHits },
   { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", Transform: transformAvgHits  },
-];
+  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
+  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
+  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
+]
+.map((col, index) => ({ ...col, order: index }));
 
 async function initializePage() {
   await loadReports();
@@ -201,6 +203,7 @@ async function loadAndReturnReport(key) {
     // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
     data = parseCSV(data);
     // we need to set headers explicitly because they are not defined in the reports.json file
+    headers = orderHeaders(headers);
     report.headers = headers;
     report.data = data;
     report.lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);;
@@ -210,6 +213,17 @@ async function loadAndReturnReport(key) {
   }
 
   return report;
+}
+
+function orderHeaders(headers) {
+  const orderedHeaders = [];
+  validColumns.sort((a, b) => a.order - b.order).forEach((column) => {
+    if (headers.includes(column.Name)) {
+      orderedHeaders.push(column.Name);
+    }
+  });
+
+  return orderedHeaders
 }
 
 async function setCurrentReport(report) {
@@ -284,7 +298,14 @@ function parseCSV(csvText) {
       return obj;
     }, {});
 
-    const columns = Object.entries(row).map(([key, value]) => {
+    // this is a bit hacky; we should really refactor this to have an overall better data structure that links headers to data; they are currently separate
+    let sortedColumns = Object.entries(row).sort((a, b) => {
+      a = validColumns.find((column) => column.Name === a[0]);
+      b = validColumns.find((column) => column.Name === b[0]);
+      return a.order - b.order;
+    });
+
+    const columns = sortedColumns.map(([key, value]) => {
       // Convert numbers to actual numbers and format accordingly      
       // it feels like data should be formatted on render (i.e. when the variable mData is set)
       // but we aren't changing the original CSV file so who cares right?
