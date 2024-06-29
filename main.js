@@ -36,7 +36,7 @@ async function initializePage() {
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows();
-  TDSort?.init("pTable", "pColumns");
+  TDSort?.init("p-table", "p-columns");
   if (sessionStorage.getItem("firstLoad") === null) {
     // load other report data in background (notice we do not await this function)
     cacheAllReportsData();
@@ -226,12 +226,12 @@ async function setCurrentReport(report) {
 }
 
 function createHeaderRow() {
-  const headerRow = document.getElementById("pColumns");
+  const headerRow = document.getElementById("p-columns");
 
   mColumns.forEach((column) => {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
-    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.className = `stats-col stats-col-header align-${column.Align}`;
     const displayName = column.DisplayName ? column.DisplayName : column.Name;
     th.textContent = displayName;
     headerRow.appendChild(th);
@@ -251,7 +251,7 @@ function populateDropdown() {
 }
 
 function createTableRows() {
-  tableBody = document.getElementById("pBody");
+  tableBody = document.getElementById("p-table-body");
 
   for (let i = 0; i < mData.length; i++) {
     const tr = document.createElement("tr");
@@ -260,7 +260,7 @@ function createTableRows() {
     mData[i].Columns.forEach((column) => {
       const td = document.createElement("td");
       td.textContent = column.Text;
-      td.className = `statsColumn align-${column.Align}`;
+      td.className = `stats-col align-${column.Align}`;
       if (column.FixedClasses) {
         td.className += ` ${column.FixedClasses}`;
       }
