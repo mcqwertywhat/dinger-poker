@@ -4,6 +4,9 @@ let requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
 let mData;
 let mColumns;
+const isOnSmallScreen = window.innerWidth <= 600;
+// TODO: this should be configurable with user selection? or force it on everyone but then each column will need an explanation
+const useMobileColumns = true;
 
 const validColumns = [
   // the order of these columns is the order they will appear in the table
@@ -246,7 +249,10 @@ function createHeaderRow() {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
     th.className = `stats-col stats-col-header align-${column.align}`;
-    const displayName = column.displayName ? column.displayName : column.name;
+    let displayName = column.DisplayName ? column.DisplayName : column.Name;
+    if (useMobileColumns && isOnSmallScreen && column.MobileDisplayName) {
+      displayName = column.MobileDisplayName;
+    }
     th.textContent = displayName;
     headerRow.appendChild(th);
   });
