@@ -9,22 +9,24 @@ const isOnSmallScreen = window.innerWidth <= 600;
 const useMobileColumns = true;
 
 const validColumns = [
-  { Key: "_Index", Name: "#", DisplayName: "#"},
-  { Key: "Name", Name: "Name", DisplayName: "Name" },
-  { Key: "Buyins", Name: "Buy-ins", DisplayName: "Games", MobileDisplayName: "GP" },
-  { Key: "RebuysCount", Name: "Rebuys", MobileDisplayName: "Rb" },
-  { Key: "Hits", Name: "Hits", MobileDisplayName: "H", Transform: transformHits },
-  { Key: "TotalWinnings", Name: "Total Winnings", DisplayName: "Won", Transform: transformMoney },
-  { Key: "TotalCost", Name: "Total Cost", DisplayName: "Cost", Transform: transformMoney },
-  { Key: "TotalTake", Name: "Total Take", DisplayName: "Take", Transform: transformMoney },
-  { Key: "TimesPlaced", Name: "Times Placed", DisplayName: "Payouts", MobileDisplayName: "P" },
-  { Key: "First", Name: "1st" },
-  { Key: "Second", Name: "2nd" },
-  { Key: "Third", Name: "3rd" },
-  { Key: "AveragePlaced", Name: "Average Placed", DisplayName: "Payout %", MobileDisplayName: "P%", Transform: transformAvgPlaced },
-  { Key: "OnTheBubble", Name: "Bubble", MobileDisplayName: "Bub" },
-  { Key: "AverageHits", Name: "Average Hits", DisplayName: "Avg Hits", MobileDisplayName: "AH", Transform: transformAvgHits  },
-];
+  // the order of these columns is the order they will appear in the table
+  { key: "_Index", name: "#", displayName: "#", align: "right" },
+  { key: "Name", name: "Name", displayName: "Name", align: "left" },
+  { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center" },
+  { key: "RebuysCount", name: "Rebuys", align: "center" },
+  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center" },
+  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center" },
+  { key: "First", name: "1st", align: "center" },
+  { key: "Second", name: "2nd", align: "center" },
+  { key: "Third", name: "3rd", align: "center" },
+  { key: "OnTheBubble", name: "Bubble", align: "center" },
+  { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
+  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right" },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
+]
+.map((col, index) => ({ ...col, order: index }));
 
 async function initializePage() {
   await loadReports();
@@ -39,7 +41,7 @@ async function initializePage() {
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows();
-  TDSort?.init("pTable", "pColumns");
+  TDSort?.init("p-table", "p-columns");
   if (sessionStorage.getItem("firstLoad") === null) {
     // load other report data in background (notice we do not await this function)
     cacheAllReportsData();
@@ -204,6 +206,7 @@ async function loadAndReturnReport(key) {
     // TODO: parseCSV seems to return only the data, not the headers; it seems like it should return both in an array for what i need
     data = parseCSV(data);
     // we need to set headers explicitly because they are not defined in the reports.json file
+    headers = orderHeaders(headers);
     report.headers = headers;
     report.data = data;
     report.lastUpdatedAt = await getLatestCommitTimeStampFromGitHub(`data/${report.filename}`);;
@@ -215,31 +218,41 @@ async function loadAndReturnReport(key) {
   return report;
 }
 
+function orderHeaders(headers) {
+  const orderedHeaders = [];
+  validColumns.sort((a, b) => a.order - b.order).forEach((column) => {
+    if (headers.includes(column.name)) {
+      orderedHeaders.push(column.name);
+    }
+  });
+
+  return orderedHeaders
+}
+
 async function setCurrentReport(report) {
   // async because mData and mColumns need to be set before other things happen
   mData = report.data;
-  const validHeaderNames = validColumns.map((column) => column.Name);
+  const validHeaderNames = validColumns.map((column) => column.name);
   mColumns = report.headers
     .map((headerName) => {
       if (validHeaderNames.includes(headerName)) {
-        return validColumns.find((column) => column.Name === headerName);
+        return validColumns.find((column) => column.name === headerName);
       }
     })
     .filter((column) => column !== undefined);
 }
 
 function createHeaderRow() {
-  const headerRow = document.getElementById("pColumns");
+  const headerRow = document.getElementById("p-columns");
 
   mColumns.forEach((column) => {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
-    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.className = `stats-col stats-col-header align-${column.align}`;
     let displayName = column.DisplayName ? column.DisplayName : column.Name;
     if (useMobileColumns && isOnSmallScreen && column.MobileDisplayName) {
       displayName = column.MobileDisplayName;
     }
-
     th.textContent = displayName;
     headerRow.appendChild(th);
   });
@@ -258,16 +271,16 @@ function populateDropdown() {
 }
 
 function createTableRows() {
-  tableBody = document.getElementById("pBody");
+  tableBody = document.getElementById("p-table-body");
 
   for (let i = 0; i < mData.length; i++) {
     const tr = document.createElement("tr");
     tr.className = i % 2 === 0 ? "even" : "odd";
 
-    mData[i].Columns.forEach((column) => {
+    mData[i].columns.forEach((column) => {
       const td = document.createElement("td");
-      td.textContent = column.Text;
-      td.className = `statsColumn align-${column.Align}`;
+      td.textContent = column.text;
+      td.className = `stats-col align-${column.align}`;
       if (column.FixedClasses) {
         td.className += ` ${column.FixedClasses}`;
       }
@@ -291,14 +304,21 @@ function parseCSV(csvText) {
       return obj;
     }, {});
 
-    const columns = Object.entries(row).map(([key, value]) => {
+    // this is a bit hacky; we should really refactor this to have an overall better data structure that links headers to data; they are currently separate
+    let sortedColumns = Object.entries(row).sort((a, b) => {
+      a = validColumns.find((column) => column.name === a[0]);
+      b = validColumns.find((column) => column.name === b[0]);
+      return a.order - b.order;
+    });
+
+    const columns = sortedColumns.map(([key, value]) => {
       // Convert numbers to actual numbers and format accordingly      
       // it feels like data should be formatted on render (i.e. when the variable mData is set)
       // but we aren't changing the original CSV file so who cares right?
       // TODO: consider transforming on render; if we did do it where mData was set, then we'd be able to hide/show formatted/not formatted options instead of forcing them on the user 
       const numericValue = parseFloat(value.replace(/[,$]/g, ""));
-      const numericColumn = validColumns.find((column) => column.Name === key);
-      const formattedText = numericColumn.Transform ? numericColumn.Transform(numericValue) : value;
+      const column = validColumns.find((col) => col.name === key);
+      const formattedText = column.transform ? column.transform(numericValue) : value;
       
       let fixedClasses = null;
       if (key === "#") {
@@ -307,17 +327,17 @@ function parseCSV(csvText) {
         fixedClasses = 'fixed-column fixed-column-1';
       }
       return {
-        Text: formattedText,
-        HTML: formattedText,
-        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
-        Align: !isNaN(numericValue) ? "right" : "left",
+        text: formattedText,
+        html: formattedText,
+        sortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
+        align: column.align,
         FixedClasses: fixedClasses
       };
     });
 
     return {
-      Index: index,
-      Columns: columns,
+      index: index,
+      columns: columns,
     };
   });
 
@@ -387,8 +407,8 @@ var TDSort = (function () {
       for (var i = 0, iLen = theRow.cells.length; i < iLen; i++) {
         if (
           i != mIndexCol &&
-          mColumns[i].Key != "_PlayerImage" &&
-          mColumns[i].Key != "_HitmanImage"
+          mColumns[i].key != "_PlayerImage" &&
+          mColumns[i].key != "_HitmanImage"
         ) {
           theRow.cells[i].onclick = getSortFn(i);
           theRow.cells[i].style.cursor = "pointer";
@@ -406,12 +426,12 @@ var TDSort = (function () {
 
   // sort fn
   function sortRow(a, b) {
-    var aVal = a.Columns[sortIndex].SortValue;
-    var bVal = b.Columns[sortIndex].SortValue;
+    var aVal = a.columns[sortIndex].sortValue;
+    var bVal = b.columns[sortIndex].sortValue;
 
     if (aVal === null || bVal === null) {
       // for equal values, fall back on the row index
-      if (aVal === bVal) return a.Index - b.Index;
+      if (aVal === bVal) return a.index - b.index;
 
       return aVal === null ? -1 : 1;
     }
@@ -420,7 +440,7 @@ var TDSort = (function () {
     else if (aVal > bVal) return 1;
 
     // for equal values, fall back on the row index
-    return a.Index - b.Index;
+    return a.index - b.index;
   }
 
   function sortByColumn(inIndex) {
