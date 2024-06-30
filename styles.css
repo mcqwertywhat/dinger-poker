@@ -55,7 +55,8 @@ body {
   font-weight: bold;
   position: sticky;
   top: 64px; /* this value is adjusted to position it just under .table-header for desktop */
-  background-color: #fff;
+  background-color: #2f2d32;
+  color: #fff;
 }
 
 .stats-col {
