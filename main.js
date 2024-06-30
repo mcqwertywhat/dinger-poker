@@ -7,21 +7,21 @@ let mColumns;
 
 const validColumns = [
   // the order of these columns is the order they will appear in the table
-  { key: "_Index", name: "#", displayName: "#"},
-  { key: "Name", name: "Name", displayName: "Name" },
-  { key: "Buyins", name: "Buy-ins", displayName: "Games" },
-  { key: "RebuysCount", name: "Rebuys" },
-  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts" },
-  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced },
-  { key: "First", name: "1st" },
-  { key: "Second", name: "2nd" },
-  { key: "Third", name: "3rd" },
-  { key: "OnTheBubble", name: "Bubble" },
-  { key: "Hits", name: "Hits", transform: transformHits },
-  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney },
+  { key: "_Index", name: "#", displayName: "#", align: "right" },
+  { key: "Name", name: "Name", displayName: "Name", align: "left" },
+  { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center" },
+  { key: "RebuysCount", name: "Rebuys", align: "center" },
+  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center" },
+  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center" },
+  { key: "First", name: "1st", align: "center" },
+  { key: "Second", name: "2nd", align: "center" },
+  { key: "Third", name: "3rd", align: "center" },
+  { key: "OnTheBubble", name: "Bubble", align: "center" },
+  { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
+  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right" },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
 ]
 .map((col, index) => ({ ...col, order: index }));
 
@@ -38,7 +38,7 @@ async function initializePage() {
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows();
-  TDSort?.init("pTable", "pColumns");
+  TDSort?.init("p-table", "p-columns");
   if (sessionStorage.getItem("firstLoad") === null) {
     // load other report data in background (notice we do not await this function)
     cacheAllReportsData();
@@ -240,12 +240,12 @@ async function setCurrentReport(report) {
 }
 
 function createHeaderRow() {
-  const headerRow = document.getElementById("pColumns");
+  const headerRow = document.getElementById("p-columns");
 
   mColumns.forEach((column) => {
     // TODO: this is a th, but originally was a td... check CSS to see if anything messes up because of it
     const th = document.createElement("th");
-    th.className = `statsColumn statsColumnHeader align-${column.Align}`;
+    th.className = `stats-col stats-col-header align-${column.align}`;
     const displayName = column.displayName ? column.displayName : column.name;
     th.textContent = displayName;
     headerRow.appendChild(th);
@@ -265,16 +265,16 @@ function populateDropdown() {
 }
 
 function createTableRows() {
-  tableBody = document.getElementById("pBody");
+  tableBody = document.getElementById("p-table-body");
 
   for (let i = 0; i < mData.length; i++) {
     const tr = document.createElement("tr");
     tr.className = i % 2 === 0 ? "even" : "odd";
 
-    mData[i].Columns.forEach((column) => {
+    mData[i].columns.forEach((column) => {
       const td = document.createElement("td");
-      td.textContent = column.Text;
-      td.className = `statsColumn align-${column.Align}`;
+      td.textContent = column.text;
+      td.className = `stats-col align-${column.align}`;
       if (column.FixedClasses) {
         td.className += ` ${column.FixedClasses}`;
       }
@@ -311,8 +311,8 @@ function parseCSV(csvText) {
       // but we aren't changing the original CSV file so who cares right?
       // TODO: consider transforming on render; if we did do it where mData was set, then we'd be able to hide/show formatted/not formatted options instead of forcing them on the user 
       const numericValue = parseFloat(value.replace(/[,$]/g, ""));
-      const numericColumn = validColumns.find((column) => column.name === key);
-      const formattedText = numericColumn.transform ? numericColumn.transform(numericValue) : value;
+      const column = validColumns.find((col) => col.name === key);
+      const formattedText = column.transform ? column.transform(numericValue) : value;
       
       let fixedClasses = null;
       if (key === "#") {
@@ -321,17 +321,17 @@ function parseCSV(csvText) {
         fixedClasses = 'fixed-column fixed-column-1';
       }
       return {
-        Text: formattedText,
-        HTML: formattedText,
-        SortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
-        Align: !isNaN(numericValue) ? "right" : "left",
+        text: formattedText,
+        html: formattedText,
+        sortValue: isNaN(numericValue) ? value.toLowerCase() : numericValue,
+        align: column.align,
         FixedClasses: fixedClasses
       };
     });
 
     return {
-      Index: index,
-      Columns: columns,
+      index: index,
+      columns: columns,
     };
   });
 
@@ -420,12 +420,12 @@ var TDSort = (function () {
 
   // sort fn
   function sortRow(a, b) {
-    var aVal = a.Columns[sortIndex].SortValue;
-    var bVal = b.Columns[sortIndex].SortValue;
+    var aVal = a.columns[sortIndex].sortValue;
+    var bVal = b.columns[sortIndex].sortValue;
 
     if (aVal === null || bVal === null) {
       // for equal values, fall back on the row index
-      if (aVal === bVal) return a.Index - b.Index;
+      if (aVal === bVal) return a.index - b.index;
 
       return aVal === null ? -1 : 1;
     }
@@ -434,7 +434,7 @@ var TDSort = (function () {
     else if (aVal > bVal) return 1;
 
     // for equal values, fall back on the row index
-    return a.Index - b.Index;
+    return a.index - b.index;
   }
 
   function sortByColumn(inIndex) {

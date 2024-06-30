@@ -1,11 +1,34 @@
 html {
-  font-family: Arial;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 12pt;
 }
 
-a {
-  color: rgb(22, 225, 113);
-  text-decoration: none;
+body {
+  background-color: #5f7a96;
+}
+
+.table-container {
+  border: 2px solid #000;
+  border-radius: 6px;
+  font-size: 1.0rem;
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  display: inline-block;
+}
+
+.table-header {
+  padding: 8px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  position: sticky;
+  top: 0;
+}
+
+.heading-selectlist-info-container {
+  font-size: 1.6rem;
+  font-weight: bold;
 }
 
 .align-left {
@@ -20,43 +43,7 @@ a {
   text-align: right;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-body {
-  background-color: #5f7a96;
-}
-
-.infoTable {
-  border: 2px solid #000;
-  border-radius: 6px;
-  font-size: 1.0rem;
-  background-color: #fff;
-  color: #000;
-  text-align: center;
-  display: inline-block;
-}
-
-.tableHeader {
-  padding: 8px;
-  background-color: #000;
-  color: #fff;
-  text-align: center;
-  position: sticky;
-  top: 0;
-}
-
-.eventname {
-  font-size: 1.6rem;
-  font-weight: bold;
-}
-
-.description {
-  font-weight: bold;
-}
-
-.statsTable {
+.stats-table {
   padding: 0px; /* do not make padding more than 0 or sticky header names */
   background-color: #fff;
   color: #000;
@@ -64,14 +51,15 @@ body {
   border: 0px;
 }
 
-.statsColumnHeader {
+.stats-col-header {
   font-weight: bold;
   position: sticky;
-  top: 64px; /* this value is adjusted to position it just under .tableHeader for desktop */
-  background-color: #fff;
+  top: 64px; /* this value is adjusted to position it just under .table-header for desktop */
+  background-color: #2f2d32;
+  color: #fff;
 }
 
-.statsColumn {
+.stats-col {
   padding: 1rem;
   white-space: nowrap;
 }
@@ -105,9 +93,10 @@ body {
 
 #report-select {
   display: inline-block;
+  font-family: "Georgia", "Times New Roman", Times, serif;
   margin: 10px;
-  background-color: #292c2a;
-  color:rgb(22, 225, 113);
+  background-color: #2f2d32;
+  color:rgb(255, 255, 255);
   padding-right: 10px;
   padding-left: 5px;
 }
@@ -123,7 +112,7 @@ body {
   }
   
   /* controls all table text  */
-  .infoTable {
+  .table-container {
     max-width: 100%;
     overflow-x: scroll;
     font-size: .75rem;
@@ -136,15 +125,15 @@ body {
     border-radius: 0;
   }
 
-  .statsColumn {
+  .stats-col {
     padding: .5rem;
   }
 
-  .statsTable {
+  .stats-table {
     position: sticky;
   }
 
-  .tableHeader {
+  .table-header {
     left: 0;
     min-height: 61px;
     position: sticky;
@@ -153,7 +142,7 @@ body {
   }
 
   /* controls size of page heading and select control; set to .9rem to deal with iPhone SE screen */
-  .eventname {
+  .heading-selectlist-info-container {
     font-size: 0.9rem;
   }
 
@@ -187,11 +176,11 @@ body {
     left: 28px;
   }
 
-  .statsColumnHeader {
-    top: 0; /* this value is adjusted to position it just under .tableHeader for mobile */
+  .stats-col-header {
+    top: 0; /* this value is adjusted to position it just under .table-header for mobile */
   }
   
-  #pColumns .fixed-column {
+  #p-columns .fixed-column {
     z-index: 2; /* Ensure headers are above the rest of the cells */
   }
 
@@ -215,13 +204,13 @@ body {
     border-right: 1px solid #e3e3e3;
   }
 
-  #pColumns > :nth-child(1) {
+  #p-columns > :nth-child(1) {
     position: sticky;
     left: 0;
     z-index: 2;
   }
 
-  #pColumns > :nth-child(2) {
+  #p-columns > :nth-child(2) {
     position: sticky;
     /* prevents the "Name" column from overlapping the "#" column */
     left: 28px;
