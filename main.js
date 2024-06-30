@@ -7,21 +7,21 @@ let mColumns;
 
 const validColumns = [
   // the order of these columns is the order they will appear in the table
-  { key: "_Index", name: "#", displayName: "#"},
-  { key: "Name", name: "Name", displayName: "Name" },
-  { key: "Buyins", name: "Buy-ins", displayName: "Games" },
-  { key: "RebuysCount", name: "Rebuys" },
-  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts" },
-  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced },
-  { key: "First", name: "1st" },
-  { key: "Second", name: "2nd" },
-  { key: "Third", name: "3rd" },
-  { key: "OnTheBubble", name: "Bubble" },
-  { key: "Hits", name: "Hits", transform: transformHits },
-  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney },
+  { key: "_Index", name: "#", displayName: "#", Align: "right" },
+  { key: "Name", name: "Name", displayName: "Name", Align: "left" },
+  { key: "Buyins", name: "Buy-ins", displayName: "Games", Align: "right" },
+  { key: "RebuysCount", name: "Rebuys", Align: "right" },
+  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", Align: "right" },
+  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, Align: "right" },
+  { key: "First", name: "1st", Align: "right" },
+  { key: "Second", name: "2nd", Align: "right" },
+  { key: "Third", name: "3rd", Align: "right" },
+  { key: "OnTheBubble", name: "Bubble", Align: "right" },
+  { key: "Hits", name: "Hits", transform: transformHits, Align: "right" },
+  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, Align: "right"  },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, Align: "right" },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, Align: "right" },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, Align: "right" },
 ]
 .map((col, index) => ({ ...col, order: index }));
 
