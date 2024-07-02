@@ -82,3 +82,13 @@ Just remove its entry in `reports.json` and remove its CSV file.
 ## Stale Data
 
 Let's say you just uploaded a new report. It's possible, if you have your browser open to the site while you upload the report, that you will not see the uploaded data. If this happens, just close the tab with the site and open a new one. 
+
+# Dev Notes
+
+## Background 
+
+The code in this site was initially exported from Tournament Director. it was a single HTML file with styles and script tags. The CSS and JS was separated but some original code remai s (all the sorting functionality). The main code that was added was to allow a CSV upload that would display the data. This app is, essentially a CSV display tool where we expect certain header names in the CSV file. Of course, this isn't the optimal solution (ideally we'd host a database and query it directly), but this solution is free and fills a basic requirement of displaying reports online.
+
+## Caching 
+
+Because we're reading CSV files and displaying that data, we have a caching system in place where we store all data from the CSV files in local storage, and only read  directly from the files themselves if the data isn't found in local storage. We also store a value in local storage that holds the last visited time of the user. We also have a value in session storage that checks the time of the latest commit to the 'data' folder in this github repo. If the value of the users last visit is earlier than the latest commit to the data folder, we fetch all new data from the CSV files.
