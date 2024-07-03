@@ -464,6 +464,7 @@ var TDSort = (function () {
       currentColElement.classList.add("sort-col-arrow", "sort-col-desc");
     } else {
       currentColElement.classList.add("sort-col-arrow", "sort-col-asc");
+    }
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
 
