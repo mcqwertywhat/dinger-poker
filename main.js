@@ -444,14 +444,15 @@ var TDSort = (function () {
       const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
       lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc");
     }
-
+    
     if (mData.length == 0) {
       return;
     }
     
     if (inIndex == sortIndex) {
       sortedHighToLow = !sortedHighToLow;
-    } else if (inIndex === 1) {
+      // TODO: we need a column to know if it should be sorted high to low or low to high the first time it is clicked; a defaultSort
+    } else if (inIndex === 1 || inIndex === 13) {
       sortedHighToLow = false;
     } else {
       // sorting the same column, again, so reverse the current sort
