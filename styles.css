@@ -69,6 +69,7 @@ body {
   right: -1px;
   top: 50%;
   transform: translateY(-50%);
+  color: lightskyblue;
 }
 
 .sort-col-desc::after {
@@ -232,4 +233,9 @@ body {
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
+
+  .stats-col::after {
+    font-size: .55rem;
+  }
+
 }

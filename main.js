@@ -438,7 +438,7 @@ var TDSort = (function () {
   }
 
   function sortByColumn(inIndex) {
-    const currentSortCol = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
+    const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
     
     if (sortIndex >= 0) {
       const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
@@ -457,15 +457,12 @@ var TDSort = (function () {
       // sorting the same column, again, so reverse the current sort
       sortedHighToLow = true; // if sorting on a new column, always reset to reverse sort because most people want to see the highest stat at the top
     }
+    sortIndex = inIndex;
     
     if (sortedHighToLow) {
-      currentSortCol.classList.add("sort-col-arrow", "sort-col-desc");
+      currentColElement.classList.add("sort-col-arrow", "sort-col-desc");
     } else {
-      currentSortCol.classList.add("sort-col-arrow", "sort-col-asc");
-    }
-
-    sortIndex = inIndex;
-
+      currentColElement.classList.add("sort-col-arrow", "sort-col-asc");
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
 
