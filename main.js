@@ -377,8 +377,8 @@ async function fetchCSV(url) {
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
-  // was the last sort a reverse sort?
-  var reverseSort = false;
+  // was the last sort a reverse sort (i.e. sorted high to low)?
+  var sortedHighToLow = true;
   // not going to try too hard for browser compatibility - just check for IE or non-IE
   var mTextKey = document.all ? "innerText" : "textContent";
   var mTableID = "";
@@ -438,11 +438,31 @@ var TDSort = (function () {
   }
 
   function sortByColumn(inIndex) {
-    if (mData.length == 0) return;
+    const currentSortCol = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
+    
+    if (sortIndex >= 0) {
+      const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc");
+    }
 
-    if (inIndex == sortIndex) reverseSort = !reverseSort;
-    // sorting the same column, again, so reverse the current sort
-    else reverseSort = false; // if sorting on a new column, always reset to forward sort
+    if (mData.length == 0) {
+      return;
+    }
+    
+    if (inIndex == sortIndex) {
+      sortedHighToLow = !sortedHighToLow;
+    } else if (inIndex === 1) {
+      sortedHighToLow = false;
+    } else {
+      // sorting the same column, again, so reverse the current sort
+      sortedHighToLow = true; // if sorting on a new column, always reset to reverse sort because most people want to see the highest stat at the top
+    }
+    
+    if (sortedHighToLow) {
+      currentSortCol.classList.add("sort-col-arrow", "sort-col-desc");
+    } else {
+      currentSortCol.classList.add("sort-col-arrow", "sort-col-asc");
+    }
 
     sortIndex = inIndex;
 
@@ -456,7 +476,9 @@ var TDSort = (function () {
     // sort the rows
     mData.sort(sortRow);
 
-    if (reverseSort) mData.reverse();
+    if (sortedHighToLow) {
+      mData.reverse();
+    }
 
     // put the rows back in the new sorted order
     // there may or may not be an empty row followed by a sum and average rows, so for an easy solution insert the
