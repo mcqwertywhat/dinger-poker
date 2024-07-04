@@ -80,6 +80,14 @@ body {
   content: " \25B2";
 }
 
+.best-at-top::after {
+  color: greenyellow;
+}
+
+.best-at-bottom::after {
+  color: red;
+}
+
 .odd {
 }
 

@@ -7,21 +7,21 @@ let mColumns;
 
 const validColumns = [
   // the order of these columns is the order they will appear in the table
-  { key: "_Index", name: "#", displayName: "#", align: "right" },
-  { key: "Name", name: "Name", displayName: "Name", align: "left" },
-  { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center" },
-  { key: "RebuysCount", name: "Rebuys", align: "center" },
-  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center" },
-  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center" },
-  { key: "First", name: "1st", align: "center" },
-  { key: "Second", name: "2nd", align: "center" },
-  { key: "Third", name: "3rd", align: "center" },
-  { key: "OnTheBubble", name: "Bubble", align: "center" },
-  { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
-  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right" },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
+  { key: "_Index", name: "#", displayName: "#", align: "right", defaultSort: null, rankable: false },
+  { key: "Name", name: "Name", displayName: "Name", align: "left", defaultSort: "asc", rankable: false },
+  { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center", defaultSort: null, rankable: false },
+  { key: "RebuysCount", name: "Rebuys", align: "center", defaultSort: "asc", rankable: true },
+  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center", defaultSort: "desc", rankable: true },
+  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center", defaultSort: "desc", rankable: true },
+  { key: "First", name: "1st", align: "center", defaultSort: "desc", rankable: true },
+  { key: "Second", name: "2nd", align: "center", defaultSort: "desc", rankable: true },
+  { key: "Third", name: "3rd", align: "center", defaultSort: "desc", rankable: true },
+  { key: "OnTheBubble", name: "Bubble", align: "center", defaultSort: "desc", rankable: true },
+  { key: "Hits", name: "Hits", transform: transformHits, align: "center", defaultSort: "desc", rankable: true },
+  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center", defaultSort: "desc", rankable: true },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right", defaultSort: "asc", rankable: true },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true },
 ]
 .map((col, index) => ({ ...col, order: index }));
 
@@ -438,16 +438,18 @@ var TDSort = (function () {
   }
 
   function sortByColumn(inIndex) {
-    const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
-    
-    if (sortIndex >= 0) {
-      const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
-      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc");
-    }
-    
     if (mData.length == 0) {
       return;
     }
+
+    
+    // sortIndex is -1 if we haven't sorted yet; only changes after the first sort
+    if (sortIndex >= 0) {
+      const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "best-at-top", "best-at-bottom");
+    }
+    
+    const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
     
     if (inIndex == sortIndex) {
       sortedHighToLow = !sortedHighToLow;
@@ -459,12 +461,20 @@ var TDSort = (function () {
       sortedHighToLow = true; // if sorting on a new column, always reset to reverse sort because most people want to see the highest stat at the top
     }
     sortIndex = inIndex;
-    
-    if (sortedHighToLow) {
-      currentColElement.classList.add("sort-col-arrow", "sort-col-desc");
-    } else {
-      currentColElement.classList.add("sort-col-arrow", "sort-col-asc");
+    const currentColumn = mColumns[inIndex];
+    const classesToAdd = ["sort-col-arrow"];
+
+    if (currentColumn.rankable) {
+      const sortClass = currentColumn?.defaultSort === "desc" 
+        ? (sortedHighToLow ? "best-at-top" : "best-at-bottom") 
+        : (sortedHighToLow ? "best-at-bottom" : "best-at-top");
+      classesToAdd.push(sortClass);
     }
+    
+    classesToAdd.push(sortedHighToLow ? "sort-col-desc" : "sort-col-asc");
+    
+    currentColElement.classList.add(...classesToAdd);    
+    
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
 
