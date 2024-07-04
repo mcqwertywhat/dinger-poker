@@ -19,7 +19,7 @@ const validColumns = [
   { key: "OnTheBubble", name: "Bubble", align: "center" },
   { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
   { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right" },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", sortOnPageLoad: true },
   { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
   { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
 ]
@@ -416,6 +416,9 @@ var TDSort = (function () {
     for (var i = 0, iLen = mData.length; i < iLen; i++) {
       mData[i].Row = theRows[i + 1];
     }
+
+    const defaultColumnIndex = validColumns.findIndex((column) => column.sortOnPageLoad);
+    sortByColumn(defaultColumnIndex);
   }
 
   // sort fn
