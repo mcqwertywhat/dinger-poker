@@ -503,11 +503,23 @@ var TDSort = (function () {
     theParent.removeChild(theHeader);
     theParent.insertBefore(theHeader, mData[0].Row);
 
+    const ranks = [];
+    
+    // TODO: Fix this hackery... we're reversing three times in the span of 30 lines. Must be a better way.
+    
+    if (!sortedHighToLow) {
+      mData.reverse();
+    }
+
+    if (sortIndex === 1) {
+      mData.reverse();
+    }
+    
     // update the index column
     if (mIndexCol >= 0) {
       let currentDataValue = undefined;
       let lastDataValue = undefined;
-      let rank = 1;
+      let currentRank = 1;
       for (var i = 0, iLen = mData.length; i < iLen; i++) {
         
         // this will allow us to identify ties
@@ -522,17 +534,20 @@ var TDSort = (function () {
 
         if (lastDataValue === undefined) {
           lastDataValue = currentDataValue;
-          console.log(lastDataValue)
         }
 
         if (lastDataValue != currentDataValue) {
-          rank = rank + 1;
+          currentRank = currentRank + 1;
         }
         
         lastDataValue = currentDataValue;
-
-        mData[i].Row.cells[mIndexCol][mTextKey] = rank;
+        ranks.push(currentRank);
+        mData[i].Row.cells[mIndexCol][mTextKey] = currentRank;
       }
+    }
+
+    for (var i = 0, iLen = mData.length; i < iLen; i++) {
+      mData[i].Row.cells[mIndexCol][mTextKey] = ranks[i];
     }
   }
 
