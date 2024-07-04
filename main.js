@@ -1,5 +1,4 @@
 // only allowed param is 'id'; expect it to match a reports key
-// TODO: should requestedReportID be set as global variable in some other way?
 let requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
 let mData;
@@ -7,23 +6,128 @@ let mColumns;
 
 const validColumns = [
   // the order of these columns is the order they will appear in the table
-  { key: "_Index", name: "#", displayName: "#", align: "right", defaultSort: null, rankable: false },
-  { key: "Name", name: "Name", displayName: "Name", align: "left", defaultSort: "asc", rankable: false },
-  { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center", defaultSort: null, rankable: false },
-  { key: "RebuysCount", name: "Rebuys", align: "center", defaultSort: "asc", rankable: true },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true, sortOnPageLoad: true },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right", defaultSort: "asc", rankable: true },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true },
-  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center", defaultSort: "desc", rankable: true },
-  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center", defaultSort: "desc", rankable: true },
-  { key: "First", name: "1st", align: "center", defaultSort: "desc", rankable: true },
-  { key: "Second", name: "2nd", align: "center", defaultSort: "desc", rankable: true },
-  { key: "Third", name: "3rd", align: "center", defaultSort: "desc", rankable: true },
-  { key: "OnTheBubble", name: "Bubble", align: "center", defaultSort: "desc", rankable: true },
-  { key: "Hits", name: "Hits", transform: transformHits, align: "center", defaultSort: "desc", rankable: true },
-  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center", defaultSort: "desc", rankable: true },
-]
-.map((col, index) => ({ ...col, order: index }));
+  {
+    key: "_Index",
+    name: "#",
+    displayName: "#",
+    align: "right",
+    defaultSort: null,
+    rankable: false,
+  },
+  {
+    key: "Name",
+    name: "Name",
+    displayName: "Name",
+    align: "left",
+    defaultSort: "asc",
+    rankable: false,
+  },
+  {
+    key: "Buyins",
+    name: "Buy-ins",
+    displayName: "Games",
+    align: "center",
+    defaultSort: null,
+    rankable: false,
+  },
+  {
+    key: "RebuysCount",
+    name: "Rebuys",
+    align: "center",
+    defaultSort: "asc",
+    rankable: true,
+  },
+  {
+    key: "TotalWinnings",
+    name: "Total Winnings",
+    displayName: "Won",
+    transform: transformMoney,
+    align: "right",
+    defaultSort: "desc",
+    rankable: true,
+    sortOnPageLoad: true,
+  },
+  {
+    key: "TotalCost",
+    name: "Total Cost",
+    displayName: "Cost",
+    transform: transformMoney,
+    align: "right",
+    defaultSort: "asc",
+    rankable: true,
+  },
+  {
+    key: "TotalTake",
+    name: "Total Take",
+    displayName: "Take",
+    transform: transformMoney,
+    align: "right",
+    defaultSort: "desc",
+    rankable: true,
+  },
+  {
+    key: "TimesPlaced",
+    name: "Times Placed",
+    displayName: "Payouts",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+  },
+  {
+    key: "AveragePlaced",
+    name: "Average Placed",
+    displayName: "Payout %",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+    transform: transformAvgPlaced,
+  },
+  {
+    key: "First",
+    name: "1st",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+  },
+  {
+    key: "Second",
+    name: "2nd",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+  },
+  {
+    key: "Third",
+    name: "3rd",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+  },
+  {
+    key: "OnTheBubble",
+    name: "Bubble",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+  },
+  {
+    key: "Hits",
+    name: "Hits",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+    transform: transformHits,
+  },
+  {
+    key: "AverageHits",
+    name: "Average Hits",
+    displayName: "Avg Hits",
+    align: "center",
+    defaultSort: "desc",
+    rankable: true,
+    transform: transformAvgHits,
+  },
+].map((col, index) => ({ ...col, order: index }));
 
 async function initializePage() {
   await loadReports();
