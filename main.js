@@ -11,6 +11,9 @@ const validColumns = [
   { key: "Name", name: "Name", displayName: "Name", align: "left" },
   { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center" },
   { key: "RebuysCount", name: "Rebuys", align: "center" },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", sortOnPageLoad: true },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
   { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center" },
   { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center" },
   { key: "First", name: "1st", align: "center" },
@@ -19,9 +22,6 @@ const validColumns = [
   { key: "OnTheBubble", name: "Bubble", align: "center" },
   { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
   { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right" },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
 ]
 .map((col, index) => ({ ...col, order: index }));
 
@@ -377,8 +377,8 @@ async function fetchCSV(url) {
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
-  // was the last sort a reverse sort?
-  var reverseSort = false;
+  // was the last sort a reverse sort (i.e. sorted high to low)?
+  var sortedHighToLow = true;
   // not going to try too hard for browser compatibility - just check for IE or non-IE
   var mTextKey = document.all ? "innerText" : "textContent";
   var mTableID = "";
@@ -416,6 +416,9 @@ var TDSort = (function () {
     for (var i = 0, iLen = mData.length; i < iLen; i++) {
       mData[i].Row = theRows[i + 1];
     }
+
+    const defaultColumnIndex = validColumns.findIndex((column) => column.sortOnPageLoad);
+    sortByColumn(defaultColumnIndex);
   }
 
   // sort fn
@@ -438,14 +441,40 @@ var TDSort = (function () {
   }
 
   function sortByColumn(inIndex) {
-    if (mData.length == 0) return;
-
-    if (inIndex == sortIndex) reverseSort = !reverseSort;
-    // sorting the same column, again, so reverse the current sort
-    else reverseSort = false; // if sorting on a new column, always reset to forward sort
-
+    const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
+    
+    if (sortIndex >= 0) {
+      const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow");
+    }
+    
+    if (mData.length == 0) {
+      return;
+    }
+    
+    if (inIndex == sortIndex) {
+      sortedHighToLow = !sortedHighToLow;
+      // TODO: we need a column to know if it should be sorted high to low or low to high the first time it is clicked; a defaultSort
+      // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
+    } else if (inIndex === 1) {
+      sortedHighToLow = false;
+    } else {
+      // sorting the same column, again, so reverse the current sort
+      sortedHighToLow = true; // if sorting on a new column, always reset to reverse sort because most people want to see the highest stat at the top
+    }
     sortIndex = inIndex;
+    
+    if (sortIndex == 1) {
+      currentColElement.classList.add("sort-name-col-arrow")
+    } else {
+      currentColElement.classList.add("sort-col-arrow");
+    }
 
+    if (sortedHighToLow) {
+      currentColElement.classList.add("sort-col-desc");
+    } else {
+      currentColElement.classList.add("sort-col-asc");
+    }
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
 
@@ -456,7 +485,9 @@ var TDSort = (function () {
     // sort the rows
     mData.sort(sortRow);
 
-    if (reverseSort) mData.reverse();
+    if (sortedHighToLow) {
+      mData.reverse();
+    }
 
     // put the rows back in the new sorted order
     // there may or may not be an empty row followed by a sum and average rows, so for an easy solution insert the

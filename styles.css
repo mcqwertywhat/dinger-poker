@@ -1,6 +1,6 @@
 html {
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 12pt;
+  font-size: 14pt;
 }
 
 body {
@@ -64,6 +64,26 @@ body {
   white-space: nowrap;
 }
 
+.sort-col-arrow::after, .sort-name-col-arrow::after {
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #89c2ff;
+}
+
+.sort-name-col-arrow::after {
+  right: 18px;
+}
+
+.sort-col-desc::after {
+  content: " \25BC";
+}
+
+.sort-col-asc::after {
+  content: " \25B2";
+}
+
 .odd {
 }
 
@@ -115,7 +135,7 @@ body {
   .table-container {
     max-width: 100%;
     overflow-x: scroll;
-    font-size: .75rem;
+    font-size: .8rem;
     position: fixed;
     left: 0;
     /* whatever offset we use for top, table needs to be 100% - that% for height */
@@ -135,7 +155,7 @@ body {
 
   .table-header {
     left: 0;
-    min-height: 61px;
+    min-height: 76px;
     position: sticky;
     top: 0;
     width: 100%;
@@ -143,7 +163,7 @@ body {
 
   /* controls size of page heading and select control; set to .9rem to deal with iPhone SE screen */
   .heading-selectlist-info-container {
-    font-size: 0.9rem;
+    font-size: .95rem;
   }
 
   #info-icon {
@@ -152,7 +172,7 @@ body {
 
   #info-text {
     right: 10px;
-    top: 44px;
+    top: 52px;
     margin-left: 3px;
     border-radius: 3px;
     padding: 5px 10px;
@@ -173,7 +193,7 @@ body {
   
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 28px;
+    left: 32px;
   }
 
   .stats-col-header {
@@ -213,8 +233,18 @@ body {
   #p-columns > :nth-child(2) {
     position: sticky;
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 28px;
+    left: 32px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
+
+  .stats-col::after {
+    font-size: .6rem;
+    right: -2px;
+  }
+
+  .sort-name-col-arrow::after {
+    right: 12px;
+  }
+
 }
