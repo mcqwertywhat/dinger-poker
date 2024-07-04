@@ -442,7 +442,7 @@ var TDSort = (function () {
     
     if (sortIndex >= 0) {
       const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
-      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc");
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow");
     }
     
     if (mData.length == 0) {
@@ -461,10 +461,16 @@ var TDSort = (function () {
     }
     sortIndex = inIndex;
     
-    if (sortedHighToLow) {
-      currentColElement.classList.add("sort-col-arrow", "sort-col-desc");
+    if (sortIndex == 1) {
+      currentColElement.classList.add("sort-name-col-arrow")
     } else {
-      currentColElement.classList.add("sort-col-arrow", "sort-col-asc");
+      currentColElement.classList.add("sort-col-arrow");
+    }
+
+    if (sortedHighToLow) {
+      currentColElement.classList.add("sort-col-desc");
+    } else {
+      currentColElement.classList.add("sort-col-asc");
     }
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
