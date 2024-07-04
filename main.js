@@ -570,8 +570,11 @@ var TDSort = (function () {
     }
     sortIndex = inIndex;
     const currentColumn = mColumns[inIndex];
-    const classesToAdd = (sortIndex == 1) ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
+    // the name column is always leftmost and needs its sort arrow repositioned
+    const classesToAdd = (currentColumn.key == "Name") ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
 
+    // we only use arrows that imply "best" and "worst" if the column is rankable (e.g. "Name" is not rankable, but "Total Winnings" is rankable)
+    // otherwise, we use a neutral colour for the arrow
     if (currentColumn.rankable) {
       const sortClass = currentColumn?.defaultSort === "desc" 
         ? (sortedHighToLow ? "best-at-top" : "best-at-bottom") 
@@ -581,7 +584,7 @@ var TDSort = (function () {
     
     classesToAdd.push(sortedHighToLow ? "sort-col-desc" : "sort-col-asc");
     
-    currentColElement.classList.add(...classesToAdd);    
+    currentColElement.classList.add(...classesToAdd);
     
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
