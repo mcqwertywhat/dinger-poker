@@ -72,6 +72,10 @@ body {
   color: #89c2ff;
 }
 
+.sort-name-col-arrow::after {
+  right: 18px;
+}
+
 .sort-col-desc::after {
   content: " \25BC";
 }
@@ -241,7 +245,11 @@ body {
   }
 
   .sort-name-col-arrow::after {
-    right: 12px;
+    right: 24px;
+  }
+
+  .sort-col-arrow::after, .sort-name-col-arrow::after {
+    top: 55%;
   }
 
 }
