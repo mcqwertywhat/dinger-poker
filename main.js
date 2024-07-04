@@ -505,8 +505,34 @@ var TDSort = (function () {
 
     // update the index column
     if (mIndexCol >= 0) {
-      for (var i = 0, iLen = mData.length; i < iLen; i++)
-        mData[i].Row.cells[mIndexCol][mTextKey] = "" + (i + 1);
+      let currentDataValue = undefined;
+      let lastDataValue = undefined;
+      let rank = 1;
+      for (var i = 0, iLen = mData.length; i < iLen; i++) {
+        
+        // this will allow us to identify ties
+        currentDataValue = mData[i].Row.cells[sortIndex][mTextKey];
+        if (typeof currentDataValue === 'string') {
+          if (currentDataValue.includes('$')) {
+            currentDataValue = parseFloat(currentDataValue.replace('$', ''));
+          } else if (currentDataValue.includes('%')) {
+            currentDataValue = parseFloat(currentDataValue.replace('%', '')) / 100;
+          }
+        }
+
+        if (lastDataValue === undefined) {
+          lastDataValue = currentDataValue;
+          console.log(lastDataValue)
+        }
+
+        if (lastDataValue != currentDataValue) {
+          rank = rank + 1;
+        }
+        
+        lastDataValue = currentDataValue;
+
+        mData[i].Row.cells[mIndexCol][mTextKey] = rank;
+      }
     }
   }
 
