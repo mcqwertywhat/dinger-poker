@@ -194,6 +194,7 @@ body {
 
   .stats-col-header {
     top: 0; /* this value is adjusted to position it just under .table-header for mobile */
+    font-weight: normal;
   }
   
   #p-columns .fixed-column {
@@ -235,7 +236,8 @@ body {
   }
 
   .stats-col::after {
-    font-size: .55rem;
+    font-size: .6rem;
+    right: -2px;
   }
 
 }
