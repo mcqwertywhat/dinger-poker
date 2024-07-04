@@ -11,6 +11,9 @@ const validColumns = [
   { key: "Name", name: "Name", displayName: "Name", align: "left" },
   { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center" },
   { key: "RebuysCount", name: "Rebuys", align: "center" },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", sortOnPageLoad: true },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
   { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center" },
   { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center" },
   { key: "First", name: "1st", align: "center" },
@@ -19,9 +22,6 @@ const validColumns = [
   { key: "OnTheBubble", name: "Bubble", align: "center" },
   { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
   { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", sortOnPageLoad: true },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
 ]
 .map((col, index) => ({ ...col, order: index }));
 
