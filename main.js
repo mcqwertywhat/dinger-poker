@@ -614,10 +614,51 @@ var TDSort = (function () {
     theParent.removeChild(theHeader);
     theParent.insertBefore(theHeader, mData[0].Row);
 
+    const ranks = [];
+    
+    // TODO: Fix this hackery... we're reversing three times in the span of 30 lines. Must be a better way.
+    
+    if (!sortedHighToLow) {
+      mData.reverse();
+    }
+
+    if (sortIndex === 1) {
+      mData.reverse();
+    }
+    
     // update the index column
     if (mIndexCol >= 0) {
-      for (var i = 0, iLen = mData.length; i < iLen; i++)
-        mData[i].Row.cells[mIndexCol][mTextKey] = "" + (i + 1);
+      let currentDataValue = undefined;
+      let lastDataValue = undefined;
+      let currentRank = 1;
+      for (var i = 0, iLen = mData.length; i < iLen; i++) {
+        
+        // this will allow us to identify ties
+        currentDataValue = mData[i].Row.cells[sortIndex][mTextKey];
+        if (typeof currentDataValue === 'string') {
+          if (currentDataValue.includes('$')) {
+            currentDataValue = parseFloat(currentDataValue.replace('$', ''));
+          } else if (currentDataValue.includes('%')) {
+            currentDataValue = parseFloat(currentDataValue.replace('%', '')) / 100;
+          }
+        }
+
+        if (lastDataValue === undefined) {
+          lastDataValue = currentDataValue;
+        }
+
+        if (lastDataValue != currentDataValue) {
+          currentRank = currentRank + 1;
+        }
+        
+        lastDataValue = currentDataValue;
+        ranks.push(currentRank);
+        mData[i].Row.cells[mIndexCol][mTextKey] = currentRank;
+      }
+    }
+
+    for (var i = 0, iLen = mData.length; i < iLen; i++) {
+      mData[i].Row.cells[mIndexCol][mTextKey] = ranks[i];
     }
   }
 
