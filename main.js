@@ -454,7 +454,8 @@ var TDSort = (function () {
     if (inIndex == sortIndex) {
       sortedHighToLow = !sortedHighToLow;
       // TODO: we need a column to know if it should be sorted high to low or low to high the first time it is clicked; a defaultSort
-    } else if (inIndex === 1 || inIndex === 13) {
+      // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
+    } else if (inIndex === 1) {
       sortedHighToLow = false;
     } else {
       // sorting the same column, again, so reverse the current sort
