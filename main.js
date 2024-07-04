@@ -11,6 +11,9 @@ const validColumns = [
   { key: "Name", name: "Name", displayName: "Name", align: "left", defaultSort: "asc", rankable: false },
   { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center", defaultSort: null, rankable: false },
   { key: "RebuysCount", name: "Rebuys", align: "center", defaultSort: "asc", rankable: true },
+  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true, sortOnPageLoad: true },
+  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right", defaultSort: "asc", rankable: true },
+  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true },
   { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center", defaultSort: "desc", rankable: true },
   { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center", defaultSort: "desc", rankable: true },
   { key: "First", name: "1st", align: "center", defaultSort: "desc", rankable: true },
@@ -19,9 +22,6 @@ const validColumns = [
   { key: "OnTheBubble", name: "Bubble", align: "center", defaultSort: "desc", rankable: true },
   { key: "Hits", name: "Hits", transform: transformHits, align: "center", defaultSort: "desc", rankable: true },
   { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center", defaultSort: "desc", rankable: true },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right", defaultSort: "asc", rankable: true },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right", defaultSort: "desc", rankable: true },
 ]
 .map((col, index) => ({ ...col, order: index }));
 
@@ -416,6 +416,9 @@ var TDSort = (function () {
     for (var i = 0, iLen = mData.length; i < iLen; i++) {
       mData[i].Row = theRows[i + 1];
     }
+
+    const defaultColumnIndex = validColumns.findIndex((column) => column.sortOnPageLoad);
+    sortByColumn(defaultColumnIndex);
   }
 
   // sort fn
