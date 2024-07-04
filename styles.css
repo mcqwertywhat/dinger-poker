@@ -135,7 +135,7 @@ body {
   .table-container {
     max-width: 100%;
     overflow-x: scroll;
-    font-size: .9rem;
+    font-size: .8rem;
     position: fixed;
     left: 0;
     /* whatever offset we use for top, table needs to be 100% - that% for height */
@@ -198,7 +198,6 @@ body {
 
   .stats-col-header {
     top: 0; /* this value is adjusted to position it just under .table-header for mobile */
-    font-weight: normal;
   }
   
   #p-columns .fixed-column {
@@ -245,11 +244,7 @@ body {
   }
 
   .sort-name-col-arrow::after {
-    right: 24px;
-  }
-
-  .sort-col-arrow::after, .sort-name-col-arrow::after {
-    top: 55%;
+    right: 12px;
   }
 
 }
