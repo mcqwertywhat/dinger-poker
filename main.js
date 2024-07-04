@@ -446,7 +446,7 @@ var TDSort = (function () {
     // sortIndex is -1 if we haven't sorted yet; only changes after the first sort
     if (sortIndex >= 0) {
       const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
-      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "best-at-top", "best-at-bottom");
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow", "best-at-top", "best-at-bottom");
     }
     
     const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
@@ -463,7 +463,7 @@ var TDSort = (function () {
     }
     sortIndex = inIndex;
     const currentColumn = mColumns[inIndex];
-    const classesToAdd = ["sort-col-arrow"];
+    const classesToAdd = (sortIndex == 1) ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
 
     if (currentColumn.rankable) {
       const sortClass = currentColumn?.defaultSort === "desc" 
