@@ -35,8 +35,8 @@ const validColumns = [
     key: "RebuysCount",
     name: "Rebuys",
     align: "center",
-    defaultSort: "asc",
-    bestScore: "low",
+    defaultSort: "desc",
+    bestScore: null,
   },
   {
     key: "TotalWinnings",
@@ -53,8 +53,8 @@ const validColumns = [
     name: "Total Cost",
     displayName: "Cost",
     align: "right",
-    defaultSort: "asc",
-    bestScore: "low",
+    defaultSort: "desc",
+    bestScore: null,
     transform: transformMoney,
   },
   {
