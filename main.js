@@ -1,5 +1,4 @@
 // only allowed param is 'id'; expect it to match a reports key
-// TODO: should requestedReportID be set as global variable in some other way?
 let requestedReportID = new URLSearchParams(window.location.search).get("id");
 let reports;
 let mData;
@@ -10,23 +9,129 @@ const useMobileColumns = true;
 
 const validColumns = [
   // the order of these columns is the order they will appear in the table
-  { key: "_Index", name: "#", displayName: "#", align: "right" },
-  { key: "Name", name: "Name", displayName: "Name", align: "left" },
-  { key: "Buyins", name: "Buy-ins", displayName: "Games", align: "center" },
-  { key: "RebuysCount", name: "Rebuys", align: "center" },
-  { key: "TimesPlaced", name: "Times Placed", displayName: "Payouts", align: "center" },
-  { key: "AveragePlaced", name: "Average Placed", displayName: "Payout %", transform: transformAvgPlaced, align: "center" },
-  { key: "First", name: "1st", align: "center" },
-  { key: "Second", name: "2nd", align: "center" },
-  { key: "Third", name: "3rd", align: "center" },
-  { key: "OnTheBubble", name: "Bubble", align: "center" },
-  { key: "Hits", name: "Hits", transform: transformHits, align: "center" },
-  { key: "AverageHits", name: "Average Hits", displayName: "Avg Hits", transform: transformAvgHits, align: "center"  },
-  { key: "TotalWinnings", name: "Total Winnings", displayName: "Won", transform: transformMoney, align: "right" },
-  { key: "TotalCost", name: "Total Cost", displayName: "Cost", transform: transformMoney, align: "right" },
-  { key: "TotalTake", name: "Total Take", displayName: "Take", transform: transformMoney, align: "right" },
-]
-.map((col, index) => ({ ...col, order: index }));
+  {
+    key: "_Index",
+    name: "#",
+    displayName: "#",
+    align: "right",
+    defaultSort: null,
+    bestScore: null,
+    // TODO: we may want an explicit "showRank" property to determine if the rank column should be shown. right now, we assume that if no bestScore is set, the rank column should not be populated
+  },
+  {
+    key: "Name",
+    name: "Name",
+    displayName: "Name",
+    align: "left",
+    defaultSort: "asc",
+    bestScore: null,
+  },
+  {
+    key: "Buyins",
+    name: "Buy-ins",
+    displayName: "Games",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: null,
+  },
+  {
+    key: "RebuysCount",
+    name: "Rebuys",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: null,
+  },
+  {
+    key: "TotalWinnings",
+    name: "Total Winnings",
+    displayName: "Won",
+    align: "right",
+    defaultSort: "desc",
+    bestScore: "high",
+    sortOnPageLoad: true,
+    transform: transformMoney,
+  },
+  {
+    key: "TotalCost",
+    name: "Total Cost",
+    displayName: "Cost",
+    align: "right",
+    defaultSort: "desc",
+    bestScore: null,
+    transform: transformMoney,
+  },
+  {
+    key: "TotalTake",
+    name: "Total Take",
+    displayName: "Take",
+    align: "right",
+    defaultSort: "desc",
+    bestScore: "high",
+    transform: transformMoney,
+  },
+  {
+    key: "TimesPlaced",
+    name: "Times Placed",
+    displayName: "Payouts",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+  },
+  {
+    key: "AveragePlaced",
+    name: "Average Placed",
+    displayName: "Payout %",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+    transform: transformAvgPlaced,
+  },
+  {
+    key: "First",
+    name: "1st",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+  },
+  {
+    key: "Second",
+    name: "2nd",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+  },
+  {
+    key: "Third",
+    name: "3rd",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+  },
+  {
+    key: "OnTheBubble",
+    name: "Bubble",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+  },
+  {
+    key: "Hits",
+    name: "Hits",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+    transform: transformHits,
+  },
+  {
+    key: "AverageHits",
+    name: "Average Hits",
+    displayName: "Avg Hits",
+    align: "center",
+    defaultSort: "desc",
+    bestScore: "high",
+    transform: transformAvgHits,
+  },
+].map((col, index) => ({ ...col, order: index }));
 
 async function initializePage() {
   await loadReports();
@@ -383,8 +488,8 @@ async function fetchCSV(url) {
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
-  // was the last sort a reverse sort?
-  var reverseSort = false;
+  // was the last sort a reverse sort (i.e. sorted high to low)?
+  var sortedHighToLow = true;
   // not going to try too hard for browser compatibility - just check for IE or non-IE
   var mTextKey = document.all ? "innerText" : "textContent";
   var mTableID = "";
@@ -422,6 +527,9 @@ var TDSort = (function () {
     for (var i = 0, iLen = mData.length; i < iLen; i++) {
       mData[i].Row = theRows[i + 1];
     }
+
+    const defaultColumnIndex = validColumns.findIndex((column) => column.sortOnPageLoad);
+    sortByColumn(defaultColumnIndex);
   }
 
   // sort fn
@@ -444,14 +552,45 @@ var TDSort = (function () {
   }
 
   function sortByColumn(inIndex) {
-    if (mData.length == 0) return;
-
-    if (inIndex == sortIndex) reverseSort = !reverseSort;
-    // sorting the same column, again, so reverse the current sort
-    else reverseSort = false; // if sorting on a new column, always reset to forward sort
-
+    if (mData.length == 0) {
+      return;
+    }
+    
+    // sortIndex is -1 if we haven't sorted yet; only changes after the first sort
+    if (sortIndex >= 0) {
+      const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow", "best-at-top", "best-at-bottom");
+    }
+    
+    const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
+    
+    if (inIndex == sortIndex) {
+      sortedHighToLow = !sortedHighToLow;
+      // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
+    } else if (mColumns[inIndex].defaultSort === 'asc') {
+      sortedHighToLow = false;
+    } else {
+      // sorting the same column, again, so reverse the current sort
+      sortedHighToLow = true;
+    }
     sortIndex = inIndex;
+    const currentColumn = mColumns[inIndex];
+    // the name column is always leftmost and needs its sort arrow repositioned
+    const classesToAdd = (currentColumn.key == "Name") ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
 
+    // we use arrows that imply "best" and "worst" if the column is rankable (i.e. it has a non-null bestScore)
+    // otherwise, we use a neutral colour for the arrow
+    if (currentColumn.bestScore) {
+      const sortClass = currentColumn.bestScore === "high" 
+        ? (sortedHighToLow ? "best-at-top" : "best-at-bottom") 
+        : (sortedHighToLow ? "best-at-bottom" : "best-at-top");
+      classesToAdd.push(sortClass);
+    }
+    
+    classesToAdd.push(sortedHighToLow ? "sort-col-desc" : "sort-col-asc");
+    
+    currentColElement.classList.add(...classesToAdd);
+    
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
 
@@ -462,7 +601,9 @@ var TDSort = (function () {
     // sort the rows
     mData.sort(sortRow);
 
-    if (reverseSort) mData.reverse();
+    if (sortedHighToLow) {
+      mData.reverse();
+    }
 
     // put the rows back in the new sorted order
     // there may or may not be an empty row followed by a sum and average rows, so for an easy solution insert the
@@ -476,18 +617,64 @@ var TDSort = (function () {
     }
 
     theParent.removeChild(theHeader);
-    theParent.insertBefore(theHeader, mData[0].Row);
+    theParent.insertBefore(theHeader, mData[0].Row);    
+    
+    // TODO: we're reversing twice in a row? Must be a better way.
+    if (!sortedHighToLow) {
+      mData.reverse();
+    }
+    
+    if (currentColumn?.bestScore === "low" || (currentColumn?.bestScore === null && currentColumn.defaultSort === "asc")) {
+      // without this, the rank column will be sorted opposite of the "best" result
+      mData.reverse();
+    }
+    
+    if (currentColumn.bestScore) {
+      // update the index column
+      const ranks = [];
+      if (mIndexCol >= 0) {
+        let currentDataValue = undefined;
+        let lastDataValue = undefined;
+        let currentRank = 1;
+        for (var i = 0, iLen = mData.length; i < iLen; i++) {
+          // this will allow us to identify ties
+          currentDataValue = mData[i].Row.cells[sortIndex][mTextKey];
+          if (typeof currentDataValue === "string") {
+            if (currentDataValue.includes("$")) {
+              currentDataValue = parseFloat(currentDataValue.replace("$", ""));
+            } else if (currentDataValue.includes("%")) {
+              currentDataValue =
+                parseFloat(currentDataValue.replace("%", "")) / 100;
+            }
+          }
 
-    // update the index column
-    if (mIndexCol >= 0) {
-      for (var i = 0, iLen = mData.length; i < iLen; i++)
-        mData[i].Row.cells[mIndexCol][mTextKey] = "" + (i + 1);
+          if (lastDataValue === undefined) {
+            lastDataValue = currentDataValue;
+          }
+
+          if (lastDataValue != currentDataValue) {
+            currentRank = currentRank + 1;
+          }
+
+          lastDataValue = currentDataValue;
+          ranks.push(currentRank);
+        }
+      }
+
+      for (var i = 0, iLen = mData.length; i < iLen; i++) {
+        mData[i].Row.cells[mIndexCol][mTextKey] = ranks[i];
+      }
+    } else {
+      // clear the index column as the column isn't rankable
+      for (var i = 0, iLen = mData.length; i < iLen; i++) {
+        mData[i].Row.cells[mIndexCol][mTextKey] = "";
+      }
     }
   }
-
-  return {
-    init: init,
-  };
+    
+    return {
+      init: init,
+    };
 })();
 
 window.onload = initializePage;
