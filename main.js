@@ -653,7 +653,6 @@ var TDSort = (function () {
         
         lastDataValue = currentDataValue;
         ranks.push(currentRank);
-        mData[i].Row.cells[mIndexCol][mTextKey] = currentRank;
       }
     }
 
