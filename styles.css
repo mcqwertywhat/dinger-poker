@@ -84,6 +84,14 @@ body {
   content: " \25B2";
 }
 
+.best-at-top::after {
+  color: greenyellow;
+}
+
+.best-at-bottom::after {
+  color: red;
+}
+
 .odd {
 }
 
@@ -193,7 +201,7 @@ body {
   
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 32px;
+    left: 28px;
   }
 
   .stats-col-header {
@@ -233,7 +241,7 @@ body {
   #p-columns > :nth-child(2) {
     position: sticky;
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 32px;
+    left: 28px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
