@@ -13,6 +13,7 @@ const validColumns = [
     align: "right",
     defaultSort: null,
     bestScore: null,
+    // TODO: we may want an explicit "showRank" property to determine if the rank column should be shown. right now, we assume that if no bestScore is set, the rank column should not be populated
   },
   {
     key: "Name",
