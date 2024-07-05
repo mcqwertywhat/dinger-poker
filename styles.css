@@ -231,7 +231,7 @@ body {
   
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 32px;
+    left: 35px;
   }
 
   .stats-col-header {
