@@ -10,7 +10,7 @@ const validColumns = [
     key: "_Index",
     name: "#",
     displayName: "#",
-    align: "right",
+    align: "left",
     defaultSort: null,
     bestScore: null,
     // TODO: we may want an explicit "showRank" property to determine if the rank column should be shown. right now, we assume that if no bestScore is set, the rank column should not be populated
@@ -484,8 +484,7 @@ var TDSort = (function () {
   var sortIndex = -1;
   // was the last sort a reverse sort (i.e. sorted high to low)?
   var sortedHighToLow = true;
-  // not going to try too hard for browser compatibility - just check for IE or non-IE
-  var mTextKey = document.all ? "innerText" : "textContent";
+  var mTextKey = "innerHTML"
   var mTableID = "";
   var mHeaderRowID = "";
   var mIndexCol = 0;
@@ -656,13 +655,30 @@ var TDSort = (function () {
       }
 
       for (var i = 0, iLen = mData.length; i < iLen; i++) {
-        mData[i].Row.cells[mIndexCol][mTextKey] = ranks[i];
+        console.log(mData[i].Row.cells[mIndexCol]);
+        mData[i].Row.cells[mIndexCol][mTextKey] = getPlaceSuffix(ranks[i]);
       }
     } else {
       // clear the index column as the column isn't rankable
       for (var i = 0, iLen = mData.length; i < iLen; i++) {
-        mData[i].Row.cells[mIndexCol][mTextKey] = "";
+        mData[i].Row.cells[mIndexCol][mTextKey] = "-";
       }
+    }
+  }
+
+  function getPlaceSuffix(number) {
+    if (number % 100 >= 11 && number % 100 <= 13) {
+      return `${number}<span class='nth-place'></span>`;
+    }
+    switch (number % 10) {
+      case 1:
+        return `${number}<span class='first-place'></span>`;
+        case 2:
+        return `${number}<span class='second-place'></span>`;
+        case 3:
+        return `${number}<span class='third-place'></span>`;
+        default:
+        return `${number}<span class='nth-place'></span>`;
     }
   }
     

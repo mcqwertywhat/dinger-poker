@@ -39,16 +39,44 @@ body {
   text-align: center;
 }
 
+.fixed-column-0 {
+  min-width: 40px;
+}
+
 .align-right {
   text-align: right;
 }
 
 .stats-table {
+  table-layout: fixed;
   padding: 0px; /* do not make padding more than 0 or sticky header names */
   background-color: #fff;
   color: #000;
   border-radius: 6px;
   border: 0px;
+}
+
+.first-place, .second-place, .third-place, .nth-place {
+  position: relative;
+  bottom: .25rem;
+  right: 0;
+  font-size: .75rem;
+}
+
+.first-place::after {
+  content: "st";
+}
+
+.second-place::after {
+  content: "nd";
+}
+
+.third-place::after {
+  content: "rd";
+}
+
+.nth-place::after {
+  content: "th";
 }
 
 .stats-col-header {
@@ -57,6 +85,7 @@ body {
   top: 64px; /* this value is adjusted to position it just under .table-header for desktop */
   background-color: #2f2d32;
   color: #fff;
+  z-index: 1;
 }
 
 .stats-col {
@@ -197,11 +226,12 @@ body {
   
   .fixed-column-0 {
     left: 0;
+    min-width: 5px;
   }
   
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 28px;
+    left: 35px;
   }
 
   .stats-col-header {
@@ -253,6 +283,12 @@ body {
 
   .sort-name-col-arrow::after {
     right: 12px;
+  }
+
+  .first-place, .second-place, .third-place, .nth-place {
+    bottom: .25rem;
+    right: 0;
+    font-size: .5rem;
   }
 
 }
