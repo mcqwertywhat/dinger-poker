@@ -226,7 +226,7 @@ body {
   
   .fixed-column-0 {
     left: 0;
-    min-width: 5px;
+    min-width: 24px;
   }
   
   .fixed-column-1 {
@@ -271,7 +271,7 @@ body {
   #p-columns > :nth-child(2) {
     position: sticky;
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 28px;
+    left: 33px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
