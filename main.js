@@ -553,6 +553,10 @@ var TDSort = (function () {
     if (sortIndex >= 0) {
       const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
       lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow", "best-at-top", "best-at-bottom", "sort-col-color");
+      const trophyIcons = document.querySelectorAll("i.fa-trophy");
+      trophyIcons.forEach((icon) => {
+        icon.remove();
+      });
     }
     
     const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
@@ -655,7 +659,6 @@ var TDSort = (function () {
       }
 
       for (var i = 0, iLen = mData.length; i < iLen; i++) {
-        console.log(mData[i].Row.cells[mIndexCol]);
         mData[i].Row.cells[mIndexCol][mTextKey] = getPlaceSuffix(ranks[i]);
       }
     } else {
@@ -670,6 +673,19 @@ var TDSort = (function () {
     if (number % 100 >= 11 && number % 100 <= 13) {
       return `${number}<span class='nth-place'></span>`;
     }
+
+    if (number === 1) {
+      return `<div class="rank-box"><div>${number}<span class='first-place'></span></div><i class='fa-solid fa-trophy first-place-icon'></i></div>`;
+    }
+
+    if (number === 2) {
+      return `<div class="rank-box"><div>${number}<span class='second-place'></span></div><i class='fa-solid fa-trophy second-place-icon'></i></div>`;
+    }
+
+    if (number === 3) {
+      return `<div class="rank-box"><div>${number}<span class='third-place'></span></div><i class='fa-solid fa-trophy third-place-icon'></i></div>`;
+    }
+
     switch (number % 10) {
       case 1:
         return `${number}<span class='first-place'></span>`;

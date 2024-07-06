@@ -131,6 +131,25 @@ body {
   color: gold;
 }
 
+.rank-box {
+  display: flex;
+  justify-content: space-between;
+  width: 60px;
+  padding: 0;
+}
+
+.first-place-icon {
+  color: rgb(214, 184, 16);
+}
+
+.second-place-icon {
+  color: rgb(173, 168, 168);
+}
+
+.third-place-icon {
+  color: #b08335;
+}
+
 .odd {
 }
 
@@ -236,12 +255,12 @@ body {
   
   .fixed-column-0 {
     left: 0;
-    min-width: 24px;
+    min-width: 32px;
   }
   
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 35px;
+    left: 49px;
   }
 
   .stats-col-header {
@@ -281,7 +300,7 @@ body {
   #p-columns > :nth-child(2) {
     position: sticky;
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 33px;
+    left: 49px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
@@ -293,6 +312,12 @@ body {
 
   .sort-name-col-arrow::after {
     right: 12px;
+  }
+
+  .rank-box {
+    display: flex;
+    justify-content: space-between;
+    width: 40px;
   }
 
   .first-place, .second-place, .third-place, .nth-place {
