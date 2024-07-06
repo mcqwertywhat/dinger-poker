@@ -571,8 +571,8 @@ var TDSort = (function () {
     // the name column is always leftmost and needs its sort arrow repositioned
     const classesToAdd = (currentColumn.key == "Name") ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
     classesToAdd.push("sort-col-color")
-    // we can use arrows that imply "best" and "worst" if the column is rankable (i.e. it has a non-null bestScore)
-    // otherwise, we can use a neutral colour for the arrow
+    // we can use arrows that imply "best" and "worst" if the column is rankable (i.e. it has a non-null bestScore) otherwise, we can use a neutral colour for the arrow
+    // all columns currently use the same color for sort arrows, and if not leveraging that, then none of this needs to be here
     if (currentColumn.bestScore) {
       const sortClass = currentColumn.bestScore === "high" 
         ? (sortedHighToLow ? "best-at-top" : "best-at-bottom") 

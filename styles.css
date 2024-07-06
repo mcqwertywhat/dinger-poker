@@ -112,7 +112,7 @@ body {
   content: " \25B2";
 }
 
-/* these classes could all be grouped together under one rule, but leaving here in case we want to reimplment "best/worst" arrow colors */
+/* these classes for sort color could all be grouped together under one rule, but leaving here in case we want to reimplment "best/worst" arrow colors */
 /* they once had different color arrows to visually indicate if the column was currently sorted with best on top or worst on top */
 
 .sort-col-color {
