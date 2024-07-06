@@ -98,7 +98,6 @@ body {
   right: -1px;
   top: 50%;
   transform: translateY(-50%);
-  color: #89c2ff;
 }
 
 .sort-name-col-arrow::after {
@@ -113,12 +112,23 @@ body {
   content: " \25B2";
 }
 
+/* these classes for sort color could all be grouped together under one rule, but leaving here in case we want to reimplment "best/worst" arrow colors */
+/* they once had different color arrows to visually indicate if the column was currently sorted with best on top or worst on top */
+
+.sort-col-color {
+  color: gold;
+}
+
+.sort-col-arrow::after, .sort-name-col-arrow::after {
+  color: gold;
+}
+
 .best-at-top::after {
-  color: greenyellow;
+  color: gold;
 }
 
 .best-at-bottom::after {
-  color: red;
+  color: gold;
 }
 
 .odd {

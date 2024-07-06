@@ -552,7 +552,7 @@ var TDSort = (function () {
     // sortIndex is -1 if we haven't sorted yet; only changes after the first sort
     if (sortIndex >= 0) {
       const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
-      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow", "best-at-top", "best-at-bottom");
+      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow", "best-at-top", "best-at-bottom", "sort-col-color");
     }
     
     const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
@@ -570,9 +570,9 @@ var TDSort = (function () {
     const currentColumn = mColumns[inIndex];
     // the name column is always leftmost and needs its sort arrow repositioned
     const classesToAdd = (currentColumn.key == "Name") ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
-
-    // we use arrows that imply "best" and "worst" if the column is rankable (i.e. it has a non-null bestScore)
-    // otherwise, we use a neutral colour for the arrow
+    classesToAdd.push("sort-col-color")
+    // we can use arrows that imply "best" and "worst" if the column is rankable (i.e. it has a non-null bestScore) otherwise, we can use a neutral colour for the arrow
+    // all columns currently use the same color for sort arrows, and if not leveraging that, then none of this needs to be here
     if (currentColumn.bestScore) {
       const sortClass = currentColumn.bestScore === "high" 
         ? (sortedHighToLow ? "best-at-top" : "best-at-bottom") 
