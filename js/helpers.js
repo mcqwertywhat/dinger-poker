@@ -1,33 +1,22 @@
-// transform functions are used to format data in the table (e.g. currency, percentages, etc.)
-
-function transformAvgPlaced(numericValue) {
-  return (numericValue * 100).toFixed(0) + "%";
-}
-
-function transformAvgHits(numericValue) {
-  numericValue = Math.round(numericValue * 10) / 10;
-  if (Number.isInteger(numericValue) && numericValue % 1 === 0) {
-    numericValue = numericValue.toFixed(1);
-  }
-  return numericValue;
-}
-
-function transformHits(numericValue) {
-  return Math.floor(numericValue);
-}
-
-function transformMoney(numericValue) {
-  // do we need amount to be numeric value?
-  if (numericValue < 0) {
-    return `-$${Math.abs(numericValue).toFixed(0)}`;
-  } else {
-    return `$${numericValue.toFixed(0)}`;
+export function processQueryparams(requestedReportID) {
+  const validQueryParams = Object.keys(reports);
+  if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
+    requestedReportID = getDefaultReportID();
+    window.location.href = `index.html?id=${requestedReportID}`;
   }
 }
 
-// other helpers
+function getDefaultReportID() {  
+  for (const key in reports) {
+    if (reports[key].default) {
+      return key;
+    }
+  }  
+  // if no report is set to default, use the first report in the list
+  return Object.keys(reports)[0];
+}
 
-function populateInfoIcon(report) {
+export function populateInfoIcon(report) {
   const isoString = report.lastUpdatedAt;
   const date = new Date(isoString);
 
