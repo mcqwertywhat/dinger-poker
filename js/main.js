@@ -21,51 +21,43 @@ import {
 } from "./domUtils.js";
 
 async function initializePage() {
-  // only allowed param is 'id'; expect it to match a reports key
-  let requestedReportID = new URLSearchParams(window.location.search).get("id");
+  // order matters; each function relies on the previous one and we need to set some global variables for use by other functions
   const reports = await loadReports();
-  // reports needs to be a global variable
   window.reports = reports;
-
-  processQueryparams(requestedReportID);
+  
+  const requestedReportID = getRequestedReportID();
   await updateLocalStorageIfNecessary(requestedReportID);
   const requestedReport = await loadAndReturnReport(requestedReportID);
-  // awaiting setCurrentReport because mColumns has to be set before creating the header row
   const currentReport = await setCurrentReport(requestedReport);
   const mData = currentReport.data;
-  window.mData = mData;
   const mColumns = currentReport.headers;
+  window.mData = mData;
   window.mColumns = mColumns;
+
   createHeaderRow(mColumns);
   populateDropdown(requestedReportID);
   populateInfoIcon(currentReport);
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows(mData);
-  TDSort?.init("p-table", "p-columns");
+  TDSort.init("p-table", "p-columns");
   if (sessionStorage.getItem("firstLoad") === null) {
-    // load other report data in background (notice we do not await this function)
+    // load other report data in background
     cacheAllReportsData();
     sessionStorage.setItem("firstLoad", "true");
   }
 }
 
-function processQueryparams(requestedReportID) {
-  const validQueryParams = Object.keys(reports);
-  if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
-    requestedReportID = getDefaultReportID();
+function getRequestedReportID() {
+  // only allowed param is 'id'; expect it to match a reports key
+  let requestedReportID = new URLSearchParams(window.location.search).get("id");
+
+  if (!requestedReportID || !Object.keys(reports).includes(requestedReportID)) {
+    requestedReportID = Object.keys(reports).find(key => reports[key].default) || Object.keys(reports)[0];
     window.location.href = `index.html?id=${requestedReportID}`;
   }
-}
 
-function getDefaultReportID() {
-  for (const key in reports) {
-    if (reports[key].default) {
-      return key;
-    }
-  }
-  // if no report is set to default, use the first report in the list
-  return Object.keys(reports)[0];
+  return requestedReportID
 }
 
 // everything in TDSort was from the original HTML export
