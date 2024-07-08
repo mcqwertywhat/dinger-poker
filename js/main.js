@@ -1,21 +1,30 @@
-import { validColumns } from "./data.js";
-import { loadReports, setCurrentReport, loadAndReturnReport, cacheAllReportsData, updateLocalStorageIfNecessary } from "./dataUtils.js";
-import { processQueryparams, populateInfoIcon } from "./helpers.js";
-import { addEventListenerForReportSelect, addEventListenerForInfoIcon } from "./eventListeners.js";
-import { createHeaderRow, createTableRows, populateDropdown } from "./domUtils.js";
+import { validColumns } from "./validColumns.js";
 
-// only allowed param is 'id'; expect it to match a reports key
-// these variables need to be available across files
-let requestedReportID = new URLSearchParams(window.location.search).get("id");
+import {
+  loadReports,
+  setCurrentReport,
+  loadAndReturnReport,
+  cacheAllReportsData,
+  updateLocalStorageIfNecessary,
+} from "./dataUtils.js";
 
-let mData;
-let mColumns;
+import {
+  addEventListenerForReportSelect,
+  addEventListenerForInfoIcon,
+} from "./eventListeners.js";
+
+import {
+  createHeaderRow,
+  createTableRows,
+  populateDropdown,
+  populateInfoIcon,
+} from "./domUtils.js";
 
 async function initializePage() {
+  // only allowed param is 'id'; expect it to match a reports key
+  let requestedReportID = new URLSearchParams(window.location.search).get("id");
   const reports = await loadReports();
-  // Now you can work with the `reports` object as needed
-  // For example, assign it to a global variable if necessary
-  // TODO: really? assign as global variable like this?
+  // reports needs to be a global variable
   window.reports = reports;
 
   processQueryparams(requestedReportID);
@@ -23,8 +32,10 @@ async function initializePage() {
   const requestedReport = await loadAndReturnReport(requestedReportID);
   // awaiting setCurrentReport because mColumns has to be set before creating the header row
   const currentReport = await setCurrentReport(requestedReport);
-  mData = currentReport.data;
-  mColumns = currentReport.headers;
+  const mData = currentReport.data;
+  window.mData = mData;
+  const mColumns = currentReport.headers;
+  window.mColumns = mColumns;
   createHeaderRow(mColumns);
   populateDropdown(requestedReportID);
   populateInfoIcon(currentReport);
@@ -39,13 +50,31 @@ async function initializePage() {
   }
 }
 
+function processQueryparams(requestedReportID) {
+  const validQueryParams = Object.keys(reports);
+  if (!requestedReportID || !validQueryParams.includes(requestedReportID)) {
+    requestedReportID = getDefaultReportID();
+    window.location.href = `index.html?id=${requestedReportID}`;
+  }
+}
+
+function getDefaultReportID() {
+  for (const key in reports) {
+    if (reports[key].default) {
+      return key;
+    }
+  }
+  // if no report is set to default, use the first report in the list
+  return Object.keys(reports)[0];
+}
+
 // everything in TDSort was from the original HTML export
 var TDSort = (function () {
   // the column index on which we are sorting
   var sortIndex = -1;
   // was the last sort a reverse sort (i.e. sorted high to low)?
   var sortedHighToLow = true;
-  var mTextKey = "innerHTML"
+  var mTextKey = "innerHTML";
   var mTableID = "";
   var mHeaderRowID = "";
   var mIndexCol = 0;
@@ -82,7 +111,9 @@ var TDSort = (function () {
       mData[i].Row = theRows[i + 1];
     }
 
-    const defaultColumnIndex = validColumns.findIndex((column) => column.sortOnPageLoad);
+    const defaultColumnIndex = validColumns.findIndex(
+      (column) => column.sortOnPageLoad
+    );
     sortByColumn(defaultColumnIndex);
   }
 
@@ -109,19 +140,31 @@ var TDSort = (function () {
     if (mData.length == 0) {
       return;
     }
-    
+
     // sortIndex is -1 if we haven't sorted yet; only changes after the first sort
     if (sortIndex >= 0) {
-      const lastSortedColumn = document.querySelector(`#p-columns th:nth-of-type(${sortIndex + 1})`);
-      lastSortedColumn.classList.remove("sort-col-arrow", "sort-col-desc", "sort-col-asc", "sort-name-col-arrow", "best-at-top", "best-at-bottom", "sort-col-color");
+      const lastSortedColumn = document.querySelector(
+        `#p-columns th:nth-of-type(${sortIndex + 1})`
+      );
+      lastSortedColumn.classList.remove(
+        "sort-col-arrow",
+        "sort-col-desc",
+        "sort-col-asc",
+        "sort-name-col-arrow",
+        "best-at-top",
+        "best-at-bottom",
+        "sort-col-color"
+      );
     }
-    
-    const currentColElement = document.querySelector(`#p-columns th:nth-of-type(${inIndex + 1})`);
-    
+
+    const currentColElement = document.querySelector(
+      `#p-columns th:nth-of-type(${inIndex + 1})`
+    );
+
     if (inIndex == sortIndex) {
       sortedHighToLow = !sortedHighToLow;
       // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
-    } else if (mColumns[inIndex].defaultSort === 'asc') {
+    } else if (mColumns[inIndex].defaultSort === "asc") {
       sortedHighToLow = false;
     } else {
       // sorting the same column, again, so reverse the current sort
@@ -130,21 +173,29 @@ var TDSort = (function () {
     sortIndex = inIndex;
     const currentColumn = mColumns[inIndex];
     // the name column is always leftmost and needs its sort arrow repositioned
-    const classesToAdd = (currentColumn.key == "Name") ? ["sort-name-col-arrow"] : ["sort-col-arrow"];
-    classesToAdd.push("sort-col-color")
+    const classesToAdd =
+      currentColumn.key == "Name"
+        ? ["sort-name-col-arrow"]
+        : ["sort-col-arrow"];
+    classesToAdd.push("sort-col-color");
     // we can use arrows that imply "best" and "worst" if the column is rankable (i.e. it has a non-null bestScore) otherwise, we can use a neutral colour for the arrow
     // all columns currently use the same color for sort arrows, and if not leveraging that, then none of this needs to be here
     if (currentColumn.bestScore) {
-      const sortClass = currentColumn.bestScore === "high" 
-        ? (sortedHighToLow ? "best-at-top" : "best-at-bottom") 
-        : (sortedHighToLow ? "best-at-bottom" : "best-at-top");
+      const sortClass =
+        currentColumn.bestScore === "high"
+          ? sortedHighToLow
+            ? "best-at-top"
+            : "best-at-bottom"
+          : sortedHighToLow
+          ? "best-at-bottom"
+          : "best-at-top";
       classesToAdd.push(sortClass);
     }
-    
+
     classesToAdd.push(sortedHighToLow ? "sort-col-desc" : "sort-col-asc");
-    
+
     currentColElement.classList.add(...classesToAdd);
-    
+
     var theTable = document.getElementById(mTableID);
     var theParent = theTable.rows[0].parentNode;
 
@@ -171,18 +222,21 @@ var TDSort = (function () {
     }
 
     theParent.removeChild(theHeader);
-    theParent.insertBefore(theHeader, mData[0].Row);    
-    
+    theParent.insertBefore(theHeader, mData[0].Row);
+
     // TODO: we're reversing twice in a row? Must be a better way.
     if (!sortedHighToLow) {
       mData.reverse();
     }
-    
-    if (currentColumn?.bestScore === "low" || (currentColumn?.bestScore === null && currentColumn.defaultSort === "asc")) {
+
+    if (
+      currentColumn?.bestScore === "low" ||
+      (currentColumn?.bestScore === null && currentColumn.defaultSort === "asc")
+    ) {
       // without this, the rank column will be sorted opposite of the "best" result
       mData.reverse();
     }
-    
+
     if (currentColumn.bestScore) {
       // update the index column
       const ranks = [];
@@ -233,18 +287,18 @@ var TDSort = (function () {
     switch (number % 10) {
       case 1:
         return `${number}<span class='first-place'></span>`;
-        case 2:
+      case 2:
         return `${number}<span class='second-place'></span>`;
-        case 3:
+      case 3:
         return `${number}<span class='third-place'></span>`;
-        default:
+      default:
         return `${number}<span class='nth-place'></span>`;
     }
   }
-    
-    return {
-      init: init,
-    };
+
+  return {
+    init: init,
+  };
 })();
 
 window.onload = initializePage;

@@ -1,34 +1,6 @@
-// transform functions are used to format data in the table (e.g. currency, percentages, etc.)
-
-function transformAvgPlaced(numericValue) {
-  return (numericValue * 100).toFixed(0) + "%";
-}
-
-function transformAvgHits(numericValue) {
-  numericValue = Math.round(numericValue * 10) / 10;
-  if (Number.isInteger(numericValue) && numericValue % 1 === 0) {
-    numericValue = numericValue.toFixed(1);
-  }
-  return numericValue;
-}
-
-function transformHits(numericValue) {
-  return Math.floor(numericValue);
-}
-
-function transformMoney(numericValue) {
-  // do we need amount to be numeric value?
-  if (numericValue < 0) {
-    return `-$${Math.abs(numericValue).toFixed(0)}`;
-  } else {
-    return `$${numericValue.toFixed(0)}`;
-  }
-}
-
 export const validColumns =
   // the order of these columns is the order they will appear in the table
-  // right now, we assume that if no bestScore is set, the rank column should not be populated with place numbers
-  // TODO: we may want an explicit "showRank" property to determine if the rank column should be shown. 
+  // TODO: right now, we assume that if no bestScore is set, the rank column should not be populated with place numbers. We may want an explicit "showRank" property to determine if the rank column should be shown.
   [
     {
       key: "_Index",
@@ -152,3 +124,30 @@ export const validColumns =
       transform: transformAvgHits,
     },
   ].map((col, index) => ({ ...col, order: index }));
+
+// transform functions are used to format data in the table (e.g. currency, percentages, etc.)
+
+function transformAvgPlaced(numericValue) {
+  return (numericValue * 100).toFixed(0) + "%";
+}
+
+function transformAvgHits(numericValue) {
+  numericValue = Math.round(numericValue * 10) / 10;
+  if (Number.isInteger(numericValue) && numericValue % 1 === 0) {
+    numericValue = numericValue.toFixed(1);
+  }
+  return numericValue;
+}
+
+function transformHits(numericValue) {
+  return Math.floor(numericValue);
+}
+
+function transformMoney(numericValue) {
+  // do we need amount to be numeric value?
+  if (numericValue < 0) {
+    return `-$${Math.abs(numericValue).toFixed(0)}`;
+  } else {
+    return `$${numericValue.toFixed(0)}`;
+  }
+}
