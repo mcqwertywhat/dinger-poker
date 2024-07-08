@@ -26,15 +26,15 @@
   },
   "christmas": {
     "title": "Christmas Poker",
-    "filename": "christmas.csv"
+    "filename": "Christmas Poker.csv"
   },
   "dinger_days": {
     "title": "Dinger Days",
-    "filename": "dinger_days.csv"
+    "filename": "Dinger Days.csv"
   },
   "bounty": {
     "title": "Bounty",
-    "filename": "bounty.csv"
+    "filename": "Bounty.csv"
   },
   "hold_em_rebuy": {
     "title": "Hold'em Rebuy",
