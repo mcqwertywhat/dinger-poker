@@ -53,7 +53,6 @@ function getRequestedReportID() {
   let requestedReportID = new URLSearchParams(window.location.search).get("id");
   if (!requestedReportID || !Object.keys(reports).includes(requestedReportID)) {
     requestedReportID = Object.keys(reports).find(key => reports[key].default) || Object.keys(reports)[0];
-    window.location.href = `index.html?id=${requestedReportID}`;
   }
   return requestedReportID
 }
