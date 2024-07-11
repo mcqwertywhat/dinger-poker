@@ -41,11 +41,11 @@ export function addEventListenerForReportSelect() {
     window.mColumns = mColumns;
 
     createHeaderRow(mColumns);
-    populateDropdown(requestedReportID);
     populateInfoIcon(currentReport);
     addEventListenerForReportSelect();
-    addEventListenerForInfoIcon();
     createTableRows(mData);
+
+    // TODO: need to prevent sort from constantly reversing; may need to pass more variables here or declare new ones
     TDSort.init("p-table", "p-columns", mColumns, mData);
   });
 }

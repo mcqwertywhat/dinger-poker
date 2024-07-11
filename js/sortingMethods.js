@@ -13,7 +13,9 @@ export const TDSort = (function () {
     var mIndexCol = 0;
   
     // initialize the page
-    function init(inTableID, inHeaderRowID) {
+    function init(inTableID, inHeaderRowID, mColumns, mData) {
+      // always reset sort when initializing the table for a new report
+      sortedHighToLow = false
       mTableID = inTableID;
       mHeaderRowID = inHeaderRowID;
       // install an onClick handler for each column header
