@@ -40,7 +40,7 @@ async function initializePage() {
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows(mData);
-  TDSort.init("p-table", "p-columns");
+  TDSort.init("p-table", "p-columns", mColumns, mData);
   if (sessionStorage.getItem("firstLoad") === null) {
     // load other report data in background
     cacheAllReportsData();

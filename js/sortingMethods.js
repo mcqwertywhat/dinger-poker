@@ -31,6 +31,7 @@ export const TDSort = (function () {
             mColumns[i].key != "_PlayerImage" &&
             mColumns[i].key != "_HitmanImage"
           ) {
+            // this installs an onclick handler for each row 
             theRow.cells[i].onclick = getSortFn(i);
             theRow.cells[i].style.cursor = "pointer";
           }
