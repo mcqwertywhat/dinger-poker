@@ -45,7 +45,7 @@ export function addEventListenerForReportSelect() {
     addEventListenerForReportSelect();
     createTableRows(mData);
 
-    // TODO: need to prevent sort from constantly reversing; may need to pass more variables here or declare new ones
+    // TODO: the init method probably does too much stuff after the page has already been loaded. need something lighter weight that does not reinstall event handlers for clicking columns
     TDSort.init("p-table", "p-columns", mColumns, mData);
   });
 }
