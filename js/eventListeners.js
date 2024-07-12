@@ -6,7 +6,6 @@ import {
 import {
   createHeaderRow,
   createTableRows,
-  populateDropdown,
   populateInfoIcon,
 } from "./domUtils.js";
 
@@ -29,6 +28,7 @@ export function addEventListenerForReportSelect() {
     const requestedReportID = e.target.value
     document.getElementById("p-columns").innerHTML = "";
     const tBody = document.getElementById("p-table-body")
+    
     while (tBody.childNodes.length > 2) {
       tBody.removeChild(tBody.lastChild)
     }
@@ -42,7 +42,6 @@ export function addEventListenerForReportSelect() {
 
     createHeaderRow(mColumns);
     populateInfoIcon(currentReport);
-    addEventListenerForReportSelect();
     createTableRows(mData);
 
     // TODO: the init method probably does too much stuff after the page has already been loaded. need something lighter weight that does not reinstall event handlers for clicking columns
