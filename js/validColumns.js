@@ -17,6 +17,7 @@ export const validColumns =
       align: "left",
       defaultSort: "asc",
       bestScore: null,
+      minWidth: 12
     },
     {
       key: "Buyins",
@@ -42,6 +43,7 @@ export const validColumns =
       bestScore: "high",
       sortOnPageLoad: true,
       transform: transformMoney,
+      minWidth: 5
     },
     {
       key: "TotalCost",
@@ -51,6 +53,7 @@ export const validColumns =
       defaultSort: "desc",
       bestScore: null,
       transform: transformMoney,
+      minWidth: 5
     },
     {
       key: "TotalTake",
@@ -60,6 +63,7 @@ export const validColumns =
       defaultSort: "desc",
       bestScore: "high",
       transform: transformMoney,
+      minWidth: 5
     },
     {
       key: "TimesPlaced",
