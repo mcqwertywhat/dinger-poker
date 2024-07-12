@@ -116,7 +116,7 @@ body {
 }
 
 .sort-name-col-arrow::after {
-  right: 18px;
+  right: 7ch;
 }
 
 .sort-col-desc::after {
