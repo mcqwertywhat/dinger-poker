@@ -29,19 +29,19 @@ export function addEventListenerForReportSelect() {
     document.getElementById("p-columns").innerHTML = "";
     const tBody = document.getElementById("p-table-body")
     
+    // clear table of current data
     while (tBody.childNodes.length > 2) {
       tBody.removeChild(tBody.lastChild)
     }
-
+    
     const requestedReport = await loadAndReturnReport(requestedReportID);
-    const currentReport = await setCurrentReport(requestedReport);
-    const mData = currentReport.data;
-    const mColumns = currentReport.headers;
-    window.mData = mData;
-    window.mColumns = mColumns;
+    await setCurrentReport(requestedReport);
+
+    window.mData = requestedReport.data;
+    window.mColumns = requestedReport.headers;
 
     createHeaderRow(mColumns);
-    populateInfoIcon(currentReport);
+    populateInfoIcon(requestedReport);
     createTableRows(mData);
 
     // TODO: the init method probably does too much stuff after the page has already been loaded. need something lighter weight that does not reinstall event handlers for clicking columns
