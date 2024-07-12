@@ -1,10 +1,30 @@
 html {
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 14pt;
+  font-size: 13pt;
 }
 
 body {
   background-color: #5f7a96;
+}
+
+/* most cols need a default width of 3 characters */
+#p-columns > th {
+  min-width: 3ch;
+}
+
+/* name col */
+#p-columns > :nth-child(2) {
+  min-width: 12ch;
+}
+
+/* money columns need 5 characters - '$' followed by up to 4 digits */
+#p-columns > :nth-child(5), #p-columns > :nth-child(6), #p-columns > :nth-child(7) {
+  min-width: 5ch;
+}
+
+/* places seem to need 2 chars at most */
+#p-columns > :nth-child(10), #p-columns > :nth-child(11), #p-columns > :nth-child(12) {
+  min-width: 2ch;
 }
 
 .table-container {
