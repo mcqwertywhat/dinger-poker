@@ -5,7 +5,7 @@ export const validColumns =
     {
       key: "_Index",
       name: "#",
-      displayName: "#",
+      displayName: " ",
       align: "left",
       defaultSort: null,
       bestScore: null,
