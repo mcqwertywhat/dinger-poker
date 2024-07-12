@@ -121,6 +121,8 @@ export async function loadAndReturnReport(key) {
     localStorage.setItem(`${key}`, JSON.stringify(report));
   }
 
+  await setHeadersForReport(report)
+
   return report;
 }
 
@@ -137,7 +139,7 @@ function orderHeaders(headers) {
   return orderedHeaders;
 }
 
-export async function setCurrentReport(report) {
+export async function setHeadersForReport(report) {
   // async because mData and mColumns need to be set before other things happen
   const validHeaderNames = validColumns.map((column) => column.name);
   const mColumns = report.headers

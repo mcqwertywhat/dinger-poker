@@ -1,5 +1,4 @@
 import {
-  setCurrentReport,
   loadAndReturnReport,
 } from "./dataUtils.js";
 
@@ -35,7 +34,6 @@ export function addEventListenerForReportSelect() {
     }
     
     const requestedReport = await loadAndReturnReport(requestedReportID);
-    await setCurrentReport(requestedReport);
 
     window.mData = requestedReport.data;
     window.mColumns = requestedReport.headers;

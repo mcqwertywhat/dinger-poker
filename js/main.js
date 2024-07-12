@@ -1,6 +1,5 @@
 import {
   loadReports,
-  setCurrentReport,
   loadAndReturnReport,
   cacheAllReportsData,
   updateLocalStorageIfNecessary,
@@ -28,15 +27,14 @@ async function initializePage() {
   const requestedReportID = getRequestedReportID();
   await updateLocalStorageIfNecessary(requestedReportID);
   const requestedReport = await loadAndReturnReport(requestedReportID);
-  const currentReport = await setCurrentReport(requestedReport);
-  const mData = currentReport.data;
-  const mColumns = currentReport.headers;
+  const mData = requestedReport.data;
+  const mColumns = requestedReport.headers;
   window.mData = mData;
   window.mColumns = mColumns;
 
   createHeaderRow(mColumns);
   populateDropdown(requestedReportID);
-  populateInfoIcon(currentReport);
+  populateInfoIcon(requestedReport);
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows(mData);
