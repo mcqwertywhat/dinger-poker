@@ -127,22 +127,23 @@ body {
   content: " \25B2";
 }
 
-/* these classes for sort color could all be grouped together under one rule, but leaving here in case we want to reimplment "best/worst" arrow colors */
-/* they once had different color arrows to visually indicate if the column was currently sorted with best on top or worst on top */
+/* 
+these classes for sort color could all be grouped together under one rule, but leaving here in case we want to reimplment "best/worst" column header sort colors
+they once had different color arrows to visually indicate if the column was currently sorted with best on top or worst on top
+rankable columns are validColumn that has a non-null "bestScore"
+you can change the colour of the column header based on how the stats are currently sorted 
+as an indicator that the "best" is at the top or the "worst" is at the top 
+*/
 
-.sort-col-color {
+.sort-col-color, .sort-col-arrow::after, .sort-name-col-arrow::after {
   color: gold;
 }
 
-.sort-col-arrow::after, .sort-name-col-arrow::after {
+.best-at-top, .best-at-top::after {
   color: gold;
 }
 
-.best-at-top::after {
-  color: gold;
-}
-
-.best-at-bottom::after {
+.best-at-bottom, .best-at-bottom::after {
   color: gold;
 }
 

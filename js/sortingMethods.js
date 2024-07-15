@@ -97,17 +97,18 @@ export const TDSort = (function () {
       
       if (window.onSameReport) {
         if (inIndex == sortIndex) {
+          // sorting the same column while on the same report, so just reverse the current sort
           sortedHighToLow = !sortedHighToLow;
         } else if (mColumns[inIndex].defaultSort === "asc") {
-          // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
+          // an 'ascending' column has been clicked where it was not being sorted on before
+          // some columns are sorted low to high by default (e.g. "Name" default sort is A->Z)
           sortedHighToLow = false;
         } else {
-          // sorting the same column, again, so reverse the current sort
           sortedHighToLow = true;
         }
-      } else {
-        window.onSameReport = true;
       }
+
+      window.onSameReport = true;
       
       sortIndex = inIndex;
       const currentColumn = mColumns[inIndex];
