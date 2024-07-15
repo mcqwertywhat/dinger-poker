@@ -6,6 +6,7 @@ export const TDSort = (function () {
     // the column index on which we are sorting
     var sortIndex = -1;
     var sortedHighToLow = true;
+    // TODO: add different mTextKey for older browsers (keep in mind we load HTML and plain text into this)
     var mTextKey = "innerHTML";
     var mTableID = "";
     var mHeaderRowID = "";
