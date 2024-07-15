@@ -5,7 +5,6 @@ import { validColumns } from "./validColumns.js";
 export const TDSort = (function () {
     // the column index on which we are sorting
     var sortIndex = -1;
-    // was the last sort a reverse sort (i.e. sorted high to low)?
     var sortedHighToLow = true;
     var mTextKey = "innerHTML";
     var mTableID = "";
@@ -14,8 +13,6 @@ export const TDSort = (function () {
   
     // initialize the page
     function init(inTableID, inHeaderRowID, mColumns, mData) {
-      // always reset sort when initializing the table for a new report
-      sortedHighToLow = false
       mTableID = inTableID;
       mHeaderRowID = inHeaderRowID;
       // install an onClick handler for each column header
@@ -50,7 +47,7 @@ export const TDSort = (function () {
       const defaultColumnIndex = validColumns.findIndex(
         (column) => column.sortOnPageLoad
       );
-      sortByColumn(defaultColumnIndex);
+      sortByColumn(window.inIndex || defaultColumnIndex);
     }
   
     // sort fn
@@ -73,6 +70,7 @@ export const TDSort = (function () {
     }
   
     function sortByColumn(inIndex) {
+      window.inIndex = inIndex
       if (mData.length == 0) {
         return;
       }
@@ -95,17 +93,22 @@ export const TDSort = (function () {
   
       const currentColElement = document.querySelector(
         `#p-columns th:nth-of-type(${inIndex + 1})`
-      );
-  
-      if (inIndex == sortIndex) {
-        sortedHighToLow = !sortedHighToLow;
-        // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
-      } else if (mColumns[inIndex].defaultSort === "asc") {
-        sortedHighToLow = false;
+      );      
+      
+      if (window.onSameReport) {
+        if (inIndex == sortIndex) {
+          sortedHighToLow = !sortedHighToLow;
+        } else if (mColumns[inIndex].defaultSort === "asc") {
+          // if inIndex is 1, then it's the "Name" column, which should be sorted low to high by default
+          sortedHighToLow = false;
+        } else {
+          // sorting the same column, again, so reverse the current sort
+          sortedHighToLow = true;
+        }
       } else {
-        // sorting the same column, again, so reverse the current sort
-        sortedHighToLow = true;
+        window.onSameReport = true;
       }
+      
       sortIndex = inIndex;
       const currentColumn = mColumns[inIndex];
       // the name column is always leftmost and needs its sort arrow repositioned
