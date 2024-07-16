@@ -90,6 +90,10 @@ export const TDSort = (function () {
           "best-at-bottom",
           "sort-col-color"
         );
+        const trophyIcons = document.querySelectorAll("i.fa-trophy");
+        trophyIcons.forEach((icon) => {
+          icon.remove();
+        });
       }
   
       const currentColElement = document.querySelector(
@@ -225,6 +229,21 @@ export const TDSort = (function () {
       if (number % 100 >= 11 && number % 100 <= 13) {
         return `${number}<span class='nth-place'></span>`;
       }
+
+
+      if (number === 1) {
+        return `<div class="rank-box"><div>${number}<span class='first-place'></span></div><i class='fa-solid fa-trophy first-place-icon'></i></div>`;
+      }
+  
+      if (number === 2) {
+        return `<div class="rank-box"><div>${number}<span class='second-place'></span></div><i class='fa-solid fa-trophy second-place-icon'></i></div>`;
+      }
+  
+      if (number === 3) {
+        return `<div class="rank-box"><div>${number}<span class='third-place'></span></div><i class='fa-solid fa-trophy third-place-icon'></i></div>`;
+      }
+  
+
       switch (number % 10) {
         case 1:
           return `${number}<span class='first-place'></span>`;
