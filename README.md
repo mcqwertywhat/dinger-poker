@@ -117,12 +117,12 @@ We have a `junk` file in the data folder. If you need to trigger a data refresh 
 
 #### Best/Worst Sort Colours
 
-There are CSS rules that are dedicated to the column that is currently being sorted. The column header for the currently sorted column is always accented with a differnet colour, however it is possible to have different colors for:
+There are CSS rules that are dedicated to accenting the column that is currently being sorted. The column header is always accented with a different colour, however it is possible to have different colours for:
 a) the name of the currently sorted column (`.sort-col-color` `.best-at-top` `best-at-bottom`) 
 b) the arrow of the currently sorted column (`.sort-col-color::after` and `.sort-name-col-arrow::after`)
-c) the arrow of the currently sorted column in a "rankable" column (i.e. one that has a non-null "bestScore") based on if it is being sorted with its best value at the top or its worst value at the top (`.best-at-top::after` `best-at-bottom::after`)
+c) the arrow of the currently sorted column in a "rankable" column (i.e. one that has a non-null `bestScore`) based on if it is being sorted with its best value at the top or its worst value at the top (`.best-at-top::after` `best-at-bottom::after`)
 
-> *If we did implement different colours, we could consider a page setting that for that user's computer (a toggle for "Colour-coded Best/Worst Sorting")*
+> *We could consider a `settings` hash in localStorage for a number of things (e.g. a toggle for "Colour-coded Best/Worst Sorting", favourite reports, default report, page colour themes, etc.)*
 
 #### Column Order
 
