@@ -37,12 +37,15 @@ export function addEventListenerForReportSelect() {
 
     window.mData = requestedReport.data;
     window.mColumns = requestedReport.headers;
+    // this only works if the new report has the same column in the same position
+    // TODO: so we need to actually check that the col is in the same place
+    window.inIndex = inIndex;
 
     createHeaderRow(mColumns);
     populateInfoIcon(requestedReport);
     createTableRows(mData);
-
+    window.onSameReport = false;
     // TODO: the init method probably does too much stuff after the page has already been loaded. need something lighter weight that does not reinstall event handlers for clicking columns
-    TDSort.init("p-table", "p-columns", mColumns, mData);
+    TDSort.init("p-table", "p-columns", mColumns, mData, inIndex);
   });
 }
