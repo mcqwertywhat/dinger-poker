@@ -19,7 +19,7 @@ https://github.com/mcqwertywhat/dinger-poker/assets/65724195/a41ddf14-2fe6-46b1-
 
 ### Adding the CSV file
 
-We expect a CSV file that uses only the column names below. We can use some or all of the columns. The columns can be in any order.
+We expect a CSV file that uses only the header names below. We can use some or all of the headers. The headers and associated data can be in any order. Note that there is a fixed order on the website which overrides the order of the columns found in the CSV file.
 
 - `#`
 - `1st`
@@ -54,10 +54,14 @@ Here's an example of adding a report entry with the `id` `pineapples`:
 }
 ```
 
+### Setting the `default` report
+
+A `default` setting can be given to a report which makes it the first report to appear when the page is loaded. (Technically, the `default` setting could be given to multiple reports, but only the first one that is flagged as `default` will actually be considered `default` by the app.)
+
 A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+paste an existing entry and replace the text with what you need for the new report. That said, keep the following in mind:
 
 - In the entry before your new one, put a comma `,` after the `}`
-- The `id` above is `pineapples`. It will appear in a url if you share a link to a specific report, like this: `https://mcqwertywhat.github.io/dinger-poker/index.html?id=pineapples`
+- The `id` above is `pineapples`. 
   - It should be unique 
   - Wrap it in double quotes `"`
   - It should use only letters, numbers, underscores, and dashes (no spaces or special characters)
@@ -71,27 +75,43 @@ A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+p
 
 **Do not** change the name of the `reports.json` file or the name of the `data` folder
 
+> It's possible to share a direct link to a specific report, however you'd need to manually type some extra stuff into the URL. For example, to share a link directly to the `pineapples` report, you'd need to type the URL followed by `?id=pineapples`, like this: `https://mcqwertywhat.github.io/dinger-poker?id=pineapples`
+
 ### Replace an existing report
 
 If you want to refresh the data from a report, just replace its CSV file in the `data` folder with a file of the same name.
 
 ### Delete a report
 
-Just remove its entry in `reports.json` and remove its CSV file.
+1) Remove its entry in `reports.json`. 
+2) Remove its CSV file.
 
 ## Stale Data
 
-Let's say you just uploaded a new report. It's possible, if you have your browser open to the site while you upload the report, that you will not see the uploaded data. If this happens, just close the tab with the site and open a new one. 
+Let's say you just uploaded a new report. If you have your browser open to the site while you upload the report, it's possible that you will not see the uploaded data. If this happens, just close the tab where the site is open, and re-open the site in a new tab. 
 
 # Dev Notes
 
 ## Background 
 
-The code in this site was initially exported from Tournament Director. it was a single HTML file with styles and script tags. The CSS and JS was separated but some original code remai s (all the sorting functionality). The main code that was added was to allow a CSV upload that would display the data. This app is, essentially a CSV display tool where we expect certain header names in the CSV file. Of course, this isn't the optimal solution (ideally we'd host a database and query it directly), but this solution is free and fills a basic requirement of displaying reports online.
+When this project was first started, it was started by building on an existing codebase created for the poker stats program "Tournament Director", authored by Corey Cooper. The initial codebase was a single HTML file, thousands of lines long, with a single `<style>` and `<script>` tag, each with all the CSS and JavaScript for the entire site. From that initial base, the CSS and JS was separated, and additional code written to handle the user requirements. Some original code remains (mainly in the sorting functionality, found in `sortingMethods.js`).
+
+The main code that was added was to allow a CSV upload that would display the data. This app is essentially just a tool that allows us to display the data from a CSV file in a table with sortable columns (albeit, with only certain valid header names expected in the CSV file). Of course, this isn't the optimal solution (ideally we'd host a database and query it directly and build our own dataset for reports with custom filters etc.). That said, this solution fills the basic requirement of: "I need a FREE way to display reports online where I already have the report data as a CSV file."
 
 ### Caching 
 
-Because we're reading CSV files and displaying that data, we have a caching system in place where we store all data from the CSV files in local storage, and only read  directly from the files themselves if the data isn't found in local storage. We also store a value in local storage that holds the last visited time of the user. We also have a value in session storage that checks the time of the latest commit to the 'data' folder in this github repo. If the value of the user's last visit is earlier than the latest commit to the data folder, we fetch all new data from the CSV files.
+Because we're reading CSV files to get our data, we cache all data from the CSV files in local storage. We only read directly from the files themselves if:
+a) the data isn't found in local storage 
+or
+b) the CSV data has been updated since the user's last visit to the site
+or
+c) the user's last visit to the site cannot be determined. 
+
+> *How do we know if the CSV files have been updated since the user's last visit to the site?* We store a `lastVisitTimestamp` in localStorage and retrieve the last commit to the `data` folder from GitHub in each session (we store this as a session variable to prevent this check from happening multiple times per session). Any change to the `data` folder will trigger a refresh of the cached reports. 
+
+#### `junk` file
+
+We have a `junk` file in the data folder. If you need to trigger a data refresh for some reason, where the data isn't actually refreshed, but something in the logic now requires the data to be read again, you can use this file. This is a hack, and has been used in the past where the structure of the `reports` object changed in some way, but the `reports` in the user's localStorage was not updated because the `data` folder was not changed.
 
 ### Configurable Things (via Code)
 
@@ -113,3 +133,7 @@ The order of the columns is determined by the order they appear in `validColumns
 Columns can have a `displayName`, and if not present, the `name` is used. 
 
 > *We are considering adding a `mobileDisplayName` (see `feature/mobile-specific-column-names`) but I don't think it's really necessary. It doesn't provide value beyond fitting maybe 1 or 2 extra columns on the screen in the mobile view.*
+
+#### New Columns
+
+Add a column to `validColumns.js` and it is then considered valid and can be used in a report.
