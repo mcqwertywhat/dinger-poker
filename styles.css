@@ -317,4 +317,9 @@ as an indicator that the "best" is at the top or the "worst" is at the top
     font-size: .5rem;
   }
 
+  .min-width-12 {
+    /* cancel the min width on name column as it takes up too much space on mobile */
+    min-width: 0ch;
+  }
+
 }
