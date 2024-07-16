@@ -1,10 +1,25 @@
 html {
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 12pt;
+  font-size: 13pt;
 }
 
 body {
   background-color: #5f7a96;
+}
+
+/* most cols need a default width of 3 characters; this class is used by default on each th */
+.min-width-3 {
+  min-width: 3ch;
+}
+
+/* money columns need 5 characters - '$' followed by up to 4 digits */
+.min-width-5 {
+  min-width: 5ch;
+}
+
+/* longest name seems to be 12 */
+.min-width-12 {
+  min-width: 12ch;
 }
 
 .table-container {
@@ -39,16 +54,44 @@ body {
   text-align: center;
 }
 
+.fixed-column-0 {
+  min-width: 40px;
+}
+
 .align-right {
   text-align: right;
 }
 
 .stats-table {
+  table-layout: fixed;
   padding: 0px; /* do not make padding more than 0 or sticky header names */
   background-color: #fff;
   color: #000;
   border-radius: 6px;
   border: 0px;
+}
+
+.first-place, .second-place, .third-place, .nth-place {
+  position: relative;
+  bottom: .25rem;
+  right: 0;
+  font-size: .75rem;
+}
+
+.first-place::after {
+  content: "st";
+}
+
+.second-place::after {
+  content: "nd";
+}
+
+.third-place::after {
+  content: "rd";
+}
+
+.nth-place::after {
+  content: "th";
 }
 
 .stats-col-header {
@@ -57,11 +100,51 @@ body {
   top: 64px; /* this value is adjusted to position it just under .table-header for desktop */
   background-color: #2f2d32;
   color: #fff;
+  z-index: 1;
 }
 
 .stats-col {
   padding: 1rem;
   white-space: nowrap;
+}
+
+.sort-col-arrow::after, .sort-name-col-arrow::after {
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.sort-name-col-arrow::after {
+  right: 7.5ch;
+}
+
+.sort-col-desc::after {
+  content: " \25BC";
+}
+
+.sort-col-asc::after {
+  content: " \25B2";
+}
+
+/* 
+these classes for sort color could all be grouped together under one rule, but leaving here in case we want to reimplment "best/worst" column header sort colors
+they once had different color arrows to visually indicate if the column was currently sorted with best on top or worst on top
+rankable columns are validColumn that has a non-null "bestScore"
+you can change the colour of the column header based on how the stats are currently sorted 
+as an indicator that the "best" is at the top or the "worst" is at the top 
+*/
+
+.sort-col-color, .sort-col-arrow::after, .sort-name-col-arrow::after {
+  color: gold;
+}
+
+.best-at-top, .best-at-top::after {
+  color: gold;
+}
+
+.best-at-bottom, .best-at-bottom::after {
+  color: gold;
 }
 
 .odd {
@@ -115,7 +198,7 @@ body {
   .table-container {
     max-width: 100%;
     overflow-x: scroll;
-    font-size: .75rem;
+    font-size: .8rem;
     position: fixed;
     left: 0;
     /* whatever offset we use for top, table needs to be 100% - that% for height */
@@ -135,7 +218,7 @@ body {
 
   .table-header {
     left: 0;
-    min-height: 61px;
+    min-height: 76px;
     position: sticky;
     top: 0;
     width: 100%;
@@ -143,7 +226,7 @@ body {
 
   /* controls size of page heading and select control; set to .9rem to deal with iPhone SE screen */
   .heading-selectlist-info-container {
-    font-size: 0.9rem;
+    font-size: .95rem;
   }
 
   #info-icon {
@@ -152,7 +235,7 @@ body {
 
   #info-text {
     right: 10px;
-    top: 44px;
+    top: 52px;
     margin-left: 3px;
     border-radius: 3px;
     padding: 5px 10px;
@@ -169,11 +252,12 @@ body {
   
   .fixed-column-0 {
     left: 0;
+    min-width: 24px;
   }
   
   .fixed-column-1 {
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 28px;
+    left: 35px;
   }
 
   .stats-col-header {
@@ -213,8 +297,24 @@ body {
   #p-columns > :nth-child(2) {
     position: sticky;
     /* prevents the "Name" column from overlapping the "#" column */
-    left: 28px;
+    left: 33px;
     z-index: 2;
     border-right: 1px solid #e3e3e3;
   }
+
+  .stats-col::after {
+    font-size: .6rem;
+    right: -2px;
+  }
+
+  .sort-name-col-arrow::after {
+    right: 12px;
+  }
+
+  .first-place, .second-place, .third-place, .nth-place {
+    bottom: .25rem;
+    right: 0;
+    font-size: .5rem;
+  }
+
 }
