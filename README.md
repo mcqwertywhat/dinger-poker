@@ -4,20 +4,38 @@
 
 Dinger Poker displays stats (i.e. reports) from poker games. Each report's data is in a CSV file, where each CSV file is data from a different query (a particular year, type of game, etc.)
 
-## Add a new report
+## Quick How-to...
+
+### Update an existing report
+
+1. Replace its CSV file in the `data` folder with a file **of the same name**.
+
+> **Data not refreshing after an update?** 
+> 
+> Let's say you just uploaded a new report. If you have your browser open to the site while you upload the report, it's possible that you will not see the uploaded data. If this happens, just close the tab where the site is open, and re-open the site in a new tab.
+
+### Add a new report
 
 1. Add a CSV file to the `data` folder.
-2. Add an entry in the `reports.json` file with a filename that matches the CSV file you added.
+2. Add an entry in the `reports.json` file **with a filename that matches the CSV file you added**.
 
-## How-to Video
+### Delete a report
 
-> ⚠️ Video shows links in site menu, but that has since been replaced by a dropdown selector. 
+1. Remove its entry in `reports.json`. 
+2. Remove its CSV file.
 
-https://github.com/mcqwertywhat/dinger-poker/assets/65724195/a41ddf14-2fe6-46b1-96e2-e6f5d07e3958
+### Set the `default` report
 
-## Details on adding a new report
+The default report is the one that appears first when a user navigates to the site.
 
-### Adding the CSV file
+1. Add the line `default: true` to the desired report in the `reports.json` file
+2. Remove the line `default: true` from all reports except the one you wish to be the default.
+
+> Technically, the `default` setting could be given to multiple reports, but only the first one that is flagged as `default` will actually be considered `default` by the app.
+
+## Details on Adding a New Report
+
+### Adding the CSV file for a new report
 
 We expect a CSV file that uses only the header names below. We can use some or all of the headers. The headers and associated data can be in any order. Note that there is a fixed order on the website which overrides the order of the columns found in the CSV file.
 
@@ -54,10 +72,6 @@ Here's an example of adding a report entry with the `id` `pineapples`:
 }
 ```
 
-### Setting the `default` report
-
-A `default` setting can be given to a report which makes it the first report to appear when the page is loaded. (Technically, the `default` setting could be given to multiple reports, but only the first one that is flagged as `default` will actually be considered `default` by the app.)
-
 A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+paste an existing entry and replace the text with what you need for the new report. That said, keep the following in mind:
 
 - In the entry before your new one, put a comma `,` after the `}`
@@ -75,20 +89,7 @@ A report needs an `id`, a `title`, and a `filename`. It's easiest to just copy+p
 
 **Do not** change the name of the `reports.json` file or the name of the `data` folder
 
-> It's possible to share a direct link to a specific report, however you'd need to manually type some extra stuff into the URL. For example, to share a link directly to the `pineapples` report, you'd need to type the URL followed by `?id=pineapples`, like this: `https://mcqwertywhat.github.io/dinger-poker?id=pineapples`
-
-### Replace an existing report
-
-If you want to refresh the data from a report, just replace its CSV file in the `data` folder with a file of the same name.
-
-### Delete a report
-
-1) Remove its entry in `reports.json`. 
-2) Remove its CSV file.
-
-## Stale Data
-
-Let's say you just uploaded a new report. If you have your browser open to the site while you upload the report, it's possible that you will not see the uploaded data. If this happens, just close the tab where the site is open, and re-open the site in a new tab. 
+> It's possible to share a direct link to a specific report, however you'd need to manually type some extra stuff into the URL. For example, to share a link directly to the `pineapples` report, you'd need to type the URL followed by `?id=pineapples`, like this: `https://mcqwertywhat.github.io/dinger-poker?id=pineapples` 
 
 # Dev Notes
 
