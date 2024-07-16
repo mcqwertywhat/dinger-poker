@@ -17,7 +17,7 @@ Dinger Poker displays stats (i.e. reports) from poker games. Each report's data 
 ### Add a new report
 
 1. Add a CSV file to the `data` folder.
-2. Add an entry in the `reports.json` file **with a filename that matches the CSV file you added**.
+2. Add an entry in `reports.json`. **Make sure the `filename` of the entry matches the CSV file you added**.
 
 ### Delete a report
 
