@@ -1,6 +1,5 @@
 import {
   loadReports,
-  setCurrentReport,
   loadAndReturnReport,
   cacheAllReportsData,
   updateLocalStorageIfNecessary,
@@ -28,19 +27,18 @@ async function initializePage() {
   const requestedReportID = getRequestedReportID();
   await updateLocalStorageIfNecessary(requestedReportID);
   const requestedReport = await loadAndReturnReport(requestedReportID);
-  const currentReport = await setCurrentReport(requestedReport);
-  const mData = currentReport.data;
-  const mColumns = currentReport.headers;
+  const mData = requestedReport.data;
+  const mColumns = requestedReport.headers;
   window.mData = mData;
   window.mColumns = mColumns;
 
   createHeaderRow(mColumns);
   populateDropdown(requestedReportID);
-  populateInfoIcon(currentReport);
+  populateInfoIcon(requestedReport);
   addEventListenerForReportSelect();
   addEventListenerForInfoIcon();
   createTableRows(mData);
-  TDSort.init("p-table", "p-columns");
+  TDSort.init("p-table", "p-columns", mColumns, mData);
   if (sessionStorage.getItem("firstLoad") === null) {
     // load other report data in background
     cacheAllReportsData();
@@ -53,7 +51,6 @@ function getRequestedReportID() {
   let requestedReportID = new URLSearchParams(window.location.search).get("id");
   if (!requestedReportID || !Object.keys(reports).includes(requestedReportID)) {
     requestedReportID = Object.keys(reports).find(key => reports[key].default) || Object.keys(reports)[0];
-    window.location.href = `index.html?id=${requestedReportID}`;
   }
   return requestedReportID
 }

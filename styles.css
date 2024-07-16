@@ -1,10 +1,25 @@
 html {
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 14pt;
+  font-size: 13pt;
 }
 
 body {
   background-color: #5f7a96;
+}
+
+/* most cols need a default width of 3 characters; this class is used by default on each th */
+.min-width-3 {
+  min-width: 3ch;
+}
+
+/* money columns need 5 characters - '$' followed by up to 4 digits */
+.min-width-5 {
+  min-width: 5ch;
+}
+
+/* longest name seems to be 12 */
+.min-width-12 {
+  min-width: 12ch;
 }
 
 .table-container {
@@ -101,7 +116,7 @@ body {
 }
 
 .sort-name-col-arrow::after {
-  right: 18px;
+  right: 7.5ch;
 }
 
 .sort-col-desc::after {

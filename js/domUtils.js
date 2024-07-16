@@ -2,7 +2,7 @@ export function createHeaderRow(mColumns) {
   const headerRow = document.getElementById("p-columns");
   mColumns.forEach((column) => {
     const th = document.createElement("th");
-    th.className = `stats-col stats-col-header align-${column.align}`;
+    th.className = `stats-col stats-col-header align-${column.align} min-width-${column.minWidth ? column.minWidth : "3"}`;
     const displayName = column.displayName ? column.displayName : column.name;
     th.textContent = displayName;
     headerRow.appendChild(th);
