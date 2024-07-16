@@ -89,6 +89,27 @@ Let's say you just uploaded a new report. It's possible, if you have your browse
 
 The code in this site was initially exported from Tournament Director. it was a single HTML file with styles and script tags. The CSS and JS was separated but some original code remai s (all the sorting functionality). The main code that was added was to allow a CSV upload that would display the data. This app is, essentially a CSV display tool where we expect certain header names in the CSV file. Of course, this isn't the optimal solution (ideally we'd host a database and query it directly), but this solution is free and fills a basic requirement of displaying reports online.
 
-## Caching 
+### Caching 
 
-Because we're reading CSV files and displaying that data, we have a caching system in place where we store all data from the CSV files in local storage, and only read  directly from the files themselves if the data isn't found in local storage. We also store a value in local storage that holds the last visited time of the user. We also have a value in session storage that checks the time of the latest commit to the 'data' folder in this github repo. If the value of the users last visit is earlier than the latest commit to the data folder, we fetch all new data from the CSV files.
+Because we're reading CSV files and displaying that data, we have a caching system in place where we store all data from the CSV files in local storage, and only read  directly from the files themselves if the data isn't found in local storage. We also store a value in local storage that holds the last visited time of the user. We also have a value in session storage that checks the time of the latest commit to the 'data' folder in this github repo. If the value of the user's last visit is earlier than the latest commit to the data folder, we fetch all new data from the CSV files.
+
+### Configurable Things (via Code)
+
+#### Best/Worst Sort Colours
+
+There are CSS rules that are dedicated to the column that is currently being sorted. The column header for the currently sorted column is always accented with a differnet colour, however it is possible to have different colors for:
+a) the name of the currently sorted column (`.sort-col-color` `.best-at-top` `best-at-bottom`) 
+b) the arrow of the currently sorted column (`.sort-col-color::after` and `.sort-name-col-arrow::after`)
+c) the arrow of the currently sorted column in a "rankable" column (i.e. one that has a non-null "bestScore") based on if it is being sorted with its best value at the top or its worst value at the top (`.best-at-top::after` `best-at-bottom::after`)
+
+> *If we did implement different colours, we could consider a page setting that for that user's computer (a toggle for "Colour-coded Best/Worst Sorting")*
+
+#### Column Order
+
+The order of the columns is determined by the order they appear in `validColumns.js`
+
+#### Column Names
+
+Columns can have a `displayName`, and if not present, the `name` is used. 
+
+> *We are considering adding a `mobileDisplayName` (see `feature/mobile-specific-column-names`) but I don't think it's really necessary. It doesn't provide value beyond fitting maybe 1 or 2 extra columns on the screen in the mobile view.*
