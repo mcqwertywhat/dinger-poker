@@ -18,8 +18,8 @@ body {
 }
 
 /* longest name seems to be 12 */
-.min-width-12 {
-  min-width: 12ch;
+.min-width-7 {
+  min-width: 7ch;
 }
 
 .table-container {
@@ -116,7 +116,7 @@ body {
 }
 
 .sort-name-col-arrow::after {
-  right: 7.5ch;
+  right: 2.5ch;
 }
 
 .sort-col-desc::after {
@@ -317,7 +317,7 @@ as an indicator that the "best" is at the top or the "worst" is at the top
     font-size: .5rem;
   }
 
-  .min-width-12 {
+  .min-width-7 {
     /* cancel the min width on name column as it takes up too much space on mobile */
     min-width: 0ch;
   }
