@@ -12,14 +12,14 @@ body {
   min-width: 3ch;
 }
 
-/* money columns need 5 characters - '$' followed by up to 4 digits */
+/* money columns need 5 characters */
 .min-width-5 {
   min-width: 5ch;
 }
 
-/* longest name seems to be 12 */
-.min-width-12 {
-  min-width: 12ch;
+/* longest name seems to be 7 */
+.min-width-7 {
+  min-width: 7ch;
 }
 
 .table-container {
@@ -116,7 +116,7 @@ body {
 }
 
 .sort-name-col-arrow::after {
-  right: 7.5ch;
+  right: 2.5ch;
 }
 
 .sort-col-desc::after {

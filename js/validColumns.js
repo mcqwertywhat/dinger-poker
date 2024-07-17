@@ -17,7 +17,7 @@ export const validColumns =
       align: "left",
       defaultSort: "asc",
       bestScore: null,
-      minWidth: 12
+      minWidth: 7
     },
     {
       key: "Buyins",
