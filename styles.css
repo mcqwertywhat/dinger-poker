@@ -12,12 +12,12 @@ body {
   min-width: 3ch;
 }
 
-/* money columns need 5 characters - '$' followed by up to 4 digits */
+/* money columns need 5 characters */
 .min-width-5 {
   min-width: 5ch;
 }
 
-/* longest name seems to be 12 */
+/* longest name seems to be 7 */
 .min-width-7 {
   min-width: 7ch;
 }
@@ -315,11 +315,6 @@ as an indicator that the "best" is at the top or the "worst" is at the top
     bottom: .25rem;
     right: 0;
     font-size: .5rem;
-  }
-
-  .min-width-7 {
-    /* cancel the min width on name column as it takes up too much space on mobile */
-    min-width: 0ch;
   }
 
 }
