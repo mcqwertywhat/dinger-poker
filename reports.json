@@ -1,12 +1,12 @@
 {
   "2025": {
-    "title": "2025 TEST",
-    "filename": "2025.csv"
+    "title": "2025",
+    "filename": "2025.csv",
+    "default": true
   },
   "2024": {
     "title": "2024",
-    "filename": "2024.csv",
-    "default": true
+    "filename": "2024.csv"
   },
   "2023": {
     "title": "2023",
