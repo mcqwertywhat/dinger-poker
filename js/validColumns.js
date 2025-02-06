@@ -20,6 +20,15 @@ export const validColumns =
       minWidth: 7
     },
     {
+      key: "PlayerPoints",
+      name: "Player Points",
+      displayName: "Points",
+      align: "right",
+      defaultSort: "desc",
+      bestScore: "high",
+      sortOnPageLoad: true,
+    },
+    {
       key: "Buyins",
       name: "Buy-ins",
       displayName: "Games",
@@ -35,21 +44,12 @@ export const validColumns =
       bestScore: null,
     },
     {
-      key: "PlayerPoints",
-      name: "Player Points",
-      displayName: "Points",
-      align: "right",
-      defaultSort: "asc",
-      bestScore: "high",
-    },
-    {
       key: "TotalWinnings",
       name: "Total Winnings",
       displayName: "Won",
       align: "right",
       defaultSort: "desc",
       bestScore: "high",
-      sortOnPageLoad: true,
       transform: transformMoney,
       minWidth: 5
     },
