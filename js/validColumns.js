@@ -25,8 +25,7 @@ export const validColumns =
       displayName: "Points",
       align: "right",
       defaultSort: "desc",
-      bestScore: "high",
-      sortOnPageLoad: true,
+      bestScore: "high"
     },
     {
       key: "Buyins",
@@ -71,7 +70,8 @@ export const validColumns =
       defaultSort: "desc",
       bestScore: "high",
       transform: transformMoney,
-      minWidth: 5
+      minWidth: 5,
+      sortOnPageLoad: true
     },
     {
       key: "TimesPlaced",
