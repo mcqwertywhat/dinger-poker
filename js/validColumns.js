@@ -128,14 +128,6 @@ export const validColumns =
       transform: transformAvgHits,
     },
     {
-      key: "Points",
-      name: "Points",
-      displayName: "Points",
-      align: "right",
-      defaultSort: "desc",
-      bestScore: "high"
-    },
-    {
       key: "AveragePoints",
       name: "Average Points",
       displayName: "Avg Pts",
@@ -143,6 +135,14 @@ export const validColumns =
       defaultSort: "desc",
       bestScore: "high"
     },
+    {
+      key: "Points",
+      name: "Points",
+      displayName: "Points",
+      align: "right",
+      defaultSort: "desc",
+      bestScore: "high"
+    }
   ].map((col, index) => ({ ...col, order: index }));
 
 // transform functions are used to format data in the table (e.g. currency, percentages, etc.)
