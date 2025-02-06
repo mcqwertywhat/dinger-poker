@@ -20,14 +20,6 @@ export const validColumns =
       minWidth: 7
     },
     {
-      key: "PlayerPoints",
-      name: "Player Points",
-      displayName: "Points",
-      align: "right",
-      defaultSort: "desc",
-      bestScore: "high"
-    },
-    {
       key: "Buyins",
       name: "Buy-ins",
       displayName: "Games",
@@ -134,6 +126,22 @@ export const validColumns =
       defaultSort: "desc",
       bestScore: "high",
       transform: transformAvgHits,
+    },
+    {
+      key: "Points",
+      name: "Points",
+      displayName: "Points",
+      align: "right",
+      defaultSort: "desc",
+      bestScore: "high"
+    },
+    {
+      key: "AveragePoints",
+      name: "Average Points",
+      displayName: "Avg Pts",
+      align: "right",
+      defaultSort: "desc",
+      bestScore: "high"
     },
   ].map((col, index) => ({ ...col, order: index }));
 
