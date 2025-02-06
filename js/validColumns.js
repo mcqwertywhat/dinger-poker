@@ -35,6 +35,14 @@ export const validColumns =
       bestScore: null,
     },
     {
+      key: "PlayerPoints",
+      name: "Player Points",
+      displayName: "Points",
+      align: "right",
+      defaultSort: "asc",
+      bestScore: "high",
+    },
+    {
       key: "TotalWinnings",
       name: "Total Winnings",
       displayName: "Won",
